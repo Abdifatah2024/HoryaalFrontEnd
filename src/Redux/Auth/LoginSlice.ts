@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 
 const DEFAULT_USER_DATA = localStorage.getItem("userData")
   ? JSON.parse(localStorage.getItem("userData")!)
-  : {};
+  : { token: null };
 
 const initialState = {
   loading: false,
@@ -17,7 +17,20 @@ export const Loginfn = createAsyncThunk(
   "login",
   async (data: IloginBody, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${BASE_API_URL}/user/login`, data);
+      // add Bearar token.
+      const userData = localStorage.getItem("userData");
+      const parsedData = userData ? JSON.parse(userData) : null;
+
+      // Access the token
+      const token = parsedData?.token;
+
+      // Configure the headers
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const res = await axios.post(`${BASE_API_URL}/user/login`, data, config);
 
       return res.data;
     } catch (error) {

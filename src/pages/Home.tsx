@@ -1,25 +1,3 @@
-// import React from "react";
-// import { Container, Typography, Button, Box } from "@mui/material";
-
-// const Home: React.FC = () => {
-//   return (
-//     <Container maxWidth="md">
-//       <Box textAlign="center" mt={8}>
-//         <Typography variant="h3" component="h1" gutterBottom>
-//           Welcome to Our Website
-//         </Typography>
-//         <Typography variant="h6" color="textSecondary" paragraph>
-//           We provide high-quality services to help you succeed. Explore our offerings and get started today.
-//         </Typography>
-//         <Button variant="contained" color="primary" size="large">
-//           Get Started
-//         </Button>
-//       </Box>
-//     </Container>
-//   );
-// };
-
-// export default Home;
 import React from 'react';
 import { Container, Typography, Grid, Card, CardContent, Button, AppBar, Toolbar } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
@@ -88,3 +66,5 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+

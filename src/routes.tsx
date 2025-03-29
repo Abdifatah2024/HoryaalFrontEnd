@@ -2,16 +2,16 @@ import { createBrowserRouter } from 'react-router-dom'
 import MainRouter from './pages/main'
 import Home from './pages/Home'
 import NotFoundPage from './pages/NotFound'
-
 import Login from './pages/Auth/Login'
 import Logout from './Components/logout'
 import Register from './pages/Register'
 import UsersList from './pages/UserList'
 import UserSearch from './pages/userprofile'
-
-
-
-
+import SidebarLayout from './pages/sidebar' //
+import StudentForm from './pages/Auth/StdReg'
+import StudentList from './Redux/Auth/StudentList'
+import ClassList from './Redux/Auth/ClassList'
+import { Sidebar } from 'lucide-react'
 
 export const router = createBrowserRouter([
     {
@@ -31,24 +31,40 @@ export const router = createBrowserRouter([
                     }
                 ]
             },
-                     
             {
                 path: "logout",
-                element:<Logout/>
-
+                element: <Logout/>
             },
             {
                 path: "/register",
                 element: <Register/>
             },
             {
-                path:"/user/list",
-                element: <UsersList/>
-
-            },
-            {
-                path:"user/userinfo",
-                element: <UserSearch/>
+                // Sidebar layout wrapper for all dashboard routes
+                path: "dashboard",
+                element: <SidebarLayout/>,
+                children: [
+                    {
+                        path: "user/list",
+                        element: <UsersList/>
+                    },
+                    {
+                        path: "ClassList",
+                        element: <ClassList/>
+                    },
+                    {
+                        path: "userinfo",
+                        element: <UserSearch/>
+                    },
+                    {
+                        path: "regstd",
+                        element: <StudentForm />
+                    },
+                    {
+                        path: "ListStd",
+                        element: <StudentList />
+                    }
+                ]
             },
             {
                 path: "*",
@@ -57,3 +73,4 @@ export const router = createBrowserRouter([
         ]
     }
 ])
+
