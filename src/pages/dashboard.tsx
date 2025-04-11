@@ -1,119 +1,94 @@
-// import React from "react";
+import { FaChalkboardTeacher, FaUserGraduate, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
+import { FiSettings } from 'react-icons/fi';
+import { useState } from 'react';
 
-// const Dashboard: React.FC = () => {
-//   return (
-//     <div style={styles.container}>
-//       {/* Header */}
-//       <h1 style={styles.heading}>🎓 School Dashboard</h1>
+const SchoolDashboard = () => {
+  const [activeView, setActiveView] = useState('dashboard');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-//       {/* Stats Cards */}
-//       <div style={styles.cardsContainer}>
-//         <StatCard title="Total Students" value="300" color="#007bff" />
-//         <StatCard title="Male Students" value="120" color="#17a2b8" />
-//         <StatCard title="Female Students" value="180" color="#ff69b4" />
-//         <StatCard title="Total Teachers" value="29" color="#28a745" />
-//         <StatCard title="Total Classes" value="20" color="#ffc107" />
-//         <StatCard title="Administration Staff" value="8" color="#6f42c1" />
-//       </div>
+  const stats = [
+    { title: 'Total Students', value: '1,240', icon: <FaUserGraduate />, trend: '+12%' },
+    { title: 'Total Teachers', value: '48', icon: <FaChalkboardTeacher />, trend: '+2' },
+    { title: 'Attendance Rate', value: '94%', icon: <FaChartLine />, trend: '+3%' },
+    { title: 'Upcoming Events', value: '5', icon: <FaCalendarAlt />, trend: '2 New' },
+  ];
 
-//       {/* Additional Sections */}
-//       <div style={styles.sectionContainer}>
-//         {/* Recent Activities */}
-//         <div style={styles.section}>
-//           <h2 style={styles.sectionTitle}>📌 Recent Activities</h2>
-//           <ul style={styles.list}>
-//             <li>🏆 Annual Sports Day event planned for March 5th.</li>
-//             <li>📢 Parent-Teacher Meeting scheduled for next Friday.</li>
-//             <li>📝 Mid-term exams start from February 20th.</li>
-//             <li>🎨 Art competition winners announced.</li>
-//           </ul>
-//         </div>
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="p-8 space-y-8">
+    
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex justify-between items-center">
+                <div className={`p-3 rounded-xl bg-indigo-100 dark:bg-indigo-900`}>
+                  {stat.icon}
+                </div>
+                <span className="text-sm text-green-500 font-medium">{stat.trend}</span>
+              </div>
+              <h3 className="mt-4 text-gray-500 dark:text-gray-300 text-sm">{stat.title}</h3>
+              <p className="text-2xl font-bold dark:text-white mt-1">{stat.value}</p>
+            </div>
+          ))}
+        </div>
 
-//         {/* Notifications */}
-//         <div style={styles.section}>
-//           <h2 style={styles.sectionTitle}>🔔 Notifications</h2>
-//           <ul style={styles.list}>
-//             <li>⚠️ New admission applications open for 2025.</li>
-//             <li>✅ Attendance records updated for February.</li>
-//             <li>📚 New books added to the school library.</li>
-//             <li>🚀 Coding workshop for senior students next week.</li>
-//           </ul>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+        {/* Content Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Activities */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold dark:text-white">Recent Activities</h3>
+              <button className="text-indigo-500 text-sm font-medium">View All →</button>
+            </div>
+            <div className="space-y-6">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="flex gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                    <FaUserGraduate className="text-indigo-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium dark:text-white">New Student Enrollment</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Sarah Johnson joined Grade 10
+                    </p>
+                    <span className="text-xs text-gray-400 mt-2 block">45 mins ago</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-// // ✅ Reusable Stat Card Component
-// const StatCard: React.FC<{ title: string; value: string; color: string }> = ({
-//   title,
-//   value,
-//   color,
-// }) => {
-//   return (
-//     <div style={{ ...styles.card, backgroundColor: color }}>
-//       <h2 style={styles.cardTitle}>{title}</h2>
-//       <p style={styles.cardValue}>{value}</p>
-//     </div>
-//   );
-// };
+          {/* Quick Overview */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
+            <h3 className="text-xl font-bold mb-6 dark:text-white">Quick Overview</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-indigo-50 dark:bg-gray-700 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Pending Requests</p>
+                <p className="text-2xl font-bold dark:text-white mt-1">14</p>
+              </div>
+              <div className="p-4 bg-indigo-50 dark:bg-gray-700 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Unread Messages</p>
+                <p className="text-2xl font-bold dark:text-white mt-1">23</p>
+              </div>
+              <div className="p-4 bg-indigo-50 dark:bg-gray-700 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Active Classes</p>
+                <p className="text-2xl font-bold dark:text-white mt-1">18</p>
+              </div>
+              <div className="p-4 bg-indigo-50 dark:bg-gray-700 rounded-xl">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Staff Online</p>
+                <p className="text-2xl font-bold dark:text-white mt-1">9</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-// // ✅ Styling
-// const styles: { [key: string]: React.CSSProperties } = {
-//   container: {
-//     padding: "20px",
-//     fontFamily: "'Poppins', sans-serif",
-//     backgroundColor: "#f8f9fa",
-//     minHeight: "100vh",
-//   },
-//   heading: {
-//     fontSize: "2rem",
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     color: "#333",
-//   },
-//   cardsContainer: {
-//     display: "grid",
-//     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-//     gap: "20px",
-//     marginTop: "20px",
-//   },
-//   card: {
-//     padding: "20px",
-//     borderRadius: "10px",
-//     textAlign: "center",
-//     color: "#fff",
-//     boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-//   },
-//   cardTitle: {
-//     fontSize: "1.2rem",
-//     marginBottom: "5px",
-//   },
-//   cardValue: {
-//     fontSize: "2rem",
-//     fontWeight: "bold",
-//   },
-//   sectionContainer: {
-//     display: "grid",
-//     gridTemplateColumns: "1fr 1fr",
-//     gap: "20px",
-//     marginTop: "40px",
-//   },
-//   section: {
-//     backgroundColor: "#fff",
-//     padding: "20px",
-//     borderRadius: "10px",
-//     boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-//   },
-//   sectionTitle: {
-//     fontSize: "1.5rem",
-//     marginBottom: "10px",
-//     color: "#333",
-//   },
-//   list: {
-//     listStyle: "none",
-//     padding: "0",
-//   },
-// };
+          </div>
+    </div>
+  );
+};
 
-// export default Dashboard;
+export default SchoolDashboard;

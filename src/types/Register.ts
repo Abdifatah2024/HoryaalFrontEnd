@@ -25,3 +25,9 @@ export interface IRegisterBody {
   fullName: string;
   phoneNumber: string;
 }
+
+export interface AttendancePayload {
+  studentId: string;
+  present: boolean;
+  remark: string;
+}

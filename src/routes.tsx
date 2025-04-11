@@ -10,8 +10,14 @@ import UserSearch from './pages/userprofile'
 import SidebarLayout from './pages/sidebar' //
 import StudentForm from './pages/Auth/StdReg'
 import StudentList from './Redux/Auth/StudentList'
-import ClassList from './Redux/Auth/ClassList'
+import ClassList from './pages/ClassList'
 import { Sidebar } from 'lucide-react'
+import StudentSearch from './pages/GetOneStudent'
+import ChangePassword from './pages/ChangePassword'
+import PhotoUpload from './pages/PhotoUpload'
+import CreateClassForm from './pages/CreateClassForm'
+import StudentDetail from './pages/Auth/StudentDetail'
+import AttendanceForm from './pages/Auth/Attedence'
 
 export const router = createBrowserRouter([
     {
@@ -49,10 +55,18 @@ export const router = createBrowserRouter([
                         element: <UsersList/>
                     },
                     {
-                        path: "ClassList",
-                        element: <ClassList/>
+                        path: "register",
+                        element: <Register/>
                     },
                     {
+                        path: "Attedence",
+                        element: <AttendanceForm/>
+                    },
+                    {
+                        path: "logout",
+                        element: <Logout/>
+                    },
+                                      {
                         path: "userinfo",
                         element: <UserSearch/>
                     },
@@ -60,9 +74,26 @@ export const router = createBrowserRouter([
                         path: "regstd",
                         element: <StudentForm />
                     },
+                   
                     {
                         path: "ListStd",
                         element: <StudentList />
+                    },
+                    {
+                        path: "ChangePassword",
+                        element: <ChangePassword />
+                    },
+                    {
+                        path: "upload/photo",
+                        element: <PhotoUpload />
+                    },
+                    {
+                        path: "CeateClass",
+                        element: <CreateClassForm/>
+                    },
+                    {
+                        path:"GetOneStudent",
+                        element:<StudentDetail/>
                     }
                 ]
             },

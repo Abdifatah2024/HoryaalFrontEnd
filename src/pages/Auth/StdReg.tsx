@@ -1,4 +1,3 @@
-
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +15,24 @@ const StudentForm = () => {
 
   const [editing, setEditing] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  // 🔹 Sample class list (can be replaced with dynamic data)
+  const classList = [
+    { id: 1, name: "1A" },
+    { id: 2, name: "1B" },
+    { id: 3, name: "1C" },
+    { id: 4, name: "1D" },
+    { id: 5, name: "1E" },
+    { id: 6, name: "1G" },
+    { id: 7, name: "2A" },
+    { id: 8, name: "2B" },
+    { id: 9, name: "2C" },
+    { id: 10, name: "2D" },
+    { id: 11, name: "2E" },
+    { id: 12, name: "2F" },
+    { id: 13, name: "3A" },
+
+  ];
 
   const formik = useFormik({
     initialValues: {
@@ -42,8 +59,6 @@ const StudentForm = () => {
       Age: yup.number().min(3, "Minimum age is 3").required("Age is required"),
       fee: yup.number().required("Fee is required"),
       Amount: yup.number().required("Amount is required"),
-
-
     }),
 
     onSubmit: async (values, { resetForm, setSubmitting }) => {
@@ -52,7 +67,7 @@ const StudentForm = () => {
         Age: Number(values.Age),
         fee: Number(values.fee),
         Amount: Number(values.Amount),
-        classId:  Number(values.classId),
+        classId: Number(values.classId),
         phone: values.phone.toString(),
         fullname: `${values.firstname} ${values.middlename || ""} ${values.lastname}`,
       };
@@ -110,7 +125,7 @@ const StudentForm = () => {
       <div className={`w-full max-w-4xl p-8 ${darkMode ? "bg-gray-800 text-white" : "bg-white"} rounded-xl shadow-2xl flex flex-row`}>
         
         {/* Left Section */}
-        <div className="w-1/2 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-8 flex flex-col justify-center items-center text-white">
+        <div className="w-1/4 bg-gradient-to-b from-violet-900 to-indigo-900 text-slate-100 rounded-lg p-8 flex flex-col justify-center items-center text-white">
           <h1 className="text-4xl font-bold mb-4">Welcome!</h1>
           <p className="text-lg text-center">
             {editing ? "Update student details" : "Register a new student"}
@@ -125,15 +140,16 @@ const StudentForm = () => {
         </div>
 
         {/* Right Section */}
-        <div className="w-1/2 p-8">
+        <div className="w-full p-8">
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold">{editing ? "Update Student" : "Register Student"}</h1>
           </div>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {(["firstname", "middlename", "lastname", "classId", "phone"] as const).map((field) => (
+            {/* Text fields */}
+            {["firstname", "middlename", "lastname", "phone"].map((field) => (
               <motion.div key={field} whileHover={{ scale: 1.02 }}>
                 <label htmlFor={field} className="block text-sm font-medium capitalize">
-                  {field.replace("Id", " ID")}
+                  {field}
                 </label>
                 <div className="flex items-center border border-gray-300 rounded-md focus-within:ring focus-within:ring-green-200">
                   <AiOutlineUser className="ml-2 text-gray-400" />
@@ -154,6 +170,29 @@ const StudentForm = () => {
               </motion.div>
             ))}
 
+            {/* 🔽 classId dropdown */}
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <label htmlFor="classId" className="block text-sm font-medium">Class</label>
+              <select
+                id="classId"
+                name="classId"
+                value={formik.values.classId}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-200 ${darkMode ? "bg-gray-700 text-white" : "bg-white"}`}
+              >
+                <option value="">Select Class</option>
+                {classList.map((cls) => (
+                  <option key={cls.id} value={cls.id}>
+                    {cls.name}
+                  </option>
+                ))}
+              </select>
+              {formik.touched.classId && formik.errors.classId && (
+                <p className="text-red-500 text-xs mt-1">{formik.errors.classId}</p>
+              )}
+            </motion.div>
+
             {/* Gender Select */}
             <motion.div whileHover={{ scale: 1.02 }}>
               <label htmlFor="gender" className="block text-sm font-medium">Gender</label>
@@ -172,11 +211,9 @@ const StudentForm = () => {
             </motion.div>
 
             {/* Age, Fee, and Amount Fields */}
-            {(["Age", "fee", "Amount"] as const).map((field) => (
+            {["Age", "fee", "Amount"].map((field) => (
               <motion.div key={field} whileHover={{ scale: 1.02 }}>
-                <label htmlFor={field} className="block text-sm font-medium capitalize">
-                  {field}
-                </label>
+                <label htmlFor={field} className="block text-sm font-medium capitalize">{field}</label>
                 <input
                   id={field}
                   name={field}
@@ -212,7 +249,6 @@ const StudentForm = () => {
                 type="button"
                 onClick={() => setDarkMode(!darkMode)}
                 className={`text-sm ${darkMode ? "text-gray-300 hover:text-gray-100" : "text-gray-500 hover:text-gray-700"}`}
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {darkMode ? "Light Mode" : "Dark Mode"}
               </button>

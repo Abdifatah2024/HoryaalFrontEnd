@@ -7,6 +7,7 @@ export interface IloginResponse {
 }
 
 export interface User {
+  id: number;
   email: string;
   username: string;
   fullname: string;
