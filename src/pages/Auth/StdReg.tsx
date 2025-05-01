@@ -1,37 +1,33 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { AiOutlineUser } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../../Redux/store";
-import { createStudent, updateStudent } from "../../Redux/Auth/RegstdSlice";
+import {
+  createStudent,
+  updateStudent,
+  getStudentById,
+  clearStudent,
+} from "../../Redux/Auth/RegstdSlice";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
+import { FiSearch } from "react-icons/fi";
 
 const StudentForm = () => {
-  const toastId = "student-register";
   const dispatch = useDispatch<AppDispatch>();
   const studentState = useSelector((state: RootState) => state.StdRegSlice);
 
   const [editing, setEditing] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [searchId, setSearchId] = useState("");
+  const toastId = "student-register";
 
-  // 🔹 Sample class list (can be replaced with dynamic data)
   const classList = [
-    { id: 1, name: "1A" },
-    { id: 2, name: "1B" },
-    { id: 3, name: "1C" },
-    { id: 4, name: "1D" },
-    { id: 5, name: "1E" },
-    { id: 6, name: "1G" },
-    { id: 7, name: "2A" },
-    { id: 8, name: "2B" },
-    { id: 9, name: "2C" },
-    { id: 10, name: "2D" },
-    { id: 11, name: "2E" },
-    { id: 12, name: "2F" },
-    { id: 13, name: "3A" },
-
+    { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
+    { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
+    { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
+    { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
+    { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
+    { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
+    { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
   ];
 
   const formik = useFormik({
@@ -42,73 +38,86 @@ const StudentForm = () => {
       lastname: "",
       classId: "",
       phone: "",
+      phone2: "",
+      bus: "",
+      address: "",
+      previousSchool: "",
+      motherName: "",
       gender: "",
       Age: "",
       fee: "",
-      Amount: "",
     },
     validationSchema: yup.object({
       firstname: yup.string().required("First name is required"),
       lastname: yup.string().required("Last name is required"),
-      classId: yup.number().required("Class ID is required"),
-      phone: yup
-        .string()
-        .matches(/^\d+$/, "Phone number must contain only digits")
-        .required("Phone number is required"),
+      classId: yup.string().required("Class is required"),
+      phone: yup.string().matches(/^\d+$/, "Phone must be digits only").required("Phone is required"),
       gender: yup.string().oneOf(["Male", "Female"]).required("Gender is required"),
       Age: yup.number().min(3, "Minimum age is 3").required("Age is required"),
       fee: yup.number().required("Fee is required"),
-      Amount: yup.number().required("Amount is required"),
     }),
-
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      const data = {
+      const payload = {
         ...values,
         Age: Number(values.Age),
         fee: Number(values.fee),
-        Amount: Number(values.Amount),
         classId: Number(values.classId),
-        phone: values.phone.toString(),
         fullname: `${values.firstname} ${values.middlename || ""} ${values.lastname}`,
       };
 
       try {
         if (editing) {
-          const action = await dispatch(updateStudent({ studentId: values.id, studentData: data }));
-          if (updateStudent.fulfilled.match(action)) {
-            toast.success("Student updated successfully!", { id: toastId });
+          const res = await dispatch(updateStudent({ studentId: values.id, studentData: payload }));
+          if (updateStudent.fulfilled.match(res)) {
+            toast.success("Student updated!", { id: toastId });
             resetForm();
             setEditing(false);
+            dispatch(clearStudent());
           }
         } else {
-          const action = await dispatch(createStudent(data));
-          if (createStudent.fulfilled.match(action)) {
-            toast.success("Student registered successfully!", { id: toastId });
+          const res = await dispatch(createStudent(payload));
+          if (createStudent.fulfilled.match(res)) {
+            toast.success("Student registered!", { id: toastId });
             resetForm();
           }
         }
-      } catch (error) {
-        console.error("Student form error:", error);
-        toast.error((error as Error).message || "Something went wrong!");
+      } catch (err) {
+        toast.error("Something went wrong!");
       } finally {
         setSubmitting(false);
       }
     },
   });
 
+  const handleSearch = () => {
+    if (searchId.trim()) {
+      dispatch(getStudentById(searchId)).then((action) => {
+        if (getStudentById.fulfilled.match(action)) {
+          toast.success("Student found!", { id: toastId });
+        } else {
+          toast.error("Student not found", { id: toastId });
+        }
+      });
+    }
+  };
+
   useEffect(() => {
-    if (studentState.student && !editing) {
+    if (studentState.student) {
       formik.setValues({
-        id: studentState.student?.id?.toString() || "",
-        firstname: studentState.student?.firstname || "",
-        middlename: studentState.student?.middlename || "",
-        lastname: studentState.student?.lastname || "",
-        classId: studentState.student?.classId || "",
-        phone: studentState.student?.phone || "",
-        gender: studentState.student?.gender || "",
-        Age: studentState.student?.age?.toString() || "",
-        fee: studentState.student?.fee?.toString() || "",
-        Amount: studentState.student?.amount?.toString() || "",
+        id: studentState.student.id?.toString() || "",
+        firstname: studentState.student.firstname || "",
+        middlename: studentState.student.middlename || "",
+        lastname: studentState.student.lastname || "",
+        classId: studentState.student.classId?.toString() || "",
+        phone: studentState.student.phone || "",
+        phone2: studentState.student.phone2 || "",
+        bus: studentState.student.bus || "",
+        address: studentState.student.address || "",
+        previousSchool: studentState.student.previousSchool || "",
+        motherName: studentState.student.motherName || "",
+        gender: studentState.student.gender || "",
+        Age: studentState.student.age?.toString() || "",
+        fee: studentState.student.fee?.toString() || "",
       });
       setEditing(true);
     }
@@ -121,143 +130,164 @@ const StudentForm = () => {
   }, [studentState.error]);
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${darkMode ? "bg-gray-900" : "bg-gradient-to-r from-green-50 to-blue-50"}`}>
-      <div className={`w-full max-w-4xl p-8 ${darkMode ? "bg-gray-800 text-white" : "bg-white"} rounded-xl shadow-2xl flex flex-row`}>
-        
-        {/* Left Section */}
-        <div className="w-1/4 bg-gradient-to-b from-violet-900 to-indigo-900 text-slate-100 rounded-lg p-8 flex flex-col justify-center items-center text-white">
-          <h1 className="text-4xl font-bold mb-4">Welcome!</h1>
-          <p className="text-lg text-center">
-            {editing ? "Update student details" : "Register a new student"}
-          </p>
-          <div className="mt-8">
-            <img
-              src="https://illustrations.popsy.co/amber/student-graduation.svg"
-              alt="Illustration"
-              className="w-64 h-64"
-            />
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-5xl bg-white p-8 rounded-xl shadow-xl">
 
-        {/* Right Section */}
-        <div className="w-full p-8">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold">{editing ? "Update Student" : "Register Student"}</h1>
-          </div>
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Text fields */}
-            {["firstname", "middlename", "lastname", "phone"].map((field) => (
-              <motion.div key={field} whileHover={{ scale: 1.02 }}>
-                <label htmlFor={field} className="block text-sm font-medium capitalize">
-                  {field}
-                </label>
-                <div className="flex items-center border border-gray-300 rounded-md focus-within:ring focus-within:ring-green-200">
-                  <AiOutlineUser className="ml-2 text-gray-400" />
+        {/* Title + Search Section */}
+        <div className="mb-6 border-b pb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            {editing ? "Edit Student Details" : "Register New Student And Edit Student"}
+          </h2>
+
+          {!editing && (
+            <div className="bg-gray-50 border p-4 rounded-md shadow-sm mt-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <FiSearch className="text-blue-500" />
+                Search for a Student to Edit
+              </h3>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                <div className="relative w-full sm:w-72">
+                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
-                    id={field}
-                    name={field}
                     type="text"
-                    value={formik.values[field]}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className={`mt-1 w-full p-2 border-0 focus:outline-none ${darkMode ? "bg-gray-700 text-white" : "bg-white"}`}
-                    placeholder={`Enter ${field}`}
+                    placeholder="Enter Student ID"
+                    value={searchId}
+                    onChange={(e) => setSearchId(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
                   />
                 </div>
-                {formik.touched[field] && formik.errors[field] && (
-                  <p className="text-red-500 text-xs mt-1">{formik.errors[field]}</p>
-                )}
-              </motion.div>
-            ))}
+                <button
+                  onClick={handleSearch}
+                  type="button"
+                  className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                >
+                  Search Student
+                </button>
+              </div>
 
-            {/* 🔽 classId dropdown */}
-            <motion.div whileHover={{ scale: 1.02 }}>
-              <label htmlFor="classId" className="block text-sm font-medium">Class</label>
-              <select
-                id="classId"
-                name="classId"
-                value={formik.values.classId}
+              <p className="text-xs text-gray-500 mt-2">
+                Enter a valid student ID to auto-fill the form with their information.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Main student fields */}
+          {[
+            { name: "firstname", label: "First Name" },
+            { name: "middlename", label: "Middle Name" },
+            { name: "lastname", label: "Last Name" },
+            { name: "phone", label: "Phone Number" },
+            { name: "phone2", label: "Phone 2" },
+            { name: "bus", label: "Bus" },
+            { name: "address", label: "Address" },
+            { name: "previousSchool", label: "Previous School" },
+            { name: "motherName", label: "Mother Name" },
+            { name: "Age", label: "Age" },
+            { name: "fee", label: "Fee" },
+          ].map(({ name, label }) => (
+            <div key={name}>
+              <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+                {label}
+              </label>
+              <input
+                id={name}
+                name={name}
+                type={["Age", "fee"].includes(name) ? "number" : "text"}
+                value={formik.values[name]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-200 ${darkMode ? "bg-gray-700 text-white" : "bg-white"}`}
-              >
-                <option value="">Select Class</option>
-                {classList.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name}
-                  </option>
-                ))}
-              </select>
-              {formik.touched.classId && formik.errors.classId && (
-                <p className="text-red-500 text-xs mt-1">{formik.errors.classId}</p>
+                className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                placeholder={`Enter ${label}`}
+              />
+              {formik.touched[name] && formik.errors[name] && (
+                <p className="text-red-500 text-xs mt-1">{formik.errors[name]}</p>
               )}
-            </motion.div>
+            </div>
+          ))}
 
-            {/* Gender Select */}
-            <motion.div whileHover={{ scale: 1.02 }}>
-              <label htmlFor="gender" className="block text-sm font-medium">Gender</label>
-              <select
-                id="gender"
-                name="gender"
-                value={formik.values.gender}
-                onChange={formik.handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-              {formik.touched.gender && formik.errors.gender && <p className="text-red-500 text-xs mt-1">{formik.errors.gender}</p>}
-            </motion.div>
+          {/* Class */}
+          <div>
+            <label htmlFor="classId" className="block text-sm font-medium text-gray-700 mb-1">
+              Class
+            </label>
+            <select
+              id="classId"
+              name="classId"
+              value={formik.values.classId}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">Select Class</option>
+              {classList.map((cls) => (
+                <option key={cls.id} value={cls.id}>
+                  {cls.name}
+                </option>
+              ))}
+            </select>
+            {formik.touched.classId && formik.errors.classId && (
+              <p className="text-red-500 text-xs mt-1">{formik.errors.classId}</p>
+            )}
+          </div>
 
-            {/* Age, Fee, and Amount Fields */}
-            {["Age", "fee", "Amount"].map((field) => (
-              <motion.div key={field} whileHover={{ scale: 1.02 }}>
-                <label htmlFor={field} className="block text-sm font-medium capitalize">{field}</label>
-                <input
-                  id={field}
-                  name={field}
-                  type="number"
-                  value={formik.values[field]}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className={`mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-green-200 ${darkMode ? "bg-gray-700 text-white" : "bg-white"}`}
-                  placeholder={`Enter ${field}`}
-                />
-                {formik.touched[field] && formik.errors[field] && (
-                  <p className="text-red-500 text-xs mt-1">{formik.errors[field]}</p>
-                )}
-              </motion.div>
-            ))}
+          {/* Gender */}
+          <div>
+            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={formik.values.gender}
+              onChange={formik.handleChange}
+              className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            {formik.touched.gender && formik.errors.gender && (
+              <p className="text-red-500 text-xs mt-1">{formik.errors.gender}</p>
+            )}
+          </div>
 
-            {/* Submit Button */}
+          {/* Submit Buttons */}
+          <div className="md:col-span-2 flex items-center justify-between mt-4">
             <button
               type="submit"
-              className="w-full py-2 px-4 text-white font-bold rounded-md transition duration-300 ease-in-out bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 focus:outline-none focus:ring focus:ring-green-300"
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
               disabled={formik.isSubmitting || studentState.loading}
             >
-              {formik.isSubmitting || studentState.loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
-              ) : editing ? "Update Student" : "Register Student"}
+              {formik.isSubmitting || studentState.loading
+                ? "Processing..."
+                : editing
+                ? "Update Student"
+                : "Register Student"}
             </button>
 
-            {/* Dark Mode Toggle */}
-            <div className="flex justify-end mt-4">
+            {editing && (
               <button
                 type="button"
-                onClick={() => setDarkMode(!darkMode)}
-                className={`text-sm ${darkMode ? "text-gray-300 hover:text-gray-100" : "text-gray-500 hover:text-gray-700"}`}
+                className="text-sm text-red-500 underline"
+                onClick={() => {
+                  setEditing(false);
+                  dispatch(clearStudent());
+                  formik.resetForm();
+                }}
               >
-                {darkMode ? "Light Mode" : "Dark Mode"}
+                Cancel Edit
               </button>
-            </div>
-          </form>
-        </div>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
 export default StudentForm;
+

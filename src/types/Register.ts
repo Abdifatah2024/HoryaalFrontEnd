@@ -24,10 +24,57 @@ export interface IRegisterBody {
   password: string;
   fullName: string;
   phoneNumber: string;
+  photoUrl: string;
 }
 
 export interface AttendancePayload {
   studentId: string;
   present: boolean;
   remark: string;
+}
+
+export interface Student {
+  id: number;
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  fullname: string;
+  classId: number;
+  phone: string;
+  phone2?: string | null;
+  bus?: string | null;
+  address?: string | null;
+  previousSchool?: string | null;
+  motherName?: string | null;
+  gender: string;
+  Age: number;
+  fee: number;
+  status?: string | null;
+  absentCount?: number | null;
+  lastWarningDate?: string | null; // ISO date string
+  isdeleted: boolean;
+  userid: number;
+}
+
+export interface RegisterStudentsResponse {
+  message: string;
+  students: Student[];
+}
+
+export interface NewStudentInput {
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  fullname?: string; // optional, backend can generate
+  classId: number;
+  phone: string;
+  phone2?: string;
+  bus?: string;
+  address?: string;
+  previousSchool?: string;
+  motherName?: string;
+  gender: string;
+  Age: number;
+  fee: number;
+  status?: string; // default is "ACTIVE"
 }

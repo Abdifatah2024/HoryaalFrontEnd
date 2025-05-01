@@ -8,6 +8,7 @@ export interface User {
   fullName: string;
   email: string;
   phoneNumber: string;
+  photo: string;
 }
 
 const initialState = {
@@ -21,17 +22,13 @@ const initialState = {
 // 🔹 Register a New User
 export const Registerfn = createAsyncThunk(
   "register",
-  async (data: IRegisterBody, { rejectWithValue,getState }) => {
-    const stateData: any = getState() as { loginSlice: { data: { token: string } } };
-
-    // const { Access_token } = stateData?.loginSlice?.data;
+  async (data: IRegisterBody, { rejectWithValue, getState }) => {
+    const stateData: any = getState() as { loginSlice: { data: { Access_token: string } } };
     const { Access_token = null } = stateData?.loginSlice?.data || {};
 
-    console.log(Access_token);
-
     try {
-      const res = await axios.post(`${BASE_API_URL}/user/register`, data,{
-        headers: { Authorization: `Bearer ${Access_token}` }
+      const res = await axios.post(`${BASE_API_URL}/user/register`, data, {
+        headers: { Authorization: `Bearer ${Access_token}` },
       });
       return res.data;
     } catch (error) {
@@ -44,59 +41,90 @@ export const Registerfn = createAsyncThunk(
 );
 
 // 🔹 Fetch All Users
-export const listUser = createAsyncThunk("register/fetchUsers", async (_, { rejectWithValue }) => {
-  try {
-    const res = await axios.get(`${BASE_API_URL}/user/list`);
-    return res.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      return rejectWithValue(error.response?.data?.message || DEFAULT_ERROR_MESSAGE);
+export const listUser = createAsyncThunk(
+  "register/fetchUsers",
+  async (_, { rejectWithValue, getState }) => {
+    const stateData: any = getState() as { loginSlice: { data: { Access_token: string } } };
+    const { Access_token = null } = stateData?.loginSlice?.data || {};
+
+    try {
+      const res = await axios.get(`${BASE_API_URL}/user/list`, {
+        headers: { Authorization: `Bearer ${Access_token}` },
+      });
+      return res.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || DEFAULT_ERROR_MESSAGE);
+      }
+      return rejectWithValue(DEFAULT_ERROR_MESSAGE);
     }
-    return rejectWithValue(DEFAULT_ERROR_MESSAGE);
   }
-});
+);
 
 // 🔹 Fetch User by ID
 export const getUserById = createAsyncThunk(
   "users/getUserById",
-  async (userId: string, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue, getState }) => {
+    const stateData: any = getState() as { loginSlice: { data: { Access_token: string } } };
+    const { Access_token = null } = stateData?.loginSlice?.data || {};
+
     try {
-      const response = await axios.get(`${BASE_API_URL}/user/userinfo/${userId}`);
+      const response = await axios.get(`${BASE_API_URL}/user/userinfo/${userId}`, {
+        headers: { Authorization: `Bearer ${Access_token}` },
+      });
       return response.data;
     } catch (error) {
-      if(error instanceof AxiosError) {
-      return rejectWithValue(error.response?.data?.message || "User not found");
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "User not found");
+      }
+      return rejectWithValue("User not found");
     }
   }
-}
 );
 
 // 🔹 Update User
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, userData }: { userId: string; userData: Partial<User> }, { rejectWithValue }) => {
+  async (
+    { userId, userData }: { userId: string; userData: Partial<User> },
+    { rejectWithValue, getState }
+  ) => {
+    const stateData: any = getState() as { loginSlice: { data: { Access_token: string } } };
+    const { Access_token = null } = stateData?.loginSlice?.data || {};
+
     try {
-      const response = await axios.put(`${BASE_API_URL}/user/${userId}`, userData);
+      const response = await axios.put(`${BASE_API_URL}/user/${userId}`, userData, {
+        headers: { Authorization: `Bearer ${Access_token}` },
+      });
       return response.data;
     } catch (error) {
-      if(error instanceof AxiosError) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update user");
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to update user");
+      }
+      return rejectWithValue("Failed to update user");
     }
-  }}
+  }
 );
 
 // 🔹 Delete User
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
-  async (userId: string, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue, getState }) => {
+    const stateData: any = getState() as { loginSlice: { data: { Access_token: string } } };
+    const { Access_token = null } = stateData?.loginSlice?.data || {};
+
     try {
-      await axios.delete(`${BASE_API_URL}/user/${userId}`);
-      return userId; // Return deleted user ID
+      await axios.delete(`${BASE_API_URL}/user/${userId}`, {
+        headers: { Authorization: `Bearer ${Access_token}` },
+      });
+      return userId;
     } catch (error) {
-      if(error instanceof AxiosError) {
-      return rejectWithValue(error.response?.data?.msg || "Failed to delete user");
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.msg || "Failed to delete user");
+      }
+      return rejectWithValue("Failed to delete user");
     }
-  }}
+  }
 );
 
 // 🔥 Redux Slice
@@ -145,8 +173,7 @@ const registerSlice = createSlice({
     });
     builder.addCase(getUserById.fulfilled, (state, action) => {
       state.loading = false;
-      console.log("Fetched User:", action.payload); // Debugging
-      state.user = action.payload.user; // ✅ Correctly assign user object
+      state.user = action.payload.user;
     });
     builder.addCase(getUserById.rejected, (state, action) => {
       state.loading = false;
@@ -161,13 +188,9 @@ const registerSlice = createSlice({
     builder.addCase(updateUser.fulfilled, (state, action) => {
       state.loading = false;
       state.error = "";
-      
-      // Update user in the users list
-      state.users = state.users.map(user => 
+      state.users = state.users.map((user) =>
         user.id === action.payload.id ? action.payload : user
       );
-
-      // Update selected user if it matches the updated one
       if (state.user?.id === action.payload.id) {
         state.user = action.payload;
       }
@@ -180,9 +203,8 @@ const registerSlice = createSlice({
     // 🔹 Delete User
     builder.addCase(deleteUser.fulfilled, (state, action) => {
       state.loading = false;
-      state.user = null; // Clear user from Redux state
-      state.users = state.users.filter(user => user.id !== action.payload); // Remove from list
-      console.log("User deleted:", action.payload); // Debugging
+      state.user = null;
+      state.users = state.users.filter((user) => user.id !== action.payload);
     });
     builder.addCase(deleteUser.rejected, (state, action) => {
       state.loading = false;

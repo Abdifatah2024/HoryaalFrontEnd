@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineSearch, AiOutlinePieChart, AiOutlineBarChart } from "react-icons/ai";
 import axios from "axios";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface Student {
   id: number;
@@ -29,6 +30,18 @@ interface Student {
   };
 }
 
+const classList = [
+  { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
+  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
+  { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
+  { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
+  { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
+  { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
+  { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
+];
+
+const COLORS = ["#0088FE", "#FFBB28", "#00C49F", "#FF8042", "#8884D8", "#82CA9D"];
+
 const StudentList = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,8 +50,9 @@ const StudentList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [classes, setClasses] = useState<string[]>([]);
   const [selectedClass, setSelectedClass] = useState<string>("All");
+  const [showGenderStats, setShowGenderStats] = useState(false);
+  const [showClassStats, setShowClassStats] = useState(false);
 
   const headers = [
     { label: "ID", key: "id" },
@@ -46,8 +60,6 @@ const StudentList = () => {
     { label: "Class", key: "classes.name" },
     { label: "Gender", key: "gender" },
     { label: "Age", key: "Age" },
-    { label: "Fee", key: "fee" },
-    { label: "Amount", key: "Amount" },
     { label: "Phone", key: "phone" },
   ];
 
@@ -56,11 +68,6 @@ const StudentList = () => {
       try {
         const response = await axios.get("http://localhost:4000/student/studentList");
         setStudents(response.data);
-        
-        // Extract unique class names
-        const classNames = response.data.map((student: Student) => student.classes.name);
-        const uniqueClasses = Array.from(new Set(classNames)).sort();
-        setClasses(uniqueClasses);
       } catch (err) {
         setError("Failed to load students");
         console.error(err);
@@ -71,6 +78,60 @@ const StudentList = () => {
 
     fetchStudents();
   }, []);
+
+  // Calculate gender distribution
+  const genderData = students.reduce((acc, student) => {
+    const existing = acc.find(item => item.name === student.gender);
+    if (existing) {
+      existing.value += 1;
+    } else {
+      acc.push({ name: student.gender, value: 1 });
+    }
+    return acc;
+  }, [] as { name: string; value: number }[]);
+
+  // Calculate class level distribution (1st, 2nd, 3rd, 4th year)
+  const classLevelData = students.reduce((acc, student) => {
+    const classLevel = student.classes.name.charAt(0); // Extract the first character (1, 2, 3, 4)
+    const existing = acc.find(item => item.name === `Year ${classLevel}`);
+    
+    if (existing) {
+      existing.value += 1;
+    } else {
+      acc.push({ name: `Year ${classLevel}`, value: 1 });
+    }
+    return acc;
+  }, [] as { name: string; value: number }[]);
+
+  // Sort class levels numerically
+  const sortedClassLevelData = classLevelData.sort((a, b) => 
+    a.name.localeCompare(b.name, undefined, { numeric: true })
+  );
+
+  // Calculate detailed class distribution
+  const detailedClassData = classList.map(cls => {
+    const count = students.filter(student => student.classes.name === cls.name).length;
+    return {
+      name: cls.name,
+      students: count,
+      level: cls.name.charAt(0)
+    };
+  });
+
+  const genderStats = {
+    total: students.length,
+    male: genderData.find(g => g.name === "Male")?.value || 0,
+    female: genderData.find(g => g.name === "Female")?.value || 0,
+    other: genderData.find(g => g.name !== "Male" && g.name !== "Female")?.value || 0,
+  };
+
+  const classStats = {
+    totalClasses: new Set(students.map(s => s.classes.name)).size,
+    year1: classLevelData.find(c => c.name === "Year 1")?.value || 0,
+    year2: classLevelData.find(c => c.name === "Year 2")?.value || 0,
+    year3: classLevelData.find(c => c.name === "Year 3")?.value || 0,
+    year4: classLevelData.find(c => c.name === "Year 4")?.value || 0,
+  };
 
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : undefined), obj);
@@ -86,7 +147,7 @@ const StudentList = () => {
   };
 
   const filteredStudents = students
-    .filter(student => 
+    .filter(student =>
       student.fullname.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (selectedClass === "All" || student.classes.name === selectedClass)
     )
@@ -107,20 +168,166 @@ const StudentList = () => {
     });
 
   return (
-    <div className={`min-h-screen p-8 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-semibold">Student List</h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="text-sm bg-gray-300 px-4 py-2 rounded-full hover:bg-gray-400"
-          >
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </button>
+    <div className={`min-h-screen p-4 sm:p-8 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+          <h1 className="text-2xl sm:text-3xl font-semibold">Student Analytics Dashboard</h1>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowGenderStats(!showGenderStats)}
+              className={`flex items-center gap-2 text-sm px-4 py-2 rounded-full ${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"}`}
+            >
+              <AiOutlinePieChart />
+              {showGenderStats ? "Hide Gender" : "Gender Stats"}
+            </button>
+            <button
+              onClick={() => setShowClassStats(!showClassStats)}
+              className={`flex items-center gap-2 text-sm px-4 py-2 rounded-full ${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"}`}
+            >
+              <AiOutlineBarChart />
+              {showClassStats ? "Hide Class" : "Class Stats"}
+            </button>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="text-sm bg-gray-300 px-4 py-2 rounded-full hover:bg-gray-400"
+            >
+              {darkMode ? "Light Mode" : "Dark Mode"}
+            </button>
+          </div>
+        </div>
+
+        {/* Analytics Dashboard */}
+        <div className="space-y-6 mb-6">
+          {/* Gender Analysis Section */}
+          {showGenderStats && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className={`p-4 rounded-lg shadow-md ${darkMode ? "bg-gray-800" : "bg-white"}`}
+            >
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <AiOutlinePieChart />
+                Gender Distribution
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={genderData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {genderData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                    <h3 className="font-medium">Total Students</h3>
+                    <p className="text-2xl font-bold">{genderStats.total}</p>
+                  </div>
+                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                    <h3 className="font-medium">Male</h3>
+                    <p className="text-2xl font-bold text-blue-500">{genderStats.male}</p>
+                  </div>
+                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                    <h3 className="font-medium">Female</h3>
+                    <p className="text-2xl font-bold text-pink-500">{genderStats.female}</p>
+                  </div>
+                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                    <h3 className="font-medium">Other</h3>
+                    <p className="text-2xl font-bold text-green-500">{genderStats.other}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Class Analysis Section */}
+          {showClassStats && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className={`p-4 rounded-lg shadow-md ${darkMode ? "bg-gray-800" : "bg-white"}`}
+            >
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <AiOutlineBarChart />
+                Class Distribution
+              </h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="h-64">
+                  <h3 className="font-medium mb-2">By Year Level</h3>
+                  <ResponsiveContainer width="100%" height="90%">
+                    <BarChart data={sortedClassLevelData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="value" fill="#8884d8" name="Students" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                <div className="h-64">
+                  <h3 className="font-medium mb-2">Detailed Class Distribution</h3>
+                  <ResponsiveContainer width="100%" height="90%">
+                    <BarChart data={detailedClassData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="students" fill="#82ca9d" name="Students" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Total Classes</h3>
+                  <p className="text-2xl font-bold">{classStats.totalClasses}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Form One</h3>
+                  <p className="text-2xl font-bold text-purple-500">{classStats.year1}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Form Two</h3>
+                  <p className="text-2xl font-bold text-blue-500">{classStats.year2}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Form Three</h3>
+                  <p className="text-2xl font-bold text-green-500">{classStats.year3}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Form Four</h3>
+                  <p className="text-2xl font-bold text-orange-500">{classStats.year4}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="relative flex-1">
             <input
               type="text"
@@ -133,18 +340,18 @@ const StudentList = () => {
             />
             <AiOutlineSearch className="absolute left-3 top-3 text-gray-500" />
           </div>
-          
+
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className={`p-2 border rounded-lg ${
+            className={`p-3 border rounded-lg ${
               darkMode ? "bg-gray-800 border-gray-700 text-white" : "bg-white"
             }`}
           >
             <option value="All">All Classes</option>
-            {classes.map((className) => (
-              <option key={className} value={className}>
-                {className}
+            {classList.map((cls) => (
+              <option key={cls.id} value={cls.name}>
+                {cls.name}
               </option>
             ))}
           </select>
@@ -154,14 +361,14 @@ const StudentList = () => {
         {error && <p className="text-center text-red-500">{error}</p>}
 
         {!loading && !error && (
-          <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
-            <table className="w-full">
-              <thead className="bg-gradient-to-b from-violet-900 to-indigo-900 text-slate-100">
+          <div className="overflow-x-auto rounded-lg shadow-md">
+            <table className="min-w-full text-sm sm:text-base">
+              <thead className="bg-gradient-to-b from-violet-900 to-indigo-900 text-white">
                 <tr>
                   {headers.map((header) => (
                     <th
                       key={header.key}
-                      className="p-4 text-left cursor-pointer"
+                      className="p-3 text-left whitespace-nowrap cursor-pointer"
                       onClick={() => handleSort(header.key)}
                     >
                       {header.label}{" "}
@@ -174,19 +381,34 @@ const StudentList = () => {
                 {filteredStudents.map((student) => (
                   <motion.tr
                     key={student.id}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     className={`border-b ${
-                      darkMode ? "hover:bg-gray-800" : "hover:bg-gray-200"
+                      darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"
                     } transition-all`}
                   >
-                    <td className="p-4">{student.id}</td>
-                    <td className="p-4">{student.fullname}</td>
-                    <td className="p-4">{student.classes.name}</td>
-                    <td className="p-4">{student.gender}</td>
-                    <td className="p-4">{student.Age}</td>
-                    <td className="p-4">${student.fee}</td>
-                    <td className="p-4">${student.Amount}</td>
-                    <td className="p-4">{student.phone}</td>
+                    <td className="p-3">{student.id}</td>
+                    <td className="p-3">{student.fullname}</td>
+                    <td className="p-3">
+                      <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${
+                        student.classes.name.startsWith('1') ? 'bg-purple-100 text-purple-800' :
+                        student.classes.name.startsWith('2') ? 'bg-blue-100 text-blue-800' :
+                        student.classes.name.startsWith('3') ? 'bg-green-100 text-green-800' :
+                        'bg-orange-100 text-orange-800'
+                      }`}>
+                        {student.classes.name}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs ${
+                        student.gender === "Male" ? "bg-blue-100 text-blue-800" :
+                        student.gender === "Female" ? "bg-pink-100 text-pink-800" :
+                        "bg-green-100 text-green-800"
+                      }`}>
+                        {student.gender}
+                      </span>
+                    </td>
+                    <td className="p-3">{student.Age}</td>
+                    <td className="p-3">{student.phone}</td>
                   </motion.tr>
                 ))}
               </tbody>

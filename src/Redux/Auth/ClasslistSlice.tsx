@@ -17,7 +17,7 @@ interface ClassListState {
 }
 
 const initialState: ClassListState = {
-  loading: false,
+  loading: false, 
   classList: [],
   error: "",
 };

@@ -1,60 +1,76 @@
-// // src/components/ClassList.tsx
-// import React, { useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
-// import { RootState, AppDispatch } from '../Redux/store';
-// import { setClasses  } from '../Redux/Auth/classSlice';
-// import axios from 'axios';
-// import { Class } from '@/Redux/Auth/classSlice';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
+import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../Constant";
 
-// const ClassList: React.FC = () => {
-//   const dispatch = useDispatch<AppDispatch>();
-//   const classes = useSelector((state: RootState) => state.classSlice.classes);
+export interface Class {
+  id: string;
+  name: string;
+  userid: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    fullName: string;
+  };
+}
 
-//   useEffect(() => {
-//     const fetchClasses = async () => {
-//       try {
-//         const response = await axios.get<Class[]>('http://localhost:4000/student/classtList');
-//         dispatch(setClasses(response.data));
-//       } catch (error) {
-//         console.error('Failed to fetch classes:', error);
-//       }
-//     };
+interface ClassState {
+  loading: boolean;
+  classes: Class[];
+  error: string;
+}
 
-//     fetchClasses();
-//   }, [dispatch]);
+const initialState: ClassState = {
+  loading: false,
+  classes: [],
+  error: "",
+};
 
-//   return (
-//     <div className="min-h-screen p-8 bg-gray-100 text-gray-900">
-//       <div className="max-w-6xl mx-auto">
-//         <h1 className="text-3xl font-semibold mb-6">Class List</h1>
+// 🔹 Create a New Class
+export const createClass = createAsyncThunk(
+  "classes/createClass",
+  async (data: { name: string }, { rejectWithValue, getState }) => {
+    const state: any = getState();
+    const { Access_token = null } = state?.loginSlice?.data || {};
 
-//         <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
-//           <table className="w-full">
-//             <thead className="bg-gradient-to-b from-violet-900 to-indigo-900 text-slate-100">
-//               <tr>
-//                 <th className="p-4 text-left">Class ID</th>
-//                 <th className="p-4 text-left">Class Name</th>
-//                 <th className="p-4 text-left">User Full Name</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {classes.map(cls => (
-//                 <tr key={cls.id} className="border-b hover:bg-gray-200 transition-all">
-//                   <td className="p-4">{cls.id}</td>
-//                   <td className="p-4">{cls.name}</td>
-//                   <td className="p-4">{cls.user.fullName}</td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
+    try {
+      const res = await axios.post(`${BASE_API_URL}/student/createclass`, data, {
+        headers: { Authorization: `Bearer ${Access_token}` },
+      });
+      return res.data.class;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(
+          error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        );
+      }
+      return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+    }
+  }
+);
 
-//         {classes.length === 0 && (
-//           <p className="text-center text-gray-500 mt-4">No classes found</p>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
+const classSlice = createSlice({
+  name: "classes",
+  initialState,
+  reducers: {
+    setClasses: (state, action) => {
+      state.classes = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(createClass.pending, (state) => {
+      state.loading = true;
+      state.error = "";
+    });
+    builder.addCase(createClass.fulfilled, (state, action) => {
+      state.loading = false;
+      state.classes.push(action.payload);
+    });
+    builder.addCase(createClass.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+  },
+});
 
-// export default ClassList;
+export const { setClasses } = classSlice.actions;
+export default classSlice.reducer;

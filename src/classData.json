@@ -1,0 +1,98 @@
+[
+    {
+      "id": 1,
+      "name": "1A",
+      "userid": 1,
+      "Student": [
+        {
+          "id": 9,
+          "firstname": "Bushra",
+          "middlename": "Abdirahman",
+          "lastname": "Abdi",
+          "fullname": "Bushra Abdirahman Abdi",
+          "classId": 1,
+          "phone": "4126521",
+          "gender": "Female",
+          "Age": 20,
+          "fee": 10,
+          "Amount": 8,
+          "status": "ACTIVE",
+          "absentCount": 0,
+          "lastWarningDate": null,
+          "isdeleted": false,
+          "userid": 2,
+          "user": {
+            "fullName": "Abdifatah Ismail"
+          }
+        },
+        {
+          "id": 5,
+          "firstname": "Mustafe",
+          "middlename": "Mohamed",
+          "lastname": "A/rahman",
+          "fullname": "Mustafe Mohamed A/rahman",
+          "classId": 1,
+          "phone": "0011",
+          "gender": "Male",
+          "Age": 15,
+          "fee": 20,
+          "Amount": 5,
+          "status": "ACTIVE",
+          "absentCount": 0,
+          "lastWarningDate": null,
+          "isdeleted": false,
+          "userid": 1,
+          "user": {
+            "fullName": "Bushra Abdifatah Aslar"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "1B",
+      "userid": 1,
+      "Student": [
+        {
+          "id": 7,
+          "firstname": "Huda",
+          "middlename": "Ahmed",
+          "lastname": " Mohammed",
+          "fullname": "Huda Ahmed  Mohammed",
+          "classId": 2,
+          "phone": "0634483147",
+          "gender": "Female",
+          "Age": 12,
+          "fee": 11,
+          "Amount": 10,
+          "status": "ACTIVE",
+          "absentCount": 0,
+          "lastWarningDate": null,
+          "isdeleted": false,
+          "userid": 2,
+          "user": {
+            "fullName": "Abdifatah Ismail"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "1C",
+      "userid": 1,
+      "Student": []
+    },
+    {
+      "id": 4,
+      "name": "1D",
+      "userid": 1,
+      "Student": []
+    },
+    {
+      "id": 5,
+      "name": "1E",
+      "userid": 1,
+      "Student": []
+    }
+  ]
+  
