@@ -4,41 +4,36 @@ import { fetchUserProfile, uploadUserPhoto } from '../../Redux/Auth/userPhotoSli
 import {
   FiUser,
   FiUpload,
-  FiImage,
-  FiMail,
-  FiKey,
-  FiTag,
+  FiEdit,
   FiLoader,
   FiAlertCircle,
-  FiEdit,
-  FiX,
-  FiCalendar,
-  FiSettings,
-  FiActivity
+  FiActivity,
+  FiSettings
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
-const UserProfile = () => {
+const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
-
   const { data: loginData } = useAppSelector((state) => state.loginSlice);
   const { userData, loading, error } = useAppSelector((state) => state.user);
-
   const currentUserId = loginData?.user?.id;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({
-    fullName: '',
-    email: ''
-  });
+  const [editValues, setEditValues] = useState({ fullName: '', email: '' });
   const [activeTab, setActiveTab] = useState<'profile' | 'activity' | 'settings'>('profile');
   const [isUploading, setIsUploading] = useState(false);
 
-  // Prefill form when userData loads
+  const getFullPhotoUrl = (url: string) => {
+    if (!url) return null;
+    if (/^https?:\/\//i.test(url)) return url;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+    return `${baseUrl}/${url.replace(/^\/+/, '')}`;
+  };
+
   useEffect(() => {
     if (userData) {
       setEditValues({
@@ -48,45 +43,24 @@ const UserProfile = () => {
     }
   }, [userData]);
 
-  // Fetch profile based on logged-in user ID
   useEffect(() => {
-    if (currentUserId) {
-      dispatch(fetchUserProfile(currentUserId));
-    }
+    if (currentUserId) dispatch(fetchUserProfile(currentUserId));
   }, [dispatch, currentUserId]);
 
   useEffect(() => {
-    if (!selectedFile) {
-      setPreviewUrl(null);
-      return;
-    }
+    if (!selectedFile) return setPreviewUrl(null);
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreviewUrl(objectUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
-
-  const getFullPhotoUrl = (url: string) => {
-    if (!url) return null;
-    if (/^https?:\/\//i.test(url)) return url;
-    const cleanPath = url.replace(/^\/+/, '');
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
-    return `${baseUrl}/${cleanPath}`;
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const maxSizeMB = 5;
-
-    if (!validTypes.includes(file.type)) {
-      toast.error('Please select a JPEG, PNG, or GIF image (max 5MB)');
-      return;
-    }
-
-    if (file.size > maxSizeMB * 1024 * 1024) {
-      toast.error(`File size exceeds ${maxSizeMB}MB limit`);
+    if (!validTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be JPG, PNG, or GIF and under 5MB.');
       return;
     }
 
@@ -95,55 +69,45 @@ const UserProfile = () => {
 
   const handleUpload = async () => {
     if (!selectedFile || !currentUserId) return;
-
     setIsUploading(true);
     try {
-      await dispatch(uploadUserPhoto({
-        userId: currentUserId,
-        photo: selectedFile
-      })).unwrap();
-
+      await dispatch(uploadUserPhoto({ userId: currentUserId, photo: selectedFile })).unwrap();
       setSelectedFile(null);
       setPreviewUrl(null);
       dispatch(fetchUserProfile(currentUserId));
-      toast.success('Profile photo updated successfully');
-    } catch (err) {
-      console.error('Upload failed:', err);
-      toast.error('Failed to upload profile photo');
+      toast.success('Photo uploaded successfully');
+    } catch {
+      toast.error('Upload failed');
     } finally {
       setIsUploading(false);
     }
   };
 
   if (!currentUserId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        Please log in to view your profile.
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center text-gray-400 text-lg">Please log in to view profile.</div>;
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <FiLoader className="animate-spin text-4xl text-indigo-600" />
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <FiLoader className="animate-spin text-5xl text-indigo-500" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-sm border border-red-100">
-        <div className="flex items-start gap-3 text-red-600">
-          <FiAlertCircle className="mt-1 flex-shrink-0" />
+      <div className="max-w-md mx-auto mt-12 bg-white rounded-xl shadow p-6 border border-red-200">
+        <div className="flex gap-3 text-red-600">
+          <FiAlertCircle size={24} />
           <div>
-            <h3 className="font-medium">Profile Error</h3>
+            <h3 className="font-semibold">Profile Error</h3>
             <p className="text-sm mt-1">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium transition-colors"
+              className="mt-3 text-sm font-medium text-gray-600 hover:underline"
             >
-              Try Again
+              Reload page
             </button>
           </div>
         </div>
@@ -152,15 +116,15 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 mb-8"
+          className="bg-white rounded-3xl shadow-md border border-gray-200 mb-8 p-6"
         >
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">User Profile</h1>
-          <p className="text-gray-500">Manage your account settings and profile.</p>
+          <h1 className="text-2xl font-bold text-gray-900">User Profile</h1>
+          <p className="text-gray-500 mt-1 text-sm">Manage your information and access.</p>
         </motion.div>
 
         <AnimatePresence>
@@ -170,150 +134,126 @@ const UserProfile = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl shadow-xs border border-gray-200 overflow-hidden"
+              className="bg-white rounded-3xl shadow-md border border-gray-200 p-6"
             >
-              {/* Tab Navigation */}
-              <div className="border-b border-gray-200">
-                <nav className="flex -mb-px">
-                  <button
-                    onClick={() => setActiveTab('profile')}
-                    className={`py-4 px-6 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'profile' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-                  >
-                    <FiUser className="w-4 h-4" />
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('activity')}
-                    className={`py-4 px-6 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'activity' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-                  >
-                    <FiActivity className="w-4 h-4" />
-                    Activity
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`py-4 px-6 border-b-2 font-medium text-sm flex items-center gap-2 ${activeTab === 'settings' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-                  >
-                    <FiSettings className="w-4 h-4" />
-                    Settings
-                  </button>
-                </nav>
-              </div>
-
-              <div className="p-6 md:p-8">
-                {activeTab === 'profile' && (
-                  <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Photo Section */}
-                    <div className="flex flex-col items-center lg:items-start">
-                      <div className="relative w-40 h-40 rounded-2xl bg-gray-100 overflow-hidden border-4 border-white shadow-md">
-                        {userData.photoUrl && !imageError ? (
-                          <img
-                            src={getFullPhotoUrl(userData.photoUrl)}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                            onError={() => setImageError(true)}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <FiUser className="w-20 h-20" />
-                          </div>
-                        )}
+              {/* Header Info */}
+              <div className="flex flex-col lg:flex-row gap-10">
+                {/* Profile Picture + Upload */}
+                <div className="flex flex-col items-center lg:items-start">
+                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-50">
+                    {userData.photoUrl && !imageError ? (
+                      <img
+                        src={getFullPhotoUrl(userData.photoUrl)}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <FiUser className="w-20 h-20" />
                       </div>
+                    )}
+                  </div>
 
-                      <div className="mt-6 w-full max-w-xs">
-                        <label className="block mb-3 text-sm font-medium text-gray-700">
-                          Update Profile Photo
-                        </label>
-                        <label className="block">
-                          <div className="flex flex-col items-center px-4 py-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors">
-                            <FiUpload className="w-6 h-6 text-gray-400 mb-2" />
-                            <span className="text-sm text-gray-600 text-center">
-                              {selectedFile ? selectedFile.name : 'Click to select image'}
-                            </span>
-                          </div>
-                          <input
-                            type="file"
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            className="hidden"
-                          />
-                        </label>
-
-                        {previewUrl && (
-                          <div className="mt-4">
-                            <img src={previewUrl} alt="Preview" className="rounded-lg shadow" />
-                            <button
-                              onClick={() => setPreviewUrl(null)}
-                              className="mt-2 text-red-500 hover:underline"
-                            >
-                              Remove Preview
-                            </button>
-                          </div>
-                        )}
-
-                        {selectedFile && (
-                          <button
-                            onClick={handleUpload}
-                            disabled={isUploading}
-                            className="mt-4 w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
-                          >
-                            {isUploading ? 'Uploading...' : 'Upload Photo'}
-                          </button>
-                        )}
+                  {/* Upload Section */}
+                  <div className="mt-5 w-full max-w-xs">
+                    <label className="text-sm font-medium text-gray-700">Upload new photo</label>
+                    <label className="block mt-2">
+                      <div className="w-full py-2 px-3 bg-gray-50 border border-dashed border-gray-300 rounded-xl text-center cursor-pointer hover:bg-gray-100 text-sm text-gray-600">
+                        <FiUpload className="inline-block mr-2 text-gray-400" />
+                        {selectedFile ? selectedFile.name : 'Choose image'}
                       </div>
-                    </div>
+                      <input type="file" onChange={handleFileChange} className="hidden" />
+                    </label>
 
-                    {/* Profile Details */}
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">{userData.fullName}</h2>
+                    {previewUrl && (
+                      <div className="mt-4">
+                        <img src={previewUrl} alt="Preview" className="rounded-lg shadow" />
                         <button
-                          onClick={() => setIsEditing(!isEditing)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
+                          onClick={() => setPreviewUrl(null)}
+                          className="mt-2 text-sm text-red-500 hover:underline"
                         >
-                          <FiEdit className="w-4 h-4" />
-                          {isEditing ? 'Cancel' : 'Edit'}
+                          Remove Preview
                         </button>
                       </div>
+                    )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {isEditing ? (
-                          <>
-                            <input
-                              className="border p-2 rounded-md"
-                              value={editValues.fullName}
-                              onChange={(e) => setEditValues({ ...editValues, fullName: e.target.value })}
-                            />
-                            <input
-                              className="border p-2 rounded-md"
-                              value={editValues.email}
-                              onChange={(e) => setEditValues({ ...editValues, email: e.target.value })}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <div className="bg-gray-50 p-4 rounded-xl">
-                              <p className="text-xs text-gray-500">Full Name</p>
-                              <p className="font-medium">{userData.fullName}</p>
-                            </div>
-                            <div className="bg-gray-50 p-4 rounded-xl">
-                              <p className="text-xs text-gray-500">Email</p>
-                              <p className="font-medium">{userData.email}</p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
+                    {selectedFile && (
+                      <button
+                        onClick={handleUpload}
+                        disabled={isUploading}
+                        className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm"
+                      >
+                        {isUploading ? 'Uploading...' : 'Upload Photo'}
+                      </button>
+                    )}
                   </div>
-                )}
+                </div>
 
-                {/* Additional Tabs: Activity, Settings */}
-                {activeTab === 'activity' && (
-                  <div className="py-4">Recent activity goes here.</div>
-                )}
+                {/* Info Section */}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">{userData.fullName}</h2>
+                      <p className="text-gray-600">{userData.email}</p>
+                      <span className="inline-block mt-1 px-3 py-0.5 bg-indigo-100 text-indigo-600 text-xs rounded-full font-medium uppercase">
+                        {userData.role}
+                      </span>
+                    </div>
 
-                {activeTab === 'settings' && (
-                  <div className="py-4">Settings go here.</div>
-                )}
+                    <button
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="inline-flex items-center gap-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-md transition"
+                    >
+                      <FiEdit />
+                      {isEditing ? 'Cancel' : 'Edit'}
+                    </button>
+                  </div>
+
+                  {isEditing && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input
+                        className="border p-2 rounded-md"
+                        value={editValues.fullName}
+                        onChange={(e) => setEditValues({ ...editValues, fullName: e.target.value })}
+                      />
+                      <input
+                        className="border p-2 rounded-md"
+                        value={editValues.email}
+                        onChange={(e) => setEditValues({ ...editValues, email: e.target.value })}
+                      />
+                    </div>
+                  )}
+
+                  {/* Access Summary */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Access Permissions</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700 list-disc pl-4">
+                      {userData.role === 'ADMIN' && (
+                        <>
+                          <li>Full access to user and student management</li>
+                          <li>Can upload, register, and delete data</li>
+                          <li>Full exam and attendance reporting</li>
+                          <li>Class and subject management</li>
+                        </>
+                      )}
+                      {userData.role === 'Teacher' && (
+                        <>
+                          <li>View and manage assigned classes</li>
+                          <li>Submit grades and attendance</li>
+                          <li>Limited access to student data</li>
+                        </>
+                      )}
+                      {userData.role === 'USER' && (
+                        <>
+                          <li>Basic view access</li>
+                          <li>Profile & password management</li>
+                          <li>Submit attendance</li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -324,4 +264,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-

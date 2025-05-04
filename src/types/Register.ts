@@ -25,6 +25,7 @@ export interface IRegisterBody {
   fullName: string;
   phoneNumber: string;
   photoUrl: string;
+  Role: string;
 }
 
 export interface AttendancePayload {

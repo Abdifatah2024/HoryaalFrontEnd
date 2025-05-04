@@ -14,11 +14,43 @@ const StudentExams = () => {
     dispatch(fetchStudentExams(Number(studentIdInput)));
   };
 
-  // Calculate totals
+  // Calculate totals and performance by subject
   const monthlyTotal = exams.find(e => e.examName === 'Monthly')?.subjectScores.reduce((sum, s) => sum + s.marks, 0) || 0;
   const midtermTotal = exams.find(e => e.examName === 'Midterm')?.subjectScores.reduce((sum, s) => sum + s.marks, 0) || 0;
-  const combinedTotal = monthlyTotal + midtermTotal;
-  const percentage = ((combinedTotal / 500) * 100).toFixed(1);
+  const finalTotal = exams.find(e => e.examName === 'Final')?.subjectScores.reduce((sum, s) => sum + s.marks, 0) || 0;
+  const combinedTotal = monthlyTotal + midtermTotal + finalTotal;
+  const maxPossible = exams[0]?.subjectScores.length * 100 || 500;
+  const percentage = ((combinedTotal / maxPossible) * 100).toFixed(1);
+
+  // Calculate subject performance
+  const subjectPerformance = exams[0]?.subjectScores.map(subject => {
+    const monthly = exams.find(e => e.examName === 'Monthly')?.subjectScores.find(s => s.subjectName === subject.subjectName)?.marks || 0;
+    const midterm = exams.find(e => e.examName === 'Midterm')?.subjectScores.find(s => s.subjectName === subject.subjectName)?.marks || 0;
+    const final = exams.find(e => e.examName === 'Final')?.subjectScores.find(s => s.subjectName === subject.subjectName)?.marks || 0;
+    const total = monthly + midterm + final;
+    
+    const grade = 
+      total >= 90 ? 'A+' :
+      total >= 80 ? 'A' :
+      total >= 70 ? 'B+' :
+      total >= 60 ? 'B' :
+      total >= 50 ? 'C+' :
+      total >= 40 ? 'C' : 'D';
+
+    return {
+      subjectName: subject.subjectName,
+      monthly,
+      midterm,
+      final,
+      total,
+      grade,
+      performance: total < 50 ? 'weak' : total >= 70 ? 'strong' : 'average'
+    };
+  }) || [];
+
+  // Filter subjects by performance
+  const weakSubjects = subjectPerformance.filter(subject => subject.performance === 'weak');
+  const strongSubjects = subjectPerformance.filter(subject => subject.performance === 'strong');
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -56,7 +88,7 @@ const StudentExams = () => {
                 <p className="font-semibold">Class: <span className="font-normal">{student.class}</span></p>
               </div>
               <div>
-                <p className="font-semibold">Academic Year: <span className="font-normal">2023-2024</span></p>
+                <p className="font-semibold">Academic Year: <span className="font-normal">2024-2025</span></p>
                 <p className="font-semibold">Student ID: <span className="font-normal">{student.id}</span></p>
               </div>
             </div>
@@ -70,126 +102,95 @@ const StudentExams = () => {
                   <th className="p-3 text-left border">Subject</th>
                   <th className="p-3 text-center border">Monthly (20)</th>
                   <th className="p-3 text-center border">Midterm (30)</th>
-                  <th className="p-3 text-center border">Total (50)</th>
+                  <th className="p-3 text-center border">Final (50)</th>
+                  <th className="p-3 text-center border">Total (100)</th>
                   <th className="p-3 text-center border">Grade</th>
                 </tr>
               </thead>
               <tbody>
-                {exams[0]?.subjectScores.map((subject, index) => {
-                  const midtermMark = exams[1]?.subjectScores[index]?.marks || 0;
-                  const totalMark = subject.marks + midtermMark;
-                  const grade = 
-                    totalMark >= 45 ? 'A+' :
-                    totalMark >= 40 ? 'A' :
-                    totalMark >= 35 ? 'B+' :
-                    totalMark >= 30 ? 'B' :
-                    totalMark >= 25 ? 'C+' :
-                    totalMark >= 20 ? 'C' : 'D';
-
-                  return (
-                    <tr key={subject.subjectName} className="border-t">
-                      <td className="p-3 border">{subject.subjectName}</td>
-                      <td className="p-3 text-center border">{subject.marks}</td>
-                      <td className="p-3 text-center border">{midtermMark}</td>
-                      <td className="p-3 text-center border font-semibold">{totalMark}</td>
-                      <td className="p-3 text-center border">
-                        <span className={`px-2 py-1 rounded ${grade === 'A+' ? 'bg-green-100 text-green-800' : 
-                          grade.startsWith('A') ? 'bg-blue-100 text-blue-800' :
-                          grade.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'}`}>
-                          {grade}
-                        </span>
-                      </td>
-                    </tr>
-                  )
-                })}
+                {subjectPerformance.map((subject, index) => (
+                  <tr key={subject.subjectName} className="border-t">
+                    <td className="p-3 border">{subject.subjectName}</td>
+                    <td className="p-3 text-center border">{subject.monthly}</td>
+                    <td className="p-3 text-center border">{subject.midterm}</td>
+                    <td className="p-3 text-center border">{subject.final}</td>
+                    <td className="p-3 text-center border font-semibold">{subject.total}</td>
+                    <td className="p-3 text-center border">
+                      <span className={`px-2 py-1 rounded ${
+                        subject.grade === 'A+' ? 'bg-green-100 text-green-800' : 
+                        subject.grade.startsWith('A') ? 'bg-blue-100 text-blue-800' :
+                        subject.grade.startsWith('B') ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'}`}>
+                        {subject.grade}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           {/* Summary Section */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="border p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Overall Performance</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Total Marks Obtained:</span>
-                  <span className="font-semibold">{combinedTotal}/500</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Percentage:</span>
-                  <span className="font-semibold">{percentage}%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>School Position:</span>
-                  <span className="font-semibold">15/180</span>
-                </div>
-              </div>
+          <div className="border p-4 rounded-lg">
+            <h3 className="text-lg font-semibold mb-4 text-center">Overall Performance Summary</h3>
+            <div className="flex justify-between mb-4">
+              <span>Total Marks Obtained:</span>
+              <span className="font-semibold">{combinedTotal}/{maxPossible}</span>
             </div>
-
-            <div className="border p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Grading System</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span>A+ (90-100%):</span>
-                  <span>Outstanding</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>A (80-89%):</span>
-                  <span>Excellent</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>B+ (70-79%):</span>
-                  <span>Very Good</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>B (60-69%):</span>
-                  <span>Good</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>C+ (50-59%):</span>
-                  <span>Satisfactory</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>C (40-49%):</span>
-                  <span>Needs Improvement</span>
-                </div>
-              </div>
+            <div className="flex justify-between mb-4">
+              <span>Percentage:</span>
+              <span className="font-semibold">{percentage}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span>School Position:</span>
+              <span className="font-semibold">15/180</span>
             </div>
           </div>
 
-          {/* Comments & Signatures */}
-          <div className="border-t-2 pt-6">
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Teacher's Comments:</h3>
-              <p className="italic text-gray-600">
-                "Faisa has shown consistent improvement in Mathematics and Science subjects. 
-                More focus needed in Language subjects to achieve better results."
-              </p>
+          {/* Performance Analysis - Two Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Weak Subjects Column */}
+            <div className="border p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3 text-red-600">Subjects Needing Improvement (Below 50 marks)</h3>
+              {weakSubjects.length > 0 ? (
+                <ul className="space-y-2">
+                  {weakSubjects.map(subject => (
+                    <li key={subject.subjectName} className="flex justify-between items-center p-2 bg-red-50 rounded">
+                      <span className="font-medium">{subject.subjectName}</span>
+                      <span className="font-semibold text-red-600">{subject.total}/100</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-center py-4 text-gray-500 bg-gray-50 rounded">
+                  No subjects below 50 marks
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-8 mt-8">
-              <div className="text-center">
-                <p className="border-t-2 pt-4 inline-block px-8">
-                  Class Teacher's Signature
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="border-t-2 pt-4 inline-block px-8">
-                  Principal's Signature
-                </p>
-                <div className="mt-2 text-xs text-gray-500">
-                  <p>Al-irshad Seconadry</p>
-                  <p>Date: {new Date().toLocaleDateString()}</p>
+            {/* Strong Subjects Column */}
+            <div className="border p-4 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3 text-green-600">Strong Subjects (70-100 marks)</h3>
+              {strongSubjects.length > 0 ? (
+                <ul className="space-y-2">
+                  {strongSubjects.map(subject => (
+                    <li key={subject.subjectName} className="flex justify-between items-center p-2 bg-green-50 rounded">
+                      <span className="font-medium">{subject.subjectName}</span>
+                      <span className="font-semibold text-green-600">{subject.total}/100</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-center py-4 text-gray-500 bg-gray-50 rounded">
+                  No subjects above 70 marks
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
           {/* Footer */}
           <div className="text-center text-sm text-gray-500 mt-8">
             <p>This is an official document. Any alterations will render it invalid.</p>
-            <p>School Stamp</p>
           </div>
         </div>
       )}

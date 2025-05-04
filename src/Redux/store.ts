@@ -29,6 +29,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import studentExamsReducer from "../Redux/Exam/studentExamsSlice";
 import examReportReducer from "../Redux/Exam/examReportSlice";
 import examMidtermReportReducer from "../Redux/Exam/ExamMidtermReportSlice";
+import progressReportReducer from "../Redux/Exam/progressReportSlice";
+import employeeReducer from "../Redux/Epmloyee/employeeSlice";
+import employeeListReducer from "../Redux/Epmloyee/employeeListSlice";
+import ListStdinClass from "../Redux/Classes/ListStdInClassSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -41,6 +45,7 @@ export const store = configureStore({
     attendance: attendanceReducer,
     studentClassUpdate: UpdateClass,
     studentClass: studentClassReducer,
+    ListStdinClass: ListStdinClass,
     deleteStudent: deleteStudentReducer,
     studentSlice: studentUodateDelete,
     attendanceSlice: attendanceReducer,
@@ -61,6 +66,9 @@ export const store = configureStore({
     studentExams: studentExamsReducer,
     examReport: examReportReducer,
     midtermReport: examMidtermReportReducer, // register midterm
+    progressReport: progressReportReducer,
+    employee: employeeReducer,
+    employeeList: employeeListReducer,
   },
   devTools: true,
 });

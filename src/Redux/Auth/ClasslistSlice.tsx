@@ -30,7 +30,7 @@ export const fetchClasses = createAsyncThunk(
     const { Access_token = null } = state?.loginSlice?.data || {};
 
     try {
-      const res = await axios.get(`${BASE_API_URL}/student/classtList`, {
+      const res = await axios.get(`${BASE_API_URL}/student/classtListstd`, {
         headers: { Authorization: `Bearer ${Access_token}` },
       });
       return res.data.classes;

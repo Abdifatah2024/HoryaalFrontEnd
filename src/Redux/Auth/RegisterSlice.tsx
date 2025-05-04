@@ -9,6 +9,8 @@ export interface User {
   email: string;
   phoneNumber: string;
   photo: string;
+  Role:string
+
 }
 
 const initialState = {

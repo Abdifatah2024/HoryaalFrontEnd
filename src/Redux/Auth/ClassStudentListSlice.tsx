@@ -17,7 +17,7 @@ const initialState: ClassState = {
 export const fetchClasses = createAsyncThunk<ClassItem[]>(
   'class/fetchClasses',
   async () => {
-    const response = await axios.get<ClassItem[]>('http://localhost:4000/student/classtList'); // Replace with your real API
+    const response = await axios.get<ClassItem[]>('http://localhost:4000/student/classtListstd'); // Replace with your real API
     return response.data;
   }
 );

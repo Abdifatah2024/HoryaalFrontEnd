@@ -1,126 +1,10 @@
-// import { createBrowserRouter } from 'react-router-dom';
-// import MainRouter from './pages/main';
-// import Home from './pages/Home';
-// import NotFoundPage from './pages/NotFound';
-// import Login from './pages/Auth/Login';
-// import ForgotPassword from './Redux/Auth/ForgotPassword/ForgotPassword'; // ✅ new
-// import ResetPassword from './Redux/Auth/ForgotPassword/ResetPassword';   // ✅ new
-// import Logout from './Components/logout';
-// import Register from './pages/Register';
-// import UsersList from './pages/UserList';
-// import UserSearch from './pages/userprofile';
-// import SidebarLayout from './pages/sidebar';
-// import StudentForm from './pages/Auth/StdReg';
-// import StudentList from './Redux/Auth/StudentList';
-// import ClassList from './pages/ClassList';
-// import StudentSearch from './pages/GetOneStudent';
-// import ChangePassword from './pages/ChangePassword';
-// import PhotoUpload from './pages/PhotoUpload';
-// import CreateClassForm from './pages/CreateClassForm';
-// import StudentDetail from './pages/Auth/StudentDetail';
-// import UpdateClassForm from './pages/Auth/UpdateClassForm';
-// import DeleteStudent from './pages/Auth/SoftDeleteStudent';
-// import ProtectedRoute from './components/ProtectedRoute';
-// import Attendance from './pages/Auth/Attedence';
-// import AbsentList from './pages/Auth/AbsentList';
-// import MarkAbsentees from './pages/Auth/AbsentList';
-// import AttendanceForm from './pages/Auth/DeleteAndUpdateAbsent';
-// import UserProfile from './pages/Auth/UserPhoto';
-// import AbsenceList from './pages/Auth/GetMostStudentAbsent';
-// import RegisterMultipleStudents from './pages/Auth/RegisterMultipleStudents';
-// import ClassLists from './pages/Auth/ClassStudentList';
-// import DisciplinePage from './pages/Auth/Decipline/DisciplineList';
-// import StudentDisciplinePage from './pages/Auth/Decipline/StudentDisciplinePage';
-// import UploadStudents from './pages/Auth/UploadStudentFromExcel';
-// import StudentAbsentRecorder from './pages/Attendence/StudentAbsentRecorderPerClass';
-// import ExamPage from './pages/Exam/ExamPage';
-// import RegisterTenSubjects from './pages/Exam/RegisterTenSubjects';
-
-// export const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <MainRouter />,
-//     children: [
-//       {
-//         index: true,
-//         element: <Home />
-//       },
-//       {
-//         path: "auth",
-//         children: [
-//           {
-//             path: "login",
-//             element: <Login />
-//           },
-//           {
-//             path: "forgot-password", // ✅ Added forgot password page
-//             element: <ForgotPassword/>
-//           },
-//           {
-//             path: "reset-password", // ✅ Added reset password page
-//             element: <ResetPassword/>
-//           }
-//         ]
-//       },
-//       {
-//         path: "logout",
-//         element: <Logout />
-//       },
-//       {
-//         path: "register",
-//         element: <Register />
-//       },
-//             {
-//         // Protected dashboard routes
-//         element: <ProtectedRoute />,
-//         children: [
-//           { path: "RegisterTenSubjects", 
-//             element: <RegisterTenSubjects/> },
-//           {
-//             path: "dashboard",
-//             element: <SidebarLayout />,
-//             children: [
-//               { path: "user/list", element: <UsersList /> },
-//               { path: "ClassListStd", element: <ClassLists /> },
-//               { path: "userPhoto", element: <UserProfile /> },
-//               { path: "DeleteStd", element: <DeleteStudent /> },
-//               { path: "register", element: <Register /> },
-//               { path: "Attedence", element: <Attendance /> },
-//               { path: "GetTobAbsent", element: <AbsenceList /> },
-//               { path: "AttendceList", element: <AbsentList /> },
-//               { path: "AttendceListPerClass", element: <StudentAbsentRecorder /> },
-//               { path: "DeleteAttendace", element: <AttendanceForm /> },
-//               { path: "Markabsent", element: <MarkAbsentees /> },
-//               { path: "Decipline", element: <DisciplinePage /> },
-//               { path: "GetOneStudentDecipline", element: <StudentDisciplinePage /> },
-//               { path: "logout", element: <Logout /> },
-//               { path: "userinfo", element: <UserSearch /> },
-//               { path: "regstd", element: <StudentForm /> },
-//               { path: "UploadStudents", element: <UploadStudents/> },
-//               { path: "RegisterMulti", element: <RegisterMultipleStudents /> },
-//               { path: "ListStd", element: <StudentList /> },
-//               { path: "ChangePassword", element: <ChangePassword /> },
-//               { path: "upload/photo", element: <PhotoUpload /> },
-//               { path: "CeateClass", element: <CreateClassForm /> },
-//               { path: "UpdateClass", element: <UpdateClassForm /> },
-//               { path: "GetOneStudent", element: <StudentDetail /> },
-//               { path: "ExamRoute", element: <ExamPage /> },
-//               { path: "RegisterTenSubjects", element: <RegisterTenSubjects/> },
-//               { path: "RegisterTenSubjects", element: <RegisterTenSubjects/> }
-              
-//             ]
-//           }
-//         ]
-//       },
-//       {
-//         path: "*",
-//         element: <NotFoundPage />
-//       }
-//     ]
-//   }
-// ]);
 import { createBrowserRouter } from 'react-router-dom';
+// Layouts
 import MainRouter from './pages/main';
+import SidebarLayout from './pages/sidebar';
+import ProtectedRoute from './pages/Auth/ProtectedRoute';
+
+// Public Pages
 import Home from './pages/Home';
 import NotFoundPage from './pages/NotFound';
 import Login from './pages/Auth/Login';
@@ -128,100 +12,186 @@ import ForgotPassword from './Redux/Auth/ForgotPassword/ForgotPassword';
 import ResetPassword from './Redux/Auth/ForgotPassword/ResetPassword';
 import Logout from './Components/logout';
 import Register from './pages/Register';
+
+// User & Profile
 import UsersList from './pages/UserList';
 import UserSearch from './pages/userprofile';
-import SidebarLayout from './pages/sidebar';
-import StudentForm from './pages/Auth/StdReg';
-import StudentList from './Redux/Auth/StudentList';
-import ClassLists from './pages/Auth/ClassStudentList';
-import StudentSearch from './pages/GetOneStudent';
+import UserProfile from './pages/Auth/UserPhoto';
 import ChangePassword from './pages/ChangePassword';
 import PhotoUpload from './pages/PhotoUpload';
-import CreateClassForm from './pages/CreateClassForm';
+
+// Student Management
+import StudentForm from './pages/Auth/StdReg';
+import RegisterMultipleStudents from './pages/Auth/RegisterMultipleStudents';
+import UploadStudents from './pages/Auth/UploadStudentFromExcel';
+import StudentList from './Redux/Auth/StudentList';
+import StudentSearch from './pages/GetOneStudent';
 import StudentDetail from './pages/Auth/StudentDetail';
-import UpdateClassForm from './pages/Auth/UpdateClassForm';
 import DeleteStudent from './pages/Auth/SoftDeleteStudent';
-import ProtectedRoute from './components/ProtectedRoute';
+
+// Class Management
+import ClassLists from './pages/Auth/ClassStudentList';
+import CreateClassForm from './pages/CreateClassForm';
+import UpdateClassForm from './pages/Auth/UpdateClassForm';
+import ClassList from './pages/Auth/ClassStudentList';
+
+// Attendance
 import Attendance from './pages/Auth/Attedence';
 import AbsentList from './pages/Auth/AbsentList';
 import MarkAbsentees from './pages/Auth/AbsentList';
 import AttendanceForm from './pages/Auth/DeleteAndUpdateAbsent';
-import UserProfile from './pages/Auth/UserPhoto';
 import AbsenceList from './pages/Auth/GetMostStudentAbsent';
-import RegisterMultipleStudents from './pages/Auth/RegisterMultipleStudents';
+import StudentAbsentRecorder from './pages/Attendence/StudentAbsentRecorderPerClass';
+
+// Discipline
 import DisciplinePage from './pages/Auth/Decipline/DisciplineList';
 import StudentDisciplinePage from './pages/Auth/Decipline/StudentDisciplinePage';
-import UploadStudents from './pages/Auth/UploadStudentFromExcel';
-import StudentAbsentRecorder from './pages/Attendence/StudentAbsentRecorderPerClass';
+
+// Exams
 import ExamPage from './pages/Exam/ExamPage';
 import RegisterTenSubjects from './pages/Exam/RegisterTenSubjects';
-import ClassList from './pages/ClassList'; // ✅ NEW
-import StudentExams from './pages/Exam/StudentExams'; // ✅ NEW
+import StudentExams from './pages/Exam/StudentExams';
 import ExamReport from './pages/Exam/ExamReport';
 import ExamReportFinal from './pages/Exam/ExamFinalreport';
 import ExamMidtermReport from './pages/Exam/ExamReportMidterm';
+import YearlyProgressReport from './pages/Exam/YearlyProgressReport';
+
+// Types
+import { Role } from '../src/types/Login';
+import EmployeeForm from './pages/Employee/EmployeeForm';
+import AllEmployeesList from './pages/Employee/AllEmployeesList';
+import StudentClassListStd from './pages/Classes/GetStudentInsideClass';
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <MainRouter />,
     children: [
       { index: true, element: <Home /> },
+
+      // Public Auth Routes
       {
-        path: "auth",
+        path: 'auth',
         children: [
-          { path: "login", element: <Login /> },
-          { path: "forgot-password", element: <ForgotPassword /> },
-          { path: "reset-password", element: <ResetPassword /> },
-        ]
+          { path: 'login', element: <Login /> },
+          { path: 'forgot-password', element: <ForgotPassword /> },
+          { path: 'reset-password', element: <ResetPassword /> },
+        ],
       },
-      { path: "logout", element: <Logout /> },
-      { path: "register", element: <Register /> },
+      { path: 'logout', element: <Logout /> },
+
+      // Protected Routes
       {
-        element: <ProtectedRoute />,
+        element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER]} />,
         children: [
-          { path: "RegisterTenSubjects", element: <RegisterTenSubjects /> },
           {
-            path: "dashboard",
+            path: 'dashboard',
             element: <SidebarLayout />,
             children: [
-              { path: "user/list", element: <UsersList /> },
-              { path: "ClassListStd", element: <ClassLists /> },
-              { path: "userPhoto", element: <UserProfile /> },
-              { path: "DeleteStd", element: <DeleteStudent /> },
-              { path: "register", element: <Register /> },
-              { path: "Attedence", element: <Attendance /> },
-              { path: "GetTobAbsent", element: <AbsenceList /> },
-              { path: "AttendceList", element: <AbsentList /> },
-              { path: "AttendceListPerClass", element: <StudentAbsentRecorder /> },
-              { path: "DeleteAttendace", element: <AttendanceForm /> },
-              { path: "Markabsent", element: <MarkAbsentees /> },
-              { path: "Decipline", element: <DisciplinePage /> },
-              { path: "GetOneStudentDecipline", element: <StudentDisciplinePage /> },
-              { path: "userinfo", element: <UserSearch /> },
-              { path: "regstd", element: <StudentForm /> },
-              { path: "UploadStudents", element: <UploadStudents /> },
-              { path: "RegisterMulti", element: <RegisterMultipleStudents /> },
-              { path: "ListStd", element: <StudentList /> },
-              { path: "ChangePassword", element: <ChangePassword /> },
-              { path: "upload/photo", element: <PhotoUpload /> },
-              { path: "CeateClass", element: <CreateClassForm /> },
-              { path: "UpdateClass", element: <UpdateClassForm /> },
-              { path: "GetOneStudent", element: <StudentDetail /> },
-              { path: "ExamRoute", element: <ExamPage /> },
+              // ✅ Admin-only routes
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
+                children: [
+                  { path: 'register', element: <Register /> },
+                  { path: 'user/list', element: <UsersList /> },
+                  { path: 'DeleteStd', element: <DeleteStudent /> },
+                  { path: 'CeateClass', element: <CreateClassForm /> },
+                  { path: 'UpdateClass', element: <UpdateClassForm /> },
+                  { path: 'ExamPerformance', element: <ExamReport /> },
+                  { path: 'ClassReports', element: <ClassLists /> },
+                  { path: 'CustomReports', element: <UserSearch /> },
+                  { path: 'CreateEmployee', element: <EmployeeForm /> },
+                  { path: 'AllEmployeesList', element: <AllEmployeesList /> },
+                 
+                
+            
+                  { path: 'DeleteAttendace', element: <AttendanceForm /> },
+                  { path: 'RegisterTenSubjects', element: <RegisterTenSubjects /> },
+                
+                  { path: 'ExamRoute', element: <ExamPage /> },
+                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+                ],
+              },
 
-              // ✅ NEW Routes added for listing classes and exams
-              { path: "ClassList", element: <ClassLists /> },
-              { path: "getExam", element: <StudentExams /> },
-              { path: "GetReportMidterm", element: <ExamMidtermReport /> },
-              { path: "ExamReport", element: <ExamReport /> },
-              { path: "RegisterTenSubjects", element: <RegisterTenSubjects /> },
-              { path: "FinalReport", element: <ExamReportFinal /> },
-            ]
-          }
-        ]
+              // ✅ Teacher-only routes
+              {
+                element: <ProtectedRoute allowedRoles={[Role.Teacher]} />,
+                children: [
+                ],
+              },
+
+              // ✅ Admin & Teacher shared routes
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher]} />,
+                children: [
+                  // shared routes for Admin and Teacher go here
+                  { path: 'getExam', element: <StudentExams /> },
+                  
+                  { path: 'GetOneStudent', element: <StudentDetail /> },
+                  { path: 'ClassListStd', element: <ClassLists /> },
+                  { path: 'RegisterTenSubjects', element: <RegisterTenSubjects /> },
+                  { path: 'ExamRoute', element: <ExamPage /> },
+                  
+                ],
+              },
+
+              // ✅ Admin & User shared routes
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER]} />,
+                children: [
+                  // shared routes for Admin and User go here
+                  { path: 'regstd', element: <StudentForm /> },
+                  { path: 'UploadStudents', element: <UploadStudents /> },
+                  { path: 'RegisterMulti', element: <RegisterMultipleStudents /> },
+                  { path: 'GetOneStudent', element: <StudentDetail /> },
+                  { path: 'GetStudentInclass', element: <StudentClassListStd/> },
+                  { path: 'AttendceList', element: <AbsentList /> },
+                  { path: 'AttendceListPerClass', element: <StudentAbsentRecorder /> },
+                  { path: 'Attedence', element: <Attendance /> },
+                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+                  { path: 'AttendceListPerClass', element: <StudentAbsentRecorder /> },
+                  { path: 'Decipline', element: <DisciplinePage /> },
+                  { path: 'GetOneStudentDecipline', element: <StudentDisciplinePage /> },
+                ],
+              },
+
+              // ✅ Teacher & User shared routes
+              {
+                element: <ProtectedRoute allowedRoles={[Role.USER]} />,
+                children: [
+                
+              
+                ],
+              },
+
+              // ✅ Shared (all roles)
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER]} />,
+                children: [
+                  { path: 'userinfo', element: <UserSearch /> },
+                  { path: 'ChangePassword', element: <ChangePassword /> },
+                  { path: 'userPhoto', element: <UserProfile /> },
+                  { path: 'upload/photo', element: <PhotoUpload /> },
+                  { path: 'Final Student', element: <YearlyProgressReport /> },
+                  { path: 'GetReportMidterm', element: <ExamMidtermReport /> },
+                  { path: 'FinalReport', element: <ExamReportFinal /> },
+                  { path: 'Attedence', element: <Attendance /> },
+                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+                  { path: 'AttendceListPerClass', element: <StudentAbsentRecorder /> },
+                  { path: 'AttendanceReports', element: <AttendanceForm /> },
+                  { path: 'ListStd', element: <StudentList /> },
+                  { path: 'ClassListStd', element: <ClassList /> },
+                  { path: 'getExam', element: <StudentExams /> },
+                  { path: 'DisciplinaryReports', element: <DisciplinePage /> },
+                ],
+              },
+            ],
+          },
+        ],
       },
-      { path: "*", element: <NotFoundPage /> }
-    ]
-  }
+
+      // 404 Not Found
+      { path: '*', element: <NotFoundPage /> },
+    ],
+  },
 ]);

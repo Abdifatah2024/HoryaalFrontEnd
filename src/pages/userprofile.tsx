@@ -104,9 +104,9 @@ const UserSearch = () => {
                                 <div className="flex-1">
                                     <h2 className="text-xl font-semibold text-gray-800">{user.fullName}</h2>
                                     <p className="text-gray-500 text-sm">{user.email}</p>
-                                    {user.role && (
+                                    {user.Role && (
                                         <span className="inline-block mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full">
-                                            {user.role}
+                                            {user.Role}
                                         </span>
                                     )}
                                 </div>
