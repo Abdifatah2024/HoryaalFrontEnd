@@ -284,7 +284,7 @@ export const getStudentById = createAsyncThunk(
   "students/getStudentById",
   async (studentId: string, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${BASE_API_URL}/student/${studentId}`);
+      const res = await axios.get(`${BASE_API_URL}/student/Get/${studentId}`);
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {

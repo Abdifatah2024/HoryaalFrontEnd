@@ -23,25 +23,29 @@ const RegisterMultipleStudents = () => {
     (state) => state.registerStudents
   );
 
-  const initialStudentState: NewStudentInput = {
+  const initialStudentState: Omit<NewStudentInput, "Amount"> = {
     firstname: "",
     middlename: "",
     lastname: "",
     classId: 0,
     phone: "",
+    phone2: "",
     gender: "",
     Age: 0,
     fee: 0,
-    Amount: 0,
+    motherName: "",
+    address: "",
+    previousSchool: "",
+    bus: "",
   };
 
-  const [formData, setFormData] = useState<NewStudentInput>({ ...initialStudentState });
-  const [addedStudents, setAddedStudents] = useState<NewStudentInput[]>([]);
+  const [formData, setFormData] = useState(initialStudentState);
+  const [addedStudents, setAddedStudents] = useState<typeof formData[]>([]);
 
   const hasShownSuccess = useRef(false);
   const hasShownError = useRef(false);
 
-  const handleChange = (field: keyof NewStudentInput, value: any) => {
+  const handleChange = (field: keyof typeof formData, value: any) => {
     setFormData({ ...formData, [field]: value });
   };
 
@@ -49,9 +53,9 @@ const RegisterMultipleStudents = () => {
     const requiredFields = ["firstname", "lastname", "phone", "gender", "classId"];
     const isValid = requiredFields.every((key) => {
       const value = (formData as any)[key];
-      return value !== "" && value !== 0; // Check for empty string or 0 (for classId)
+      return value !== "" && value !== 0;
     });
-    
+
     if (!isValid) {
       toast.error("Please fill all required fields");
       return;
@@ -93,102 +97,36 @@ const RegisterMultipleStudents = () => {
         <h2 className="text-2xl font-bold text-gray-800">Add Student to List</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Personal Information */}
-          <input
-            placeholder="First Name *"
-            value={formData.firstname}
-            onChange={(e) => handleChange("firstname", e.target.value)}
-            className="border rounded px-3 py-2"
-            required
-          />
-          <input
-            placeholder="Middle Name"
-            value={formData.middlename}
-            onChange={(e) => handleChange("middlename", e.target.value)}
-            className="border rounded px-3 py-2"
-          />
-          <input
-            placeholder="Last Name *"
-            value={formData.lastname}
-            onChange={(e) => handleChange("lastname", e.target.value)}
-            className="border rounded px-3 py-2"
-            required
-          />
-          
-          {/* Contact Information */}
-          <input
-            placeholder="Phone *"
-            value={formData.phone}
-            onChange={(e) => handleChange("phone", e.target.value)}
-            className="border rounded px-3 py-2"
-            required
-          />
-          
-          {/* Class and Gender Selection */}
-          <select
-            value={formData.classId}
-            onChange={(e) => handleChange("classId", Number(e.target.value))}
-            className="border rounded px-3 py-2"
-            required
-          >
+          <input placeholder="First Name *" value={formData.firstname} onChange={(e) => handleChange("firstname", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Middle Name" value={formData.middlename} onChange={(e) => handleChange("middlename", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Last Name *" value={formData.lastname} onChange={(e) => handleChange("lastname", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Phone *" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Phone 2" value={formData.phone2} onChange={(e) => handleChange("phone2", e.target.value)} className="border rounded px-3 py-2" />
+          <select value={formData.classId} onChange={(e) => handleChange("classId", Number(e.target.value))} className="border rounded px-3 py-2">
             <option value={0}>Select Class *</option>
             {classOptions.map((cls) => (
-              <option key={cls.id} value={cls.id}>
-                {cls.name}
-              </option>
+              <option key={cls.id} value={cls.id}>{cls.name}</option>
             ))}
           </select>
-          
-          <select
-            value={formData.gender}
-            onChange={(e) => handleChange("gender", e.target.value)}
-            className="border rounded px-3 py-2"
-            required
-          >
+          <select value={formData.gender} onChange={(e) => handleChange("gender", e.target.value)} className="border rounded px-3 py-2">
             <option value="">Select Gender *</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </select>
-          
-          {/* Financial Information */}
-          <input
-            type="number"
-            placeholder="Age"
-            value={formData.Age || ""}
-            onChange={(e) => handleChange("Age", Number(e.target.value))}
-            className="border rounded px-3 py-2"
-            min="0"
-          />
-          <input
-            type="number"
-            placeholder="Fee"
-            value={formData.fee || ""}
-            onChange={(e) => handleChange("fee", Number(e.target.value))}
-            className="border rounded px-3 py-2"
-            min="0"
-          />
-          <input
-            type="number"
-            placeholder="Amount Paid"
-            value={formData.Amount || ""}
-            onChange={(e) => handleChange("Amount", Number(e.target.value))}
-            className="border rounded px-3 py-2"
-            min="0"
-          />
+          <input placeholder="Mother Name" value={formData.motherName} onChange={(e) => handleChange("motherName", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Address" value={formData.address} onChange={(e) => handleChange("address", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Previous School" value={formData.previousSchool} onChange={(e) => handleChange("previousSchool", e.target.value)} className="border rounded px-3 py-2" />
+          <input placeholder="Bus" value={formData.bus} onChange={(e) => handleChange("bus", e.target.value)} className="border rounded px-3 py-2" />
+          <input type="number" placeholder="Age" value={formData.Age || ""} onChange={(e) => handleChange("Age", Number(e.target.value))} className="border rounded px-3 py-2" />
+          <input type="number" placeholder="Fee" value={formData.fee || ""} onChange={(e) => handleChange("fee", Number(e.target.value))} className="border rounded px-3 py-2" />
         </div>
 
         <div className="flex justify-end space-x-3">
-          <button
-            type="button"
-            onClick={handleAddStudent}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            ➕ Add to List
-          </button>
+          <button onClick={handleAddStudent} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">➕ Add to List</button>
         </div>
       </div>
 
-      {/* List of Students Added */}
+      {/* Table */}
       {addedStudents.length > 0 && (
         <div className="bg-white mt-6 shadow-md rounded-xl p-6">
           <h3 className="text-xl font-semibold mb-4 text-gray-700">
@@ -200,25 +138,31 @@ const RegisterMultipleStudents = () => {
                 <tr>
                   <th className="px-4 py-2 border">Full Name</th>
                   <th className="px-4 py-2 border">Phone</th>
+                  <th className="px-4 py-2 border">Phone 2</th>
+                  <th className="px-4 py-2 border">Mother</th>
+                  <th className="px-4 py-2 border">Address</th>
+                  <th className="px-4 py-2 border">School</th>
+                  <th className="px-4 py-2 border">Bus</th>
                   <th className="px-4 py-2 border">Gender</th>
                   <th className="px-4 py-2 border">Class</th>
                   <th className="px-4 py-2 border">Age</th>
                   <th className="px-4 py-2 border">Fee</th>
-                  <th className="px-4 py-2 border">Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {addedStudents.map((student, index) => (
-                  <tr key={index} className="text-center">
-                    <td className="px-4 py-2 border">{`${student.firstname} ${student.middlename} ${student.lastname}`}</td>
-                    <td className="px-4 py-2 border">{student.phone}</td>
-                    <td className="px-4 py-2 border">{student.gender}</td>
-                    <td className="px-4 py-2 border">
-                      {classOptions.find(cls => cls.id === student.classId)?.name || "N/A"}
-                    </td>
-                    <td className="px-4 py-2 border">{student.Age || "-"}</td>
-                    <td className="px-4 py-2 border">{student.fee || "-"}</td>
-                    <td className="px-4 py-2 border">{student.Amount || "-"}</td>
+                {addedStudents.map((s, i) => (
+                  <tr key={i} className="text-center">
+                    <td className="px-4 py-2 border">{`${s.firstname} ${s.middlename} ${s.lastname}`}</td>
+                    <td className="px-4 py-2 border">{s.phone}</td>
+                    <td className="px-4 py-2 border">{s.phone2 || "-"}</td>
+                    <td className="px-4 py-2 border">{s.motherName || "-"}</td>
+                    <td className="px-4 py-2 border">{s.address || "-"}</td>
+                    <td className="px-4 py-2 border">{s.previousSchool || "-"}</td>
+                    <td className="px-4 py-2 border">{s.bus || "-"}</td>
+                    <td className="px-4 py-2 border">{s.gender}</td>
+                    <td className="px-4 py-2 border">{classOptions.find(c => c.id === s.classId)?.name}</td>
+                    <td className="px-4 py-2 border">{s.Age || "-"}</td>
+                    <td className="px-4 py-2 border">{s.fee || "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -227,20 +171,13 @@ const RegisterMultipleStudents = () => {
 
           <div className="mt-4 text-right">
             <button
-              type="button"
               onClick={handleRegisterAll}
               disabled={loading}
-              className={`px-5 py-2 rounded text-white ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}
+              className={`px-5 py-2 rounded text-white ${
+                loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+              }`}
             >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Registering...
-                </span>
-              ) : "Register All Students"}
+              {loading ? "Registering..." : "Register All Students"}
             </button>
           </div>
         </div>
@@ -250,4 +187,3 @@ const RegisterMultipleStudents = () => {
 };
 
 export default RegisterMultipleStudents;
-

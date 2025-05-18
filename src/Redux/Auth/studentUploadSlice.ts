@@ -1,37 +1,36 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { uploadExcelFile } from "../../Service/api";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
+import { Student } from "../../types/Register"; // Adjust if needed
+import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-interface Student {
-  firstname: string;
-  middlename?: string;
-  lastname: string;
-  phone: string;
-  gender: string;
-  Age: number;
-  fee: boolean;
-  Amount: number;
-  classId: string;
-}
+// --- Axios Instance with Token ---
+const axiosInstance = axios.create({
+  baseURL: BASE_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-export const uploadStudentsExcel = createAsyncThunk(
-  "studentUpload/uploadExcel",
-  async (formData: FormData, { rejectWithValue }) => {
-    try {
-      const response = await uploadExcelFile(formData);
-      return response.data; // 👈 Ensure you return `response.data`
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Upload failed");
-    }
+axiosInstance.interceptors.request.use((config) => {
+  const userData = localStorage.getItem("userData");
+  const token = userData ? JSON.parse(userData)?.Access_token : null;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
 
-interface StudentUploadState {
+  return config;
+});
+
+// --- Slice State Interface ---
+export interface StudentUploadState {
   parsedStudents: Student[];
   loading: boolean;
   success: boolean;
   error: string | null;
 }
 
+// --- Initial State ---
 const initialState: StudentUploadState = {
   parsedStudents: [],
   loading: false,
@@ -39,6 +38,35 @@ const initialState: StudentUploadState = {
   error: null,
 };
 
+// --- Thunk for Uploading Excel ---
+export const uploadStudentsExcel = createAsyncThunk<
+  any,
+  FormData,
+  { rejectValue: string }
+>("studentUpload/uploadExcel", async (formData, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post(
+      "/student/upload-excel",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return rejectWithValue(
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+      );
+    }
+    return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+  }
+});
+
+// --- Slice ---
 const studentUploadSlice = createSlice({
   name: "studentUpload",
   initialState,
@@ -59,17 +87,21 @@ const studentUploadSlice = createSlice({
         state.success = false;
         state.error = null;
       })
-      .addCase(uploadStudentsExcel.fulfilled, (state) => {
-        state.loading = false; // 👈 Reset loading on success
+      .addCase(uploadStudentsExcel.fulfilled, (state, action) => {
+        state.loading = false;
         state.success = true;
+        if (Array.isArray(action.payload)) {
+          state.parsedStudents = action.payload;
+        }
       })
       .addCase(uploadStudentsExcel.rejected, (state, action) => {
-        state.loading = false; // 👈 Reset loading on failure
-        state.error = (action.payload as string) || "Upload failed";
+        state.loading = false;
+        state.error = action.payload || "Upload failed";
       });
   },
 });
 
+// --- Exports ---
 export const { setParsedStudents, clearParsedStudents } =
   studentUploadSlice.actions;
 export default studentUploadSlice.reducer;

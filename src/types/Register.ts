@@ -34,27 +34,43 @@ export interface AttendancePayload {
   remark: string;
 }
 
+// export interface Student {
+//   id: number;
+//   firstname: string;
+//   middlename: string;
+//   lastname: string;
+//   fullname: string;
+//   classId: number;
+//   phone: string;
+//   phone2?: string | null;
+//   bus?: string | null;
+//   address?: string | null;
+//   previousSchool?: string | null;
+//   motherName?: string | null;
+//   gender: string;
+//   Age: number;
+//   fee: number;
+//   status?: string | null;
+//   absentCount?: number | null;
+//   lastWarningDate?: string | null; // ISO date string
+//   isdeleted: boolean;
+//   userid: number;
+// }
 export interface Student {
-  id: number;
   firstname: string;
-  middlename: string;
+  middlename?: string;
   lastname: string;
-  fullname: string;
-  classId: number;
+  fullname?: string;
+  classId: string; // or number depending on your DB
   phone: string;
-  phone2?: string | null;
-  bus?: string | null;
-  address?: string | null;
-  previousSchool?: string | null;
-  motherName?: string | null;
-  gender: string;
-  Age: number;
-  fee: number;
-  status?: string | null;
-  absentCount?: number | null;
-  lastWarningDate?: string | null; // ISO date string
-  isdeleted: boolean;
-  userid: number;
+  phone2?: string;
+  gender?: string;
+  Age?: string | number;
+  fee?: string | number;
+  bus?: string; // ✅ Make sure this is string
+  address?: string;
+  previousSchool?: string;
+  motherName?: string;
 }
 
 export interface RegisterStudentsResponse {

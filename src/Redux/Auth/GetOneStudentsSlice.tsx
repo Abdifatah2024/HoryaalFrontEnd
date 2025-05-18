@@ -1,9 +1,9 @@
-
 // import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 // import axios from "axios";
 // import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant/index";
 // import type { RootState } from "../store";
 
+// // ✅ Updated Student Interface
 // export interface Student {
 //   id: number;
 //   firstname: string;
@@ -12,10 +12,14 @@
 //   fullname: string;
 //   classId: number;
 //   phone: string;
+//   phone2?: string | null;
+//   bus?: string | null;
+//   address?: string | null;
+//   previousSchool?: string | null;
+//   motherName?: string | null;
 //   gender: string;
 //   Age: number;
 //   fee: number;
-//   Amount: number;
 //   isdeleted: boolean;
 //   userid: number;
 //   classes: {
@@ -46,7 +50,7 @@
 //   verifiedStudent: null,
 // };
 
-// // ✅ Accept string now (ID or Name)
+// // 🔹 Verify student by ID or Name
 // export const verifyStudent = createAsyncThunk(
 //   "studentClass/verifyStudent",
 //   async (studentIdOrName: string, { rejectWithValue }) => {
@@ -62,6 +66,7 @@
 //   }
 // );
 
+// // 🔹 Update Student Class
 // export const updateStudentClass = createAsyncThunk(
 //   "studentClass/updateStudentClass",
 //   async (
@@ -138,7 +143,7 @@ import axios from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant/index";
 import type { RootState } from "../store";
 
-// ✅ Updated Student Interface
+// ✅ Updated Student Interface to match backend
 export interface Student {
   id: number;
   firstname: string;
@@ -161,7 +166,7 @@ export interface Student {
     name: string;
   };
   user: {
-    fullName: string;
+    email: string; // ✅ Changed from fullName to email
   };
 }
 

@@ -22,7 +22,7 @@ const StudentForm = () => {
 
   const classList = [
     { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
-    { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
+    { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1F" },
     { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
     { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
     { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },

@@ -77,119 +77,169 @@ const SidebarLayout = () => {
     };
   }, []);
 
-  const menuItems: MenuItem[] = [
-    {
-      title: "Dashboard",
-      icon: <AiOutlineDashboard className="text-lg" />,
-      path: "/dashboard",
-    },
+  // Build menu items based on user role
+  const buildMenuItems = (): MenuItem[] => {
+    const items: (MenuItem | false)[] = [
+      {
+        title: "Dashboard",
+        icon: <AiOutlineDashboard className="text-lg" />,
+        path: "/dashboard",
+      },
+    ];
 
-    (isAdmin || isTeacher || isUser) && {
-      title: "Students",
-      icon: <AiOutlineUser className="text-lg" />,
-      subItems: [
-        ...(isTeacher
-          ? [
-              { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
-              { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
-            ]
-          : [
-              { title: "Register Student", icon: <AiOutlineSetting />, path: "/dashboard/regstd" },
-              { title: "Register Multiple", icon: <AiOutlineSetting />, path: "/dashboard/RegisterMulti" },
-              { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
-              { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
-              { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
-              { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
-              { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
-            ]),
-      ],
-    },
+    // Students Menu
+    if (isAdmin || isTeacher || isUser) {
+      items.push({
+        title: "Students",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          ...(isTeacher
+            ? [
+                { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
+                { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+              ]
+            : [
+                { title: "Register Student", icon: <AiOutlineSetting />, path: "/dashboard/regstd" },
+                { title: "Register Multiple", icon: <AiOutlineSetting />, path: "/dashboard/RegisterMulti" },
+                { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
+                { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
+                { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+                ...(isAdmin ? [
+                  { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
+                  { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
+                ] : []),
+              ]),
+        ],
+      });
+    }
 
-    (isAdmin || isTeacher) && {
-      title: "Classes",
+    // Classes Menu
+    if (isAdmin || isTeacher) {
+      items.push({
+        title: "Classes",
+        icon: <AiOutlineTeam className="text-lg" />,
+        subItems: [
+          { title: "Class List", icon: <AiOutlineTeam />, path: "/dashboard/GetStudentInclass" },
+          ...(isAdmin ? [{ title: "Create Class", icon: <AiOutlineTeam />, path: "/dashboard/CeateClass" }] : []),
+        ],
+      });
+    }
+
+  //Payments.
+  if (isAdmin || isUser) {
+    items.push({
+      title: "Payments",
       icon: <AiOutlineTeam className="text-lg" />,
       subItems: [
-        { title: "Class List", icon: <AiOutlineTeam />, path: "/dashboard/GetStudentInclass" },
-        ...(isAdmin
-          ? [{ title: "Create Class", icon: <AiOutlineTeam />, path: "/dashboard/CeateClass" }]
-          : []),
-      ],
-    },
+        { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+           ],
+    });
+  }
 
-    isAdmin && {
-      title: "Employee",
-      icon: <AiOutlineTeam className="text-lg" />,
-      subItems: [
-        { title: "Create Employee And Edit", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
-        { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
-      ],
-    },
+    // Employee Menu (Admin only)
+    if (isAdmin) {
+      items.push({
+        title: "Employee",
+        icon: <AiOutlineTeam className="text-lg" />,
+        subItems: [
+          { title: "Create Employee", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
+          { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
+        ],
+      });
+    }
 
-    (isAdmin || isTeacher) && {
-      title: "Exams",
-      icon: <AiOutlineFileText className="text-lg" />,
-      subItems: [
-        { title: "Register Subjects", icon: <AiOutlineFileText />, path: "/dashboard/RegisterTenSubjects" },
-        { title: "Register Exam", icon: <AiOutlineFileText />, path: "/dashboard/ExamRoute" },
-      ],
-    },
+    // Exams Menu
+    if (isAdmin || isTeacher) {
+      items.push({
+        title: "Exams",
+        icon: <AiOutlineFileText className="text-lg" />,
+        subItems: [
+          { title: "Register Subjects", icon: <AiOutlineFileText />, path: "/dashboard/RegisterTenSubjects" },
+          { title: "Register Exam", icon: <AiOutlineFileText />, path: "/dashboard/ExamRoute" },
+          { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
+          { title: "Update Exam", icon: <AiOutlineFileText />, path: "/dashboard/UpdateExam" },
+        ],
+      });
+    }
 
-    isAdmin && {
-      title: "Reports",
-      icon: <AiOutlineBarChart className="text-lg" />,
-      subItems: [
-        { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
-        { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
-        { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
-        { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
-        { title: "Attendance Reports", icon: <AiOutlineCalendar />, path: "/dashboard/AttendanceReports" },
-        { title: "Disciplinary Reports", icon: <AiOutlineUser />, path: "/dashboard/DisciplinaryReports" },
-        { title: "Exam Performance", icon: <AiOutlineFileText />, path: "/dashboard/ExamPerformance" },
-        { title: "Class Reports", icon: <AiOutlineTeam />, path: "/dashboard/ClassReports" },
-        { title: "Custom Reports", icon: <AiOutlineSearch />, path: "/dashboard/CustomReports" },
-      ],
-    },
+    // Reports Menu (Admin only)
+    if (isAdmin) {
+      items.push({
+        title: "Reports",
+        icon: <AiOutlineBarChart className="text-lg" />,
+        subItems: [
+          { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
+          { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
+          { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
+          { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
+          { title: "Attendance Reports", icon: <AiOutlineCalendar />, path: "/dashboard/AttendanceReports" },
+          { title: "Attendance Reports By Date", icon: <AiOutlineCalendar />, path: "/dashboard/AbsentByDate" },
+          { title: "Disciplinary Reports", icon: <AiOutlineUser />, path: "/dashboard/DisciplinaryReports" },
+          { title: "Exam Performance", icon: <AiOutlineFileText />, path: "/dashboard/ExamPerformance" },
+          { title: "Class Reports", icon: <AiOutlineTeam />, path: "/dashboard/ClassReports" },
+          { title: "Custom Reports", icon: <AiOutlineSearch />, path: "/dashboard/CustomReports" },
+        ],
+      });
+    }
 
-    (isAdmin || isUser) && {
-      title: "Attendance",
-      icon: <AiOutlineCalendar className="text-lg" />,
-      subItems: [
-        { title: "Record Attendance", icon: <AiOutlineUser />, path: "/dashboard/AttendceList" },
-        { title: "View Records", icon: <AiOutlineSearch />, path: "/dashboard/Attedence" },
-        { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
-        { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
-      ],
-    },
+    // Attendance Menu
+    if (isAdmin || isUser) {
+      items.push({
+        title: "Attendance",
+        icon: <AiOutlineCalendar className="text-lg" />,
+        subItems: [
+          { title: "Attendance Per Class", icon: <AiOutlineUser />, path: "/dashboard/MarkAtetendenceClass" },
+          { title: "View Records", icon: <AiOutlineSearch />, path: "/dashboard/Attedence" },
+          ...(isAdmin ? [
+            { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
+            { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
+          ] : []),
+        ],
+      });
+    }
 
-    (isAdmin || isUser) && {
-      title: "Discipline",
-      icon: <AiOutlineUser className="text-lg" />,
-      subItems: [
-        { title: "Manage Discipline", icon: <AiOutlineSetting />, path: "/dashboard/Decipline" },
-        { title: "Get One Student", icon: <AiOutlineSetting />, path: "/dashboard/GetOneStudentDecipline" },
-      ],
-    },
+    // Discipline Menu
+    if (isAdmin || isUser) {
+      items.push({
+        title: "Discipline",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          { title: "Manage Discipline", icon: <AiOutlineSetting />, path: "/dashboard/Decipline" },
+          { title: "Get One Student", icon: <AiOutlineSetting />, path: "/dashboard/GetOneStudentDecipline" },
+        ],
+      });
+    }
 
-    isAdmin && {
-      title: "Users",
-      icon: <AiOutlineUser className="text-lg" />,
-      subItems: [
-        { title: "Create User", icon: <AiOutlineUser />, path: "register" },
-        { title: "User List", icon: <AiOutlineUser />, path: "/dashboard/user/list" },
-      ],
-    },
+    // Users Menu (Admin only)
+    if (isAdmin) {
+      items.push({
+        title: "Users",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          { title: "Create User", icon: <AiOutlineUser />, path: "register" },
+          { title: "User List", icon: <AiOutlineUser />, path: "/dashboard/user/list" },
+        ],
+      });
+    }
 
-    isTeacher && {
-      title: "Exam reports",
-      icon: <AiOutlineUser className="text-lg" />,
-      subItems: [
-        { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
-        { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
-        { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
-        { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
-      ],
-    },
-  ].filter(Boolean) as MenuItem[];
+    // Exam Reports Menu (Teacher only)
+    if (isTeacher) {
+      items.push({
+        title: "Exam Reports",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
+          { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
+          { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
+          { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
+        ],
+      });
+    }
+
+    return items.filter(Boolean) as MenuItem[];
+  };
+
+  const menuItems = buildMenuItems();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const toggleDropdown = (index: number) => {

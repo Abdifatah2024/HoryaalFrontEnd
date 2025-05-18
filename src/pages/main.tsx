@@ -10,7 +10,7 @@ const MainRouter = () => {
         <div className="header">
             <Header/>
         </div>
-        
+                
         <div className="content">
             <Outlet/>
         </div>

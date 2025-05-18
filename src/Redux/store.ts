@@ -29,10 +29,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import studentExamsReducer from "../Redux/Exam/studentExamsSlice";
 import examReportReducer from "../Redux/Exam/examReportSlice";
 import examMidtermReportReducer from "../Redux/Exam/ExamMidtermReportSlice";
+import studentScoreReducer from "../Redux/Exam/studentScoreSlice";
 import progressReportReducer from "../Redux/Exam/progressReportSlice";
 import employeeReducer from "../Redux/Epmloyee/employeeSlice";
 import employeeListReducer from "../Redux/Epmloyee/employeeListSlice";
 import ListStdinClass from "../Redux/Classes/ListStdInClassSlice";
+import registerClassExamReducer from "../Redux/Exam/RegisterExamSlice";
+import paymentReducer from "../Redux/Payment/paymentSlice";
+import studentListReducer from "../Redux/Auth/Decipline/studentDisciplineSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -69,6 +73,10 @@ export const store = configureStore({
     progressReport: progressReportReducer,
     employee: employeeReducer,
     employeeList: employeeListReducer,
+    registerClassExam: registerClassExamReducer,
+    payment: paymentReducer,
+    studentList: studentListReducer,
+    studentScores: studentScoreReducer,
   },
   devTools: true,
 });

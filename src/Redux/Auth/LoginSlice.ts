@@ -9,7 +9,7 @@ const LOCAL_STORAGE_KEYS = {
   Access_token: "Access_token",
 };
 
-// Get value from localStorage
+// Helpers
 const getFromLocalStorage = <T>(key: string, defaultValue: T): T => {
   if (typeof window === "undefined") return defaultValue;
   try {
@@ -55,7 +55,7 @@ const initialState = {
     {} as IloginResponse
   ),
   error: "",
-  forgetPasswordSuccess: false, // ✅ New field
+  forgetPasswordSuccess: false,
 };
 
 // ✅ Login async thunk
@@ -90,7 +90,7 @@ export const Loginfn = createAsyncThunk(
   }
 );
 
-// ✅ Forget Password async thunk
+// ✅ Forgot Password thunk
 export const ForgotPasswordfn = createAsyncThunk(
   "login/forgotPassword",
   async (emailOrPhone: string, { rejectWithValue }) => {
@@ -137,14 +137,14 @@ export const loginSlice = createSlice({
       setAuthToken(token);
     },
     clearForgetPasswordState: (state) => {
-      state.forgetPasswordSuccess = false; // ✅ clear success after navigating
+      state.forgetPasswordSuccess = false;
       state.error = "";
       state.loading = false;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login cases
+      // 🔐 Login flow
       .addCase(Loginfn.pending, (state) => {
         state.loading = true;
         state.error = "";
@@ -157,11 +157,21 @@ export const loginSlice = createSlice({
       })
       .addCase(Loginfn.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        const errorMessage = action.payload as string;
+
+        // Optional: you can parse or categorize the error here
+        if (
+          errorMessage.toLowerCase().includes("locked") ||
+          errorMessage.toLowerCase().includes("try again in")
+        ) {
+          // Example: you could trigger a countdown or disable login button
+        }
+
+        state.error = errorMessage;
         state.data = {} as IloginResponse;
       })
 
-      // Forgot Password cases
+      // 🔐 Forgot Password
       .addCase(ForgotPasswordfn.pending, (state) => {
         state.loading = true;
         state.error = "";
