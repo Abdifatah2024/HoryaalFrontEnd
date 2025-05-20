@@ -143,7 +143,10 @@ const SidebarLayout = () => {
         icon: <AiOutlineTeam className="text-lg" />,
         subItems: [
           { title: "Create Employee", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
+          { title: "Register Teacher", icon: <AiOutlineTeam />, path: "/dashboard/RegisterTeacher" },
           { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
+          { title: "Teacher Exam Access", icon: <AiOutlineTeam />, path: "/dashboard/AssignTeacherClass" },
+          { title: "Teacher Exam Correction", icon: <AiOutlineTeam />, path: "/dashboard/TeacherCorrection" },
         ],
       });
     }
@@ -156,7 +159,8 @@ const SidebarLayout = () => {
         subItems: [
           { title: "Register Subjects", icon: <AiOutlineFileText />, path: "/dashboard/RegisterTenSubjects" },
           { title: "Register Exam", icon: <AiOutlineFileText />, path: "/dashboard/ExamRoute" },
-          { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
+         
+          { title: "Reg Student For Teacher Only", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExamForTeacher" },
           { title: "Update Exam", icon: <AiOutlineFileText />, path: "/dashboard/UpdateExam" },
         ],
       });
@@ -168,6 +172,7 @@ const SidebarLayout = () => {
         title: "Reports",
         icon: <AiOutlineBarChart className="text-lg" />,
         subItems: [
+           { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
           { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
           { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
           { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },

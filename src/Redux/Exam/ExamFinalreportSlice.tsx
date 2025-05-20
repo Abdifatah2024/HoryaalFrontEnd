@@ -1,21 +1,94 @@
+// import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+// import axios from "axios";
+
+// export const fetchExamReport = createAsyncThunk(
+//   "examReport/fetchExamReport",
+//   async ({ classId }: { classId: number }) => {
+//     const res = await axios.post("http://localhost:4000/exam/final-exam-report", { classId });
+//     return res.data.report;
+//   }
+// );
+
+// const examReportSlice = createSlice({
+//   name: "examReport",
+//   initialState: {
+//     loading: false,
+//     report: [],
+//     error: null,
+//   },
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchExamReport.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//         state.report = [];
+//       })
+//       .addCase(fetchExamReport.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.report = action.payload;
+//       })
+//       .addCase(fetchExamReport.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.error.message || "Failed to load report";
+//       });
+//   },
+// });
+
+// export default examReportSlice.reducer;
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+interface FetchExamReportArgs {
+  classId: number;
+  academicYearId: number;
+}
+
+interface StudentSubject {
+  subject: string;
+  marks: number;
+}
+
+interface StudentReport {
+  studentId: number;
+  fullName: string;
+  totalMarks: number;
+  rank: number;
+  subjects: StudentSubject[];
+}
+
+interface ExamReportState {
+  loading: boolean;
+  report: StudentReport[];
+  error: string | null;
+}
+
+const initialState: ExamReportState = {
+  loading: false,
+  report: [],
+  error: null,
+};
+
 export const fetchExamReport = createAsyncThunk(
   "examReport/fetchExamReport",
-  async ({ classId }: { classId: number }) => {
-    const res = await axios.post("http://localhost:4000/exam/final-exam-report", { classId });
-    return res.data.report;
+  async ({ classId, academicYearId }: FetchExamReportArgs, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("http://localhost:4000/exam/final-exam-report", {
+        classId,
+        academicYearId,
+      });
+      return res.data.report;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch exam report"
+      );
+    }
   }
 );
 
 const examReportSlice = createSlice({
   name: "examReport",
-  initialState: {
-    loading: false,
-    report: [],
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -30,7 +103,7 @@ const examReportSlice = createSlice({
       })
       .addCase(fetchExamReport.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to load report";
+        state.error = action.payload as string;
       });
   },
 });

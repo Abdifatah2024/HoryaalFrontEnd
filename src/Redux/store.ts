@@ -37,6 +37,9 @@ import ListStdinClass from "../Redux/Classes/ListStdInClassSlice";
 import registerClassExamReducer from "../Redux/Exam/RegisterExamSlice";
 import paymentReducer from "../Redux/Payment/paymentSlice";
 import studentListReducer from "../Redux/Auth/Decipline/studentDisciplineSlice";
+import teacherAssignmentReducer from "../Redux/Exam/teacherAssignmentSlice";
+import teacherRegisterReducer from "../Redux/Epmloyee/teacherRegisterSlice";
+import teacherCorrectionReducer from "../Redux/Exam/teacherCorrectionSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -77,6 +80,9 @@ export const store = configureStore({
     payment: paymentReducer,
     studentList: studentListReducer,
     studentScores: studentScoreReducer,
+    teacherAssignment: teacherAssignmentReducer,
+    teacherRegister: teacherRegisterReducer,
+    teacherCorrection: teacherCorrectionReducer,
   },
   devTools: true,
 });
