@@ -37,9 +37,11 @@ import ListStdinClass from "../Redux/Classes/ListStdInClassSlice";
 import registerClassExamReducer from "../Redux/Exam/RegisterExamSlice";
 import paymentReducer from "../Redux/Payment/paymentSlice";
 import studentListReducer from "../Redux/Auth/Decipline/studentDisciplineSlice";
-import teacherAssignmentReducer from "../Redux/Exam/teacherAssignmentSlice";
+import studentScoreUpdate from "../Redux/Exam/studentScoreUpdateSlice";
+
 import teacherRegisterReducer from "../Redux/Epmloyee/teacherRegisterSlice";
-import teacherCorrectionReducer from "../Redux/Exam/teacherCorrectionSlice";
+import teacherManagementReducer from "../Redux/Exam/teacherManagementSlice";
+import teacherDashboardReducer from "../Redux/Exam/teacherDashboardSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -80,9 +82,12 @@ export const store = configureStore({
     payment: paymentReducer,
     studentList: studentListReducer,
     studentScores: studentScoreReducer,
-    teacherAssignment: teacherAssignmentReducer,
+
     teacherRegister: teacherRegisterReducer,
-    teacherCorrection: teacherCorrectionReducer,
+
+    teacherManagement: teacherManagementReducer,
+    studentScore: studentScoreUpdate,
+    teacherDashboard: teacherDashboardReducer,
   },
   devTools: true,
 });

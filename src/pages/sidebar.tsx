@@ -19,6 +19,7 @@ import {
   AiOutlineTeam,
   AiOutlineMenu,
   AiOutlineClose,
+  AiOutlineSafety,
 } from "react-icons/ai";
 
 interface JwtPayload {
@@ -77,7 +78,6 @@ const SidebarLayout = () => {
     };
   }, []);
 
-  // Build menu items based on user role
   const buildMenuItems = (): MenuItem[] => {
     const items: (MenuItem | false)[] = [
       {
@@ -87,7 +87,6 @@ const SidebarLayout = () => {
       },
     ];
 
-    // Students Menu
     if (isAdmin || isTeacher || isUser) {
       items.push({
         title: "Students",
@@ -104,16 +103,17 @@ const SidebarLayout = () => {
                 { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
                 { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
-                ...(isAdmin ? [
-                  { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
-                  { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
-                ] : []),
+                ...(isAdmin
+                  ? [
+                      { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
+                      { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
+                    ]
+                  : []),
               ]),
         ],
       });
     }
 
-    // Classes Menu
     if (isAdmin || isTeacher) {
       items.push({
         title: "Classes",
@@ -125,18 +125,16 @@ const SidebarLayout = () => {
       });
     }
 
-  //Payments.
-  if (isAdmin || isUser) {
-    items.push({
-      title: "Payments",
-      icon: <AiOutlineTeam className="text-lg" />,
-      subItems: [
-        { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
-           ],
-    });
-  }
+    if (isAdmin || isUser) {
+      items.push({
+        title: "Payments",
+        icon: <AiOutlineTeam className="text-lg" />,
+        subItems: [
+          { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+        ],
+      });
+    }
 
-    // Employee Menu (Admin only)
     if (isAdmin) {
       items.push({
         title: "Employee",
@@ -145,34 +143,29 @@ const SidebarLayout = () => {
           { title: "Create Employee", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
           { title: "Register Teacher", icon: <AiOutlineTeam />, path: "/dashboard/RegisterTeacher" },
           { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
-          { title: "Teacher Exam Access", icon: <AiOutlineTeam />, path: "/dashboard/AssignTeacherClass" },
-          { title: "Teacher Exam Correction", icon: <AiOutlineTeam />, path: "/dashboard/TeacherCorrection" },
+          { title: "Teacher Exam Management", icon: <AiOutlineTeam />, path: "/dashboard/TeacherManagement" },
         ],
       });
     }
 
-    // Exams Menu
-    if (isAdmin || isTeacher) {
+    // ✅ Exams Menu for Teachers ONLY
+    if (isTeacher) {
       items.push({
         title: "Exams",
         icon: <AiOutlineFileText className="text-lg" />,
         subItems: [
-          { title: "Register Subjects", icon: <AiOutlineFileText />, path: "/dashboard/RegisterTenSubjects" },
-          { title: "Register Exam", icon: <AiOutlineFileText />, path: "/dashboard/ExamRoute" },
-         
           { title: "Reg Student For Teacher Only", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExamForTeacher" },
-          { title: "Update Exam", icon: <AiOutlineFileText />, path: "/dashboard/UpdateExam" },
+          { title: "Update Result", icon: <AiOutlineFileText />, path: "/dashboard/updateScore" },
         ],
       });
     }
 
-    // Reports Menu (Admin only)
     if (isAdmin) {
       items.push({
         title: "Reports",
         icon: <AiOutlineBarChart className="text-lg" />,
         subItems: [
-           { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
+          { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
           { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
           { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
           { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
@@ -187,7 +180,6 @@ const SidebarLayout = () => {
       });
     }
 
-    // Attendance Menu
     if (isAdmin || isUser) {
       items.push({
         title: "Attendance",
@@ -195,15 +187,16 @@ const SidebarLayout = () => {
         subItems: [
           { title: "Attendance Per Class", icon: <AiOutlineUser />, path: "/dashboard/MarkAtetendenceClass" },
           { title: "View Records", icon: <AiOutlineSearch />, path: "/dashboard/Attedence" },
-          ...(isAdmin ? [
-            { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
-            { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
-          ] : []),
+          ...(isAdmin
+            ? [
+                { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
+                { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
+              ]
+            : []),
         ],
       });
     }
 
-    // Discipline Menu
     if (isAdmin || isUser) {
       items.push({
         title: "Discipline",
@@ -215,7 +208,6 @@ const SidebarLayout = () => {
       });
     }
 
-    // Users Menu (Admin only)
     if (isAdmin) {
       items.push({
         title: "Users",
@@ -226,20 +218,26 @@ const SidebarLayout = () => {
         ],
       });
     }
-
-    // Exam Reports Menu (Teacher only)
-    if (isTeacher) {
+       if (isTeacher) {
       items.push({
-        title: "Exam Reports",
-        icon: <AiOutlineUser className="text-lg" />,
-        subItems: [
-          { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
-          { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
-          { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
-          { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
-        ],
+        title: "Permissions",
+        icon: <AiOutlineSafety className="text-lg"/>,
+        path: "/dashboard/Permissions",
       });
     }
+
+    // if (isTeacher) {
+    //   items.push({
+    //     title: "Exam Reports",
+    //     icon: <AiOutlineUser className="text-lg" />,
+    //     subItems: [
+    //       { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
+    //       { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
+    //       { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
+    //       { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
+    //     ],
+    //   });
+    // }
 
     return items.filter(Boolean) as MenuItem[];
   };
@@ -261,7 +259,6 @@ const SidebarLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
       <div
         ref={sidebarRef}
         className={`bg-blue-700 text-white p-5 pt-8 duration-300 
@@ -345,7 +342,6 @@ const SidebarLayout = () => {
         </nav>
       </div>
 
-      {/* Main content */}
       <div className={`flex-1 transition-all ${isOpen ? "ml-64" : "ml-20"}`}>
         <main className="p-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

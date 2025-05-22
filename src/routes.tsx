@@ -69,7 +69,10 @@ import UpdateStudentScores from './pages/Exam/UpdateStudentScores';
 import RegisterExamFoTeacher from './pages/Exam/RegisterExam For Teacher';
 import TeacherAssignmentManager from './pages/Exam/TeacherAssignmentManager';
 import RegisterTeacher from './pages/Employee/RegisterTeacher';
-import TeacherCorrectionStatusPanel from './pages/Exam/TeacherCorrectionViewer';
+
+import TeacherManagementPanel from './pages/Exam/TeacherManagementPanel';
+import UpdateStudentScoreForm from './pages/Exam/UpdateStudentScorePanel';
+import TeacherDashboard from './pages/Employee/teacherDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -120,7 +123,7 @@ export const router = createBrowserRouter([
                   { path: 'GetTobAbsent', element: <AbsenceList /> },
                   { path: 'AssignTeacherClass', element: <TeacherAssignmentManager /> },
                   { path: 'RegisterTeacher', element: <RegisterTeacher /> },
-                  { path: 'TeacherCorrection', element: <TeacherCorrectionStatusPanel /> },
+                                   { path: 'TeacherManagement', element: <TeacherManagementPanel/> },
                 ],
               },
 
@@ -129,6 +132,8 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute allowedRoles={[Role.Teacher]} />,
                 children: [
                   { path: 'RegiterExamForTeacher', element: <RegisterExamFoTeacher /> },
+                  { path: 'updateScore', element: <UpdateStudentScoreForm/>},
+                  { path: 'Permissions', element: <TeacherDashboard/>}
                   // Teacher-specific routes can be added here
                 ],
               },
@@ -185,10 +190,11 @@ export const router = createBrowserRouter([
                    { path: 'ClassReports', element: <ClassLists /> },
                   { path: 'DisciplinaryReports', element: <DisciplinePage /> },
                     { path: 'RegiterExam', element: <RegisterExam /> },
+                    
                 ],
               },
             ],
-          },
+          },  
         ],
       },
 
