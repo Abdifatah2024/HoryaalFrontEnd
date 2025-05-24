@@ -37,7 +37,7 @@ export const deleteStudent = createAsyncThunk(
   'students/delete',
   async (studentId: number, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${BASE_API_URL}/student/softedelete/${studentId}`);
+      const response = await axios.delete(`${BASE_API_URL}/student/delete-all/${studentId}`);
       return response.data;
     } catch (error: any) {
       if (error.response) {
