@@ -365,3 +365,4 @@ const StudentDetails: React.FC = () => {
 };
 
 export default StudentDetails;
+

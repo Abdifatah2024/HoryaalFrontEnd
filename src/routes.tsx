@@ -190,6 +190,7 @@ export const router = createBrowserRouter([
                    { path: 'ClassReports', element: <ClassLists /> },
                   { path: 'DisciplinaryReports', element: <DisciplinePage /> },
                     { path: 'RegiterExam', element: <RegisterExam /> },
+                    { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
                     
                 ],
               },

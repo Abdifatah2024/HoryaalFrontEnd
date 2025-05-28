@@ -42,6 +42,7 @@ import studentScoreUpdate from "../Redux/Exam/studentScoreUpdateSlice";
 import teacherRegisterReducer from "../Redux/Epmloyee/teacherRegisterSlice";
 import teacherManagementReducer from "../Redux/Exam/teacherManagementSlice";
 import teacherDashboardReducer from "../Redux/Exam/teacherDashboardSlice";
+import attendanceClassPerday from "../Redux/Attedence/AttendancePeClassSlicePerDay";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -88,6 +89,7 @@ export const store = configureStore({
     teacherManagement: teacherManagementReducer,
     studentScore: studentScoreUpdate,
     teacherDashboard: teacherDashboardReducer,
+    attendanceClassPerDay: attendanceClassPerday,
   },
   devTools: true,
 });
