@@ -43,6 +43,11 @@ import teacherRegisterReducer from "../Redux/Epmloyee/teacherRegisterSlice";
 import teacherManagementReducer from "../Redux/Exam/teacherManagementSlice";
 import teacherDashboardReducer from "../Redux/Exam/teacherDashboardSlice";
 import attendanceClassPerday from "../Redux/Attedence/AttendancePeClassSlicePerDay";
+import generateFeesReducer from "../Redux/Payment/FeegenerateSlice";
+import studentParent from "../Redux/Parent/ParentstudentSlice";
+import advanceReducer from "../Redux/Payment/advanceSlice";
+import expenseReducer from "../Redux/Expense/ExpenseSlice";
+import financialReducer from "../pages/Financial Reports/financialSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -90,6 +95,11 @@ export const store = configureStore({
     studentScore: studentScoreUpdate,
     teacherDashboard: teacherDashboardReducer,
     attendanceClassPerDay: attendanceClassPerday,
+    generateFees: generateFeesReducer,
+    students: studentParent,
+    paymentAdvance: advanceReducer,
+    expenses: expenseReducer,
+    financial: financialReducer,
   },
   devTools: true,
 });

@@ -57,6 +57,8 @@
 //     }
 //   }
 // );
+
+// // Delete
 // export const deleteEmployee = createAsyncThunk(
 //   "employee/delete",
 //   async (id: string, { rejectWithValue }) => {
@@ -81,7 +83,6 @@
 //   },
 //   extraReducers: (builder) => {
 //     builder
-
 //       // Submit
 //       .addCase(submitEmployee.pending, (state) => {
 //         state.loading = true;
@@ -126,6 +127,22 @@
 //       .addCase(updateEmployee.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload as string;
+//       })
+
+//       // ✅ Delete
+//       .addCase(deleteEmployee.pending, (state) => {
+//         state.loading = true;
+//         state.success = false;
+//         state.error = null;
+//       })
+//       .addCase(deleteEmployee.fulfilled, (state) => {
+//         state.loading = false;
+//         state.success = true;
+//         state.employee = null;
+//       })
+//       .addCase(deleteEmployee.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload as string;
 //       });
 //   },
 // });
@@ -139,10 +156,30 @@ import {
   deleteEmployeeById,
   fetchEmployeeById,
   updateEmployeeAPI,
+  updateStudentParent,
 } from "../../pages/Employee/employeeAPI";
+
+interface Parent {
+  id: number;
+  username: string;
+  email: string;
+  phoneNumber: string;
+}
+
+interface Student {
+  id: number;
+  parentUserId: number | null;
+}
+
+interface UpdateParentResponse {
+  message: string;
+  student: Student;
+  parentUser: Parent;
+}
 
 interface EmployeeState {
   employee: Employee | null;
+  studentParentData: UpdateParentResponse | null;
   loading: boolean;
   error: string | null;
   success: boolean;
@@ -150,12 +187,15 @@ interface EmployeeState {
 
 const initialState: EmployeeState = {
   employee: null,
+  studentParentData: null,
   loading: false,
   error: null,
   success: false,
 };
 
-// Create
+// -------------------- Thunks --------------------
+
+// Employee CRUD
 export const submitEmployee = createAsyncThunk(
   "employee/submit",
   async (data: Employee, { rejectWithValue }) => {
@@ -167,20 +207,18 @@ export const submitEmployee = createAsyncThunk(
   }
 );
 
-// Fetch by ID
 export const getEmployeeById = createAsyncThunk(
   "employee/fetchById",
   async (id: string, { rejectWithValue }) => {
     try {
       const result = await fetchEmployeeById(id);
-      return result.employee; // assuming response is { employee }
+      return result.employee;
     } catch (err: any) {
       return rejectWithValue(err?.response?.data?.message || "Fetch failed");
     }
   }
 );
 
-// Update
 export const updateEmployee = createAsyncThunk(
   "employee/update",
   async (data: Employee, { rejectWithValue }) => {
@@ -192,7 +230,6 @@ export const updateEmployee = createAsyncThunk(
   }
 );
 
-// Delete
 export const deleteEmployee = createAsyncThunk(
   "employee/delete",
   async (id: string, { rejectWithValue }) => {
@@ -204,12 +241,30 @@ export const deleteEmployee = createAsyncThunk(
   }
 );
 
+// Link Student to Parent
+export const linkStudentToParent = createAsyncThunk(
+  "employee/linkStudentToParent",
+  async (
+    { studentId, parentPhone }: { studentId: number; parentPhone: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await updateStudentParent(studentId, parentPhone);
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.message || "Link failed");
+    }
+  }
+);
+
+// -------------------- Slice --------------------
+
 const employeeSlice = createSlice({
   name: "employee",
   initialState,
   reducers: {
     resetEmployeeState: (state) => {
       state.employee = null;
+      state.studentParentData = null;
       state.loading = false;
       state.error = null;
       state.success = false;
@@ -217,7 +272,7 @@ const employeeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Submit
+      // Create
       .addCase(submitEmployee.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -232,7 +287,7 @@ const employeeSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Get
+      // Fetch
       .addCase(getEmployeeById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -263,7 +318,7 @@ const employeeSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // ✅ Delete
+      // Delete
       .addCase(deleteEmployee.pending, (state) => {
         state.loading = true;
         state.success = false;
@@ -275,6 +330,22 @@ const employeeSlice = createSlice({
         state.employee = null;
       })
       .addCase(deleteEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Link Student to Parent
+      .addCase(linkStudentToParent.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(linkStudentToParent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.studentParentData = action.payload;
+      })
+      .addCase(linkStudentToParent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

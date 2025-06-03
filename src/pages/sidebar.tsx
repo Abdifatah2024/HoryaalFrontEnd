@@ -462,7 +462,9 @@ const SidebarLayout = () => {
                 { title: "Register Multiple", icon: <AiOutlineSetting />, path: "/dashboard/RegisterMulti" },
                 { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
-                { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+                { title: "Findstudent Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+                { title: "Update Parent User", icon: <AiOutlineSearch />, path: "/dashboard/UpdateStudentParent" },
+                { title: "Student With Same Bus", icon: <AiOutlineSearch />, path: "/dashboard/StudentWithSameBus" },
                 ...(isAdmin
                   ? [
                       { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
@@ -491,6 +493,10 @@ const SidebarLayout = () => {
         icon: <AiOutlineTeam className="text-lg" />,
         subItems: [
           { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+          { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
+          { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
+          { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
+          { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
         ],
       });
     }

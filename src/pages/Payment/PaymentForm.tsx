@@ -1,682 +1,4 @@
-
-// import React, { useEffect, useState } from 'react';
-// import { useAppDispatch, useAppSelector } from '../../Redux/store';
-// import { 
-//   submitPayment, 
-//   fetchPaymentHistory, 
-//   fetchStudentDepositStatus, 
-//   fetchStudentBalanceSummary
-// } from '../../Redux/Payment/paymentSlice';
-// import {
-//   Box,
-//   Typography,
-//   TextField,
-//   Button,
-//   Divider,
-//   Grid,
-//   CircularProgress,
-//   Alert,
-//   AlertTitle,
-//   Table,
-//   TableHead,
-//   TableBody,
-//   TableRow,
-//   TableCell,
-//   IconButton,
-//   Card,
-//   CardHeader,
-//   CardContent,
-//   Collapse,
-//   useTheme,
-//   Paper,
-//   Avatar,
-//   Chip
-// } from '@mui/material';
-// import { styled } from '@mui/material/styles';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-// import { 
-//   Search as SearchIcon,
-//   Payment as PaymentIcon,
-//   Info as InfoIcon,
-//   ExpandMore as ExpandMoreIcon,
-//   ExpandLess as ExpandLessIcon,
-//   AccountBalance as BalanceIcon,
-//   AttachMoney as MoneyIcon,
-//   Discount as DiscountIcon,
-//   Description as DescriptionIcon,
-//   CalendarToday as CalendarIcon
-// } from '@mui/icons-material';
-
-// const formatCurrency = (value: number) => {
-//   return new Intl.NumberFormat('en-US', {
-//     style: 'currency',
-//     currency: 'USD',
-//     minimumFractionDigits: 2
-//   }).format(value);
-// };
-
-// // Styled Components
-// const PageContainer = styled(Box)(({ theme }) => ({
-//   padding: theme.spacing(4),
-//   maxWidth: 1400,
-//   margin: '0 auto',
-//   [theme.breakpoints.down('sm')]: {
-//     padding: theme.spacing(2)
-//   }
-// }));
-
-// const HeaderCard = styled(Card)(({ theme }) => ({
-//   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-//   color: theme.palette.primary.contrastText,
-//   marginBottom: theme.spacing(4),
-//   borderRadius: theme.shape.borderRadius * 2,
-//   boxShadow: theme.shadows[4]
-// }));
-
-// const BalanceCard = styled(Card)(({ theme }) => ({
-//   borderLeft: `6px solid ${theme.palette.secondary.main}`,
-//   borderRadius: theme.shape.borderRadius * 2,
-//   marginBottom: theme.spacing(3),
-//   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-//   '&:hover': {
-//     transform: 'translateY(-2px)',
-//     boxShadow: theme.shadows[6]
-//   }
-// }));
-
-// const PaymentFormCard = styled(Card)(({ theme }) => ({
-//   borderRadius: theme.shape.borderRadius * 2,
-//   boxShadow: theme.shadows[2],
-//   transition: 'all 0.3s ease',
-//   '&:hover': {
-//     boxShadow: theme.shadows[6]
-//   }
-// }));
-
-// const SummaryCard = styled(Card)(({ theme }) => ({
-//   borderLeft: `6px solid ${theme.palette.info.main}`,
-//   borderRadius: theme.shape.borderRadius * 2,
-//   marginBottom: theme.spacing(3),
-//   '&.deposit-card': {
-//     borderLeftColor: theme.palette.success.main
-//   },
-//   '&.balance-card': {
-//     borderLeftColor: theme.palette.warning.main
-//   }
-// }));
-
-// const StyledTable = styled(Table)(({ theme }) => ({
-//   '& .MuiTableCell-root': {
-//     padding: theme.spacing(1.5, 2),
-//     '&.header-cell': {
-//       backgroundColor: theme.palette.grey[100],
-//       fontWeight: 600
-//     }
-//   },
-//   '& .MuiTableRow-root:hover': {
-//     backgroundColor: theme.palette.action.hover
-//   }
-// }));
-
-// const StudentPaymentPage: React.FC = () => {
-//   const dispatch = useAppDispatch();
-//   const theme = useTheme();
-//   const { 
-//     loading, 
-//     error, 
-//     paymentResponse, 
-//     depositStatus, 
-//     balanceSummary 
-//   } = useAppSelector((state) => state.payment);
-
-//   const [studentId, setStudentId] = useState<number | null>(null);
-//   const [searchInput, setSearchInput] = useState<string>('');
-//   const [expandedSections, setExpandedSections] = useState({
-//     paymentForm: true,
-//     depositSummary: true,
-//     balanceSummary: true
-//   });
-//   const [form, setForm] = useState({
-//     studentId: 0,
-//     amountPaid: '',
-//     discount: '',
-//     discountReason: '',
-//     description: '',
-//     paymentDate: new Date(),
-//   });
-
-//   useEffect(() => {
-//     if (studentId !== null) {
-//       dispatch(fetchPaymentHistory(studentId));
-//       dispatch(fetchStudentDepositStatus(studentId));
-//       dispatch(fetchStudentBalanceSummary(studentId));
-//       setForm(prev => ({ 
-//         ...prev, 
-//         studentId,
-//         amountPaid: '',
-//         discount: '',
-//         discountReason: '',
-//         description: ''
-//       }));
-//     }
-//   }, [dispatch, studentId]);
-
-//   const handleSearch = () => {
-//     const id = parseInt(searchInput);
-//     if (!isNaN(id) && id > 0) {
-//       setStudentId(id);
-//     } else {
-//       alert('Please enter a valid Student ID.');
-//     }
-//   };
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setForm({
-//       ...form,
-//       [name]: value
-//     });
-//   };
-
-//   const handleDateChange = (date: Date | null) => {
-//     if (date) {
-//       setForm({ ...form, paymentDate: date });
-//     }
-//   };
-
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     if (studentId !== null) {
-//       const paymentData = {
-//         ...form,
-//         studentId,
-//         amountPaid: parseFloat(form.amountPaid) || 0,
-//         discount: parseFloat(form.discount) || 0
-//       };
-//       dispatch(submitPayment(paymentData));
-//     } else {
-//       alert('Please search and select a Student ID first.');
-//     }
-//   };
-
-//   const toggleSection = (section: keyof typeof expandedSections) => {
-//     setExpandedSections(prev => ({
-//       ...prev,
-//       [section]: !prev[section]
-//     }));
-//   };
-
-//   const handleKeyPress = (e: React.KeyboardEvent) => {
-//     if (e.key === 'Enter') {
-//       handleSearch();
-//     }
-//   };
-
-//   return (
-//     <PageContainer>
-//       {/* Header Section */}
-//       <HeaderCard>
-//         <CardContent>
-//           <Box display="flex" alignItems="center" mb={2}>
-//             <PaymentIcon fontSize="large" sx={{ mr: 2 }} />
-//             <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
-//               Student Payment Portal
-//             </Typography>
-//           </Box>
-//           <Typography variant="subtitle1">
-//             Manage student payments, view balances, and process transactions
-//           </Typography>
-//         </CardContent>
-//       </HeaderCard>
-
-//       {/* Student Search Section */}
-//       <BalanceCard>
-//         <CardContent>
-//           <Grid container spacing={3} alignItems="center">
-//             <Grid item xs={12} md={6}>
-//               <Box display="flex" alignItems="center" gap={2}>
-//                 <TextField
-//                   label="Enter Student ID"
-//                   variant="outlined"
-//                   size="small"
-//                   fullWidth
-//                   value={searchInput}
-//                   onChange={(e) => setSearchInput(e.target.value)}
-//                   onKeyPress={handleKeyPress}
-//                   InputProps={{
-//                     startAdornment: (
-//                       <SearchIcon sx={{ color: 'action.active', mr: 1 }} />
-//                     )
-//                   }}
-//                 />
-//                 <Button 
-//                   variant="contained" 
-//                   onClick={handleSearch}
-//                   startIcon={<SearchIcon />}
-//                   sx={{ minWidth: 180 }}
-//                 >
-//                   Search Student
-//                 </Button>
-//               </Box>
-//             </Grid>
-            
-//             {/* Balance Display */}
-//             {balanceSummary && (
-//               <Grid item xs={12} md={6}>
-//                 <Box display="flex" alignItems="center" justifyContent="flex-end" gap={2}>
-//                   <Avatar sx={{ bgcolor: balanceSummary.balanceDue > 0 ? 'error.main' : 'success.main' }}>
-//                     <BalanceIcon />
-//                   </Avatar>
-//                   <Box textAlign="right">
-//                     <Typography variant="subtitle2" color="textSecondary">
-//                       Current Balance
-//                     </Typography>
-//                     <Typography 
-//                       variant="h5" 
-//                       sx={{ 
-//                         fontWeight: 700,
-//                         color: balanceSummary.balanceDue > 0 ? 'error.main' : 'success.main'
-//                       }}
-//                     >
-//                       {formatCurrency(Math.abs(balanceSummary.balanceDue))}
-//                       {balanceSummary.balanceDue < 0 && (
-//                         <Chip 
-//                           label="Credit" 
-//                           size="small" 
-//                           sx={{ 
-//                             ml: 1,
-//                             backgroundColor: 'success.light',
-//                             color: 'success.contrastText'
-//                           }} 
-//                         />
-//                       )}
-//                     </Typography>
-//                   </Box>
-//                 </Box>
-//               </Grid>
-//             )}
-//           </Grid>
-//         </CardContent>
-//       </BalanceCard>
-
-//       {/* Main Content */}
-//       <Grid container spacing={4}>
-//         {/* Payment Form Column */}
-//         <Grid item xs={12} md={6}>
-//           <PaymentFormCard>
-//             <CardHeader
-//               title={
-//                 <Box display="flex" alignItems="center" gap={1}>
-//                   <PaymentIcon color="primary" />
-//                   <Typography variant="h6" component="h2">
-//                     Make a Payment
-//                   </Typography>
-//                 </Box>
-//               }
-//               action={
-//                 <IconButton onClick={() => toggleSection('paymentForm')}>
-//                   {expandedSections.paymentForm ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-//                 </IconButton>
-//               }
-//               sx={{
-//                 backgroundColor: theme.palette.primary.light,
-//                 color: theme.palette.primary.contrastText,
-//                 borderTopLeftRadius: theme.shape.borderRadius * 2,
-//                 borderTopRightRadius: theme.shape.borderRadius * 2
-//               }}
-//             />
-//             <Collapse in={expandedSections.paymentForm}>
-//               <CardContent>
-//                 <form onSubmit={handleSubmit}>
-//                   <Grid container spacing={3}>
-//                     <Grid item xs={12} sm={6}>
-//                       <TextField
-//                         fullWidth
-//                         label="Amount Paid"
-//                         name="amountPaid"
-//                         type="number"
-//                         value={form.amountPaid}
-//                         onChange={handleChange}
-//                         InputProps={{
-//                           startAdornment: (
-//                             <MoneyIcon sx={{ color: 'action.active', mr: 1 }} />
-//                           )
-//                         }}
-//                         inputProps={{ min: 0, step: 0.01 }}
-//                         required
-//                       />
-//                     </Grid>
-//                     <Grid item xs={12} sm={6}>
-//                       <TextField
-//                         fullWidth
-//                         label="Discount Amount"
-//                         name="discount"
-//                         type="number"
-//                         value={form.discount}
-//                         onChange={handleChange}
-//                         InputProps={{
-//                           startAdornment: (
-//                             <DiscountIcon sx={{ color: 'action.active', mr: 1 }} />
-//                           )
-//                         }}
-//                         inputProps={{ min: 0, step: 0.01 }}
-//                       />
-//                     </Grid>
-//                     <Grid item xs={12}>
-//                       <TextField
-//                         fullWidth
-//                         label="Discount Reason"
-//                         name="discountReason"
-//                         value={form.discountReason}
-//                         onChange={handleChange}
-//                         disabled={!form.discount}
-//                       />
-//                     </Grid>
-//                     <Grid item xs={12}>
-//                       <TextField
-//                         fullWidth
-//                         label="Payment Description"
-//                         name="description"
-//                         value={form.description}
-//                         onChange={handleChange}
-//                         multiline
-//                         rows={3}
-//                         InputProps={{
-//                           startAdornment: (
-//                             <DescriptionIcon sx={{ 
-//                               color: 'action.active', 
-//                               mr: 1,
-//                               alignSelf: 'flex-start',
-//                               mt: 1
-//                             }} />
-//                           )
-//                         }}
-//                       />
-//                     </Grid>
-//                     <Grid item xs={12}>
-//                       <LocalizationProvider dateAdapter={AdapterDateFns}>
-//                         <DatePicker
-//                           label="Payment Date"
-//                           value={form.paymentDate}
-//                           onChange={handleDateChange}
-//                           maxDate={new Date()}
-//                           renderInput={(params) => (
-//                             <TextField 
-//                               {...params} 
-//                               fullWidth 
-//                               InputProps={{
-//                                 ...params.InputProps,
-//                                 startAdornment: (
-//                                   <CalendarIcon sx={{ 
-//                                     color: 'action.active', 
-//                                     mr: 1 
-//                                   }} />
-//                                 )
-//                               }}
-//                             />
-//                           )}
-//                         />
-//                       </LocalizationProvider>
-//                     </Grid>
-//                     <Grid item xs={12}>
-//                       <Button
-//                         type="submit"
-//                         variant="contained"
-//                         color="primary"
-//                         fullWidth
-//                         disabled={loading || !studentId}
-//                         size="large"
-//                         sx={{ py: 1.5 }}
-//                         startIcon={loading ? <CircularProgress size={24} /> : <PaymentIcon />}
-//                       >
-//                         {loading ? 'Processing Payment...' : 'Submit Payment'}
-//                       </Button>
-//                     </Grid>
-//                   </Grid>
-//                 </form>
-
-//                 {error && (
-//                   <Alert severity="error" sx={{ mt: 3 }}>
-//                     <AlertTitle>Payment Error</AlertTitle>
-//                     {error}
-//                   </Alert>
-//                 )}
-
-//                 {paymentResponse && (
-//                   <Alert severity="success" sx={{ mt: 3 }}>
-//                     <AlertTitle>Payment Successful</AlertTitle>
-//                     {paymentResponse.message}
-//                     {paymentResponse.receiptNumber && (
-//                       <Typography variant="body2" sx={{ mt: 1 }}>
-//                         <strong>Receipt #:</strong> {paymentResponse.receiptNumber}
-//                       </Typography>
-//                     )}
-//                   </Alert>
-//                 )}
-//               </CardContent>
-//             </Collapse>
-//           </PaymentFormCard>
-//         </Grid>
-
-//         {/* Deposit Summary Column */}
-//         {studentId && depositStatus && (
-//           <Grid item xs={12} md={6}>
-//             <SummaryCard className="deposit-card">
-//               <CardHeader
-//                 title={
-//                   <Box display="flex" alignItems="center" gap={1}>
-//                     <InfoIcon color="success" />
-//                     <Typography variant="h6" component="h2">
-//                       Deposit Summary
-//                     </Typography>
-//                   </Box>
-//                 }
-//                 action={
-//                   <IconButton onClick={() => toggleSection('depositSummary')}>
-//                     {expandedSections.depositSummary ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-//                   </IconButton>
-//                 }
-//               />
-//               <Collapse in={expandedSections.depositSummary}>
-//                 <CardContent>
-//                   <Grid container spacing={2}>
-//                     <Grid item xs={12} sm={6}>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Name:</strong> {depositStatus.name}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Total Required:</strong> {formatCurrency(depositStatus.totalRequired)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Total Paid:</strong> {formatCurrency(depositStatus.totalPaid)}
-//                       </Typography>
-//                     </Grid>
-//                     <Grid item xs={12} sm={6}>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Carry Forward:</strong> {formatCurrency(depositStatus.carryForward)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Overpaid:</strong> {formatCurrency(depositStatus.overpaid)}
-//                       </Typography>
-//                       <Alert 
-//                         severity={depositStatus.hasExtraDeposit ? 'success' : 'info'}
-//                         sx={{ mt: 2 }}
-//                         icon={false}
-//                       >
-//                         {depositStatus.message}
-//                       </Alert>
-//                     </Grid>
-//                   </Grid>
-//                 </CardContent>
-//               </Collapse>
-//             </SummaryCard>
-//           </Grid>
-//         )}
-
-//         {/* Balance Summary Section */}
-//         {studentId && balanceSummary && (
-//           <Grid item xs={12}>
-//             <SummaryCard className="balance-card">
-//               <CardHeader
-//                 title={
-//                   <Box display="flex" alignItems="center" gap={1}>
-//                     <InfoIcon color="warning" />
-//                     <Typography variant="h6" component="h2">
-//                       Detailed Balance Summary
-//                     </Typography>
-//                   </Box>
-//                 }
-//                 action={
-//                   <IconButton onClick={() => toggleSection('balanceSummary')}>
-//                     {expandedSections.balanceSummary ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-//                   </IconButton>
-//                 }
-//               />
-//               <Collapse in={expandedSections.balanceSummary}>
-//                 <CardContent>
-//                   <Grid container spacing={3} sx={{ mb: 2 }}>
-//                     <Grid item xs={12} md={6}>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Name:</strong> {balanceSummary.name}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Monthly Fee:</strong> {formatCurrency(balanceSummary.monthlyFee)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Months Generated:</strong> {balanceSummary.monthsGenerated}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Unpaid Months:</strong> {balanceSummary.unpaidMonths}
-//                       </Typography>
-//                     </Grid>
-//                     <Grid item xs={12} md={6}>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Total Required:</strong> {formatCurrency(balanceSummary.totalRequired)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Total Paid:</strong> {formatCurrency(balanceSummary.totalPaid)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Carry Forward:</strong> {formatCurrency(balanceSummary.carryForward)}
-//                       </Typography>
-//                       <Typography variant="body1" gutterBottom>
-//                         <strong>Balance Due:</strong> 
-//                         <Box component="span" sx={{ 
-//                           color: balanceSummary.balanceDue > 0 ? 'error.main' : 'success.main',
-//                           fontWeight: 'bold',
-//                           ml: 1
-//                         }}>
-//                           {formatCurrency(Math.abs(balanceSummary.balanceDue))}
-//                           {balanceSummary.balanceDue < 0 && (
-//                             <Chip 
-//                               label="Credit" 
-//                               size="small" 
-//                               sx={{ 
-//                                 ml: 1,
-//                                 backgroundColor: 'success.light',
-//                                 color: 'success.contrastText'
-//                               }} 
-//                             />
-//                           )}
-//                         </Box>
-//                       </Typography>
-//                     </Grid>
-//                   </Grid>
-
-//                   <Divider sx={{ my: 3 }} />
-
-//                   <Typography variant="subtitle1" gutterBottom sx={{ 
-//                     display: 'flex', 
-//                     alignItems: 'center',
-//                     mb: 2
-//                   }}>
-//                     <InfoIcon color="info" sx={{ mr: 1 }} />
-//                     Unpaid Fee Details
-//                   </Typography>
-//                   {balanceSummary.unpaidDetails.length > 0 ? (
-//                     <>
-//                       <StyledTable size="small">
-//                         <TableHead>
-//                           <TableRow>
-//                             <TableCell className="header-cell">Month/Year</TableCell>
-//                             <TableCell className="header-cell" align="right">Amount Due</TableCell>
-//                             <TableCell className="header-cell" align="right">Amount Paid</TableCell>
-//                             <TableCell className="header-cell" align="right">Balance</TableCell>
-//                           </TableRow>
-//                         </TableHead>
-//                         <TableBody>
-//                           {balanceSummary.unpaidDetails.map((item, index) => {
-//                             const balance = item.due;
-//                             return (
-//                               <TableRow key={index} hover>
-//                                 <TableCell>{item.month} {item.year}</TableCell>
-//                                 <TableCell align="right">{formatCurrency(item.due)}</TableCell>
-//                                 <TableCell align="right">{formatCurrency(item.paid)}</TableCell>
-//                                 <TableCell align="right">
-//                                   <Chip 
-//                                     label={formatCurrency(Math.abs(balance))} 
-//                                     size="small"
-//                                     sx={{ 
-//                                       backgroundColor: balance > 0 ? 'error.light' : 'success.light',
-//                                       color: balance > 0 ? 'error.contrastText' : 'success.contrastText',
-//                                       fontWeight: 'bold'
-//                                     }}
-//                                   />
-//                                 </TableCell>
-//                               </TableRow>
-//                             );
-//                           })}
-//                           <TableRow sx={{ 
-//                             backgroundColor: theme.palette.grey[100],
-//                             '& .MuiTableCell-root': {
-//                               fontWeight: 'bold'
-//                             }
-//                           }}>
-//                             <TableCell>Total</TableCell>
-//                             <TableCell align="right">{formatCurrency(balanceSummary.totalRequired)}</TableCell>
-//                             <TableCell align="right">{formatCurrency(balanceSummary.totalPaid + balanceSummary.carryForward)}</TableCell>
-//                             <TableCell align="right">
-//                               <Chip 
-//                                 label={formatCurrency(Math.abs(balanceSummary.balanceDue))} 
-//                                 size="medium"
-//                                 sx={{ 
-//                                   backgroundColor: balanceSummary.balanceDue > 0 ? 'error.light' : 'success.light',
-//                                   color: balanceSummary.balanceDue > 0 ? 'error.contrastText' : 'success.contrastText',
-//                                   fontWeight: 'bold'
-//                                 }}
-//                               />
-//                             </TableCell>
-//                           </TableRow>
-//                         </TableBody>
-//                       </StyledTable>
-//                       <Typography variant="caption" sx={{ 
-//                         display: 'block', 
-//                         mt: 2, 
-//                         fontStyle: 'italic',
-//                         color: 'text.secondary'
-//                       }}>
-//                         * Includes carry forward amount if applicable
-//                       </Typography>
-//                     </>
-//                   ) : (
-//                     <Alert severity="success" icon={false}>
-//                       No unpaid fees for this student
-//                     </Alert>
-//                   )}
-//                 </CardContent>
-//               </Collapse>
-//             </SummaryCard>
-//           </Grid>
-//         )}
-//       </Grid>
-//     </PageContainer>
-//   );
-// };
-
-// export default StudentPaymentPage;
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../Redux/store';
 import {
   submitPayment,
@@ -684,6 +6,12 @@ import {
   fetchStudentDepositStatus,
   fetchStudentBalanceSummary
 } from '../../Redux/Payment/paymentSlice';
+import {
+  triggerGenerateFees,
+  clearGenerateFeesMessage
+} from '../../Redux/Payment/FeegenerateSlice';
+import { useReactToPrint } from 'react-to-print';
+
 import {
   Box,
   Typography,
@@ -705,93 +33,96 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
+  Avatar,
+  InputAdornment
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+
 import {
   Search as SearchIcon,
   Payment as PaymentIcon,
   Info as InfoIcon,
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
-  AccountBalance as BalanceIcon,
   AttachMoney as MoneyIcon,
   Discount as DiscountIcon,
   Description as DescriptionIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  School as SchoolIcon,
+  BadgeRounded as BadgeRoundedIcon,
+  CheckCircleOutlineRounded as CheckCircleOutlineRoundedIcon,
+  ErrorOutlineRounded as ErrorOutlineRoundedIcon,
+  AccountBalanceWallet as AccountBalanceWalletIcon,
+  Receipt as ReceiptIcon,
+  InfoOutlined as InfoOutlinedIcon,
+  Autorenew as AutorenewIcon,
+  CalendarToday as CalendarTodayIcon,
+  Print as PrintIcon,
+  Description
 } from '@mui/icons-material';
+
+import { styled } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
-// Type Definitions
-interface PaymentAllocation {
-  studentFeeId: number;
-  paid: number;
-}
-
-interface PaymentResponse {
-  payment: {
-    id: number;
-    amountPaid: number;
-    discount: number;
-    date: string;
-  };
-  allocations: PaymentAllocation[];
-  message: string;
-}
-
-interface DepositStatus {
-  name: string;
-  totalRequired: number;
-  totalPaid: number;
-  carryForward: number;
-  overpaid: number;
-  hasExtraDeposit: boolean;
-  message: string;
-}
-
-interface BalanceSummary {
-  name: string;
-  monthlyFee: number;
-  unpaidMonths: number;
-  unpaidDetails: {
-    month: number;
-    year: number;
-    due: number;
-    paid: number;
-  }[];
-}
-
-interface FormData {
-  studentId: number;
-  amountPaid: string;
-  discount: string;
-  discountReason: string;
-  description: string;
-  paymentDate: Date;
-}
-
-// Helper Functions
-const formatCurrency = (value: number | string) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD'
-  }).format(Number(value));
 
 // Styled Components
 const PageContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
   maxWidth: 1400,
   margin: '0 auto',
+  '@media print': {
+    padding: 0
+  },
+  className: 'no-print'
+}));
+
+const ReceiptContainer = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  marginTop: theme.spacing(3),
+  border: `1px solid ${theme.palette.divider}`,
+  maxWidth: 500,
+  '@media print': {
+    border: 'none',
+    padding: 0,
+    maxWidth: '100%'
+  }
+}));
+
+const PageHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: theme.spacing(4),
+  gap: theme.spacing(2),
+  flexWrap: 'wrap'
+}));
+
+const SearchContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(2),
+  flexGrow: 1,
+  maxWidth: 600,
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2)
+    flexDirection: 'column'
+  }
+}));
+
+const ActionButton = styled(Button)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius * 2,
+  padding: theme.spacing(1.5, 3),
+  textTransform: 'none',
+  fontWeight: 600,
+  boxShadow: theme.shadows[1],
+  '&:hover': {
+    boxShadow: theme.shadows[3]
   }
 }));
 
 const PaymentFormCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
-  boxShadow: theme.shadows[2]
+  boxShadow: theme.shadows[2],
+  height: '100%'
 }));
 
 const SummaryCard = styled(Card)(({ theme }) => ({
@@ -804,6 +135,30 @@ const SummaryCard = styled(Card)(({ theme }) => ({
   '&.balance-card': {
     borderLeftColor: theme.palette.warning.main
   }
+}));
+
+const SummaryHeader = styled(CardHeader)(({ theme }) => ({
+  backgroundColor: theme.palette.grey[50],
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  '& .MuiCardHeader-action': {
+    marginTop: theme.spacing(0.5)
+  }
+}));
+
+const PaymentInputField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: theme.shape.borderRadius * 2,
+    '&.Mui-focused fieldset': {
+      borderWidth: 2
+    }
+  }
+}));
+
+const StatusBadge = styled(Chip)(({ theme }) => ({
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  padding: theme.spacing(0.5, 1),
+  borderRadius: theme.shape.borderRadius
 }));
 
 const StyledTable = styled(Table)(({ theme }) => ({
@@ -819,26 +174,402 @@ const StyledTable = styled(Table)(({ theme }) => ({
   }
 }));
 
+const formatCurrency = (value: number | string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(Number(value));
+
+interface PaymentFormData {
+  studentId: number;
+  amountPaid: number;
+  discount: number;
+  discountReason: string;
+  Description: string;
+  paymentDate: Date;
+}
+
+interface ExpandedSections {
+  depositSummary: boolean;
+  balanceSummary: boolean;
+}
+
+interface ReceiptProps {
+  payment: {
+    id: number;
+    studentId: number;
+    StudentName: string;
+    userId: number;
+    amountPaid: string;
+    discount: string;
+    Description: string;
+    date: string;
+  };
+  allocations: Array<{
+    studentFeeId: number;
+    total: number;
+    paid: number;
+    discount: number;
+    month: number;
+    year: number;
+  }>;
+  carryForward: number;
+}
+
+const ReceiptVoucher: React.FC<ReceiptProps> = ({ payment, allocations, carryForward }) => {
+  const paymentDate = new Date(payment.date);
+  
+  return (
+    <ReceiptContainer elevation={3} className="receipt-container">
+      <Box textAlign="center" mb={3}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          AL-IRSHAAD SECONDARY SCHOOL 
+        </Typography>
+        
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Payment Receipt
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {paymentDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </Typography>
+      </Box>
+      
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={6}>
+          <Typography variant="subtitle1" color="text.secondary">
+            Name:
+          </Typography>
+          <Typography variant="body1">{payment.StudentName}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="subtitle2" color="text.secondary">
+           Receipt No.
+          </Typography>
+          <Typography variant="body1">{payment.id}</Typography>
+        </Grid>
+      </Grid>
+      
+      <Divider sx={{ my: 2 }} />
+      
+      <Typography variant="subtitle1" fontWeight="bold" mb={1}>
+        Payment Details
+      </Typography>
+      
+      <Table size="small">
+        <TableBody>
+          <TableRow>
+            <TableCell>Amount Paid</TableCell>
+            <TableCell align="right">{formatCurrency(Number(payment.amountPaid))}</TableCell>
+          </TableRow>
+          {Number(payment.discount) > 0 && (
+            <TableRow>
+              <TableCell>Discount</TableCell>
+              <TableCell align="right">-{formatCurrency(Number(payment.discount))}</TableCell>
+            </TableRow>
+          )}
+             <TableRow>
+            <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+              {(payment.Description)}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ fontWeight: 'bold' }}>Total</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+              {formatCurrency(Number(payment.amountPaid) + Number(payment.discount))}
+            </TableCell>
+          </TableRow>
+         
+        </TableBody>
+      </Table>
+      
+      {allocations.length > 0 && (
+        <>
+          <Typography variant="subtitle1" fontWeight="bold" mt={3} mb={1}>
+            Allocation
+          </Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Period</TableCell>
+                <TableCell align="right">Amount</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {allocations.map((allocation, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    {new Date(allocation.year, allocation.month - 1).toLocaleDateString('en-US', {
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </TableCell>
+                  <TableCell align="right">{formatCurrency(allocation.paid)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
+      )}
+      
+      {carryForward > 0 && (
+        <Box mt={2}>
+          <Typography variant="body2" color="text.secondary">
+            Note: {formatCurrency(carryForward)} has been carried forward to next payment.
+          </Typography>
+        </Box>
+      )}
+      
+      <Box mt={4} textAlign="center">
+        <Typography variant="body2" color="text.secondary">
+          Thank you for your payment!
+        </Typography>
+        <Typography variant="caption" display="block" color="text.secondary" mt={2}>
+          This is an automated receipt. No signature required.
+        </Typography>
+      </Box>
+    </ReceiptContainer>
+  );
+};
+
+const SummaryPrintView: React.FC<{
+  depositStatus: any;
+  balanceSummary: any;
+}> = ({ depositStatus, balanceSummary }) => {
+  return (
+    <Box sx={{ p: 3, backgroundColor: 'white', color: 'black' }}>
+      {/* School Header */}
+      <Box textAlign="center" mb={4}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          AL-IRSHAAD SECONDARY SCHOOL
+        </Typography>
+        <Typography variant="h6" gutterBottom>
+          Student Account Summary
+        </Typography>
+        <Typography variant="body2">
+          {new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </Typography>
+      </Box>
+
+      {/* Student Info */}
+      {depositStatus && (
+        <Box mb={4}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Student Name:
+              </Typography>
+              <Typography variant="body1">{depositStatus.name}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Student ID:
+              </Typography>
+              <Typography variant="body1">{depositStatus.studentId}</Typography>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+
+      {/* Deposit Status Section */}
+      <Box mb={4}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ borderBottom: '1px solid #ddd', pb: 1 }}>
+          Deposit Status
+        </Typography>
+        
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={4}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Status:
+            </Typography>
+            <Chip
+              label={depositStatus?.hasExtraDeposit ? 'Sufficient Deposit' : 'Insufficient Deposit'}
+              color={depositStatus?.hasExtraDeposit ? 'success' : 'warning'}
+              size="small"
+              sx={{ fontWeight: 'bold' }}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Required:
+            </Typography>
+            <Typography>{formatCurrency(depositStatus?.totalRequired || 0)}</Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Paid:
+            </Typography>
+            <Typography>{formatCurrency(depositStatus?.totalPaid || 0)}</Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Carry Forward:
+            </Typography>
+            <Typography>{formatCurrency(depositStatus?.carryForward || 0)}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Overpaid:
+            </Typography>
+            <Typography>{formatCurrency(depositStatus?.overpaid || 0)}</Typography>
+          </Grid>
+        </Grid>
+
+        <Box mt={2}>
+          <Typography variant="body2" fontStyle="italic">
+            {depositStatus?.message}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Balance Summary Section */}
+      <Box>
+        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ borderBottom: '1px solid #ddd', pb: 1 }}>
+          Balance Summary
+        </Typography>
+        
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Monthly Fee:
+            </Typography>
+            <Typography>{formatCurrency(balanceSummary?.monthlyFee || 0)}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight="bold">
+              Unpaid Months:
+            </Typography>
+            <Typography>{balanceSummary?.unpaidMonths || 0}</Typography>
+          </Grid>
+        </Grid>
+
+        {balanceSummary?.unpaidDetails && balanceSummary.unpaidDetails.length > 0 && (
+          <>
+            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+              Unpaid Details:
+            </Typography>
+            <Table size="small" sx={{ border: '1px solid #ddd' }}>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Period</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Due</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Paid</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>Balance</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {balanceSummary.unpaidDetails.map((item: any, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {new Date(item.year, item.month - 1).toLocaleDateString('en-US', {
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell align="right">{formatCurrency(item.due)}</TableCell>
+                    <TableCell align="right">{formatCurrency(item.paid)}</TableCell>
+                    <TableCell align="right">
+                      <Chip
+                        label={formatCurrency(item.due - item.paid)}
+                        color={item.due - item.paid > 0 ? 'error' : 'success'}
+                        size="small"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
+        )}
+
+        <Box mt={4} textAlign="center">
+          <Typography variant="body2" fontStyle="italic">
+            Generated on {new Date().toLocaleString()}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
 const StudentPaymentPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { loading, error, paymentResponse, depositStatus, balanceSummary } =
     useAppSelector((state) => state.payment);
+  const generateFeesState = useAppSelector((state) => state.generateFees);
 
   const [studentId, setStudentId] = useState<number | null>(null);
   const [searchInput, setSearchInput] = useState('');
+  const [form, setForm] = useState<PaymentFormData>({
+    studentId: 0,
+    amountPaid: 0,
+    discount: 0,
+    discountReason: '',
+    Description: '',
+    paymentDate: new Date()
+  });
+
   const [validationMessages, setValidationMessages] = useState<string[]>([]);
-  const [expandedSections, setExpandedSections] = useState({
+  const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
     depositSummary: true,
     balanceSummary: true
   });
-  const [form, setForm] = useState<FormData>({
-    studentId: 0,
-    amountPaid: '',
-    discount: '',
-    discountReason: '',
-    description: '',
-    paymentDate: new Date()
+
+  const summaryPrintRef = useRef<HTMLDivElement>(null);
+  const handlePrintSummary = useReactToPrint({
+    content: () => summaryPrintRef.current,
+    pageStyle: `
+      @page { size: A4; margin: 20mm; }
+      @media print {
+        body { -webkit-print-color-adjust: exact; }
+        .no-print { display: none !important; }
+      }
+    `,
+    documentTitle: `Student_Account_Summary_${studentId}_${new Date().toISOString().slice(0, 10)}`
   });
+
+  useEffect(() => {
+    const globalStyles = `
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        .receipt-container, .receipt-container * {
+          visibility: visible;
+        }
+        .receipt-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    `;
+
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = globalStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   useEffect(() => {
     if (studentId !== null) {
@@ -848,37 +579,13 @@ const StudentPaymentPage: React.FC = () => {
       setForm((prev) => ({
         ...prev,
         studentId,
-        amountPaid: '',
-        discount: '',
+        amountPaid: 0,
+        discount: 0,
         discountReason: '',
-        description: ''
+        Description: ''
       }));
     }
   }, [dispatch, studentId]);
-
-  const validateForm = (): string[] => {
-    const errors: string[] = [];
-    const amount = Number(form.amountPaid);
-    const discount = Number(form.discount);
-
-    if (!studentId) {
-      errors.push('Please search and select a student first');
-    }
-    if (amount <= 0) {
-      errors.push('Payment amount must be positive');
-    }
-    if (discount > amount) {
-      errors.push('Discount cannot exceed payment amount');
-    }
-    if (form.paymentDate > new Date()) {
-      errors.push('Payment date cannot be in the future');
-    }
-    if (form.discount && !form.discountReason.trim()) {
-      errors.push('Please provide a reason for the discount');
-    }
-
-    return errors;
-  };
 
   const handleSearch = () => {
     const id = parseInt(searchInput);
@@ -886,56 +593,69 @@ const StudentPaymentPage: React.FC = () => {
       setStudentId(id);
       setValidationMessages([]);
     } else {
-      setValidationMessages(['Please enter a valid Student ID (positive number)']);
+      setValidationMessages(['Please enter a valid Student ID']);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    // Clear validation messages when user makes changes
-    if (validationMessages.length > 0) {
-      setValidationMessages([]);
-    }
+  const handleGenerateFees = () => {
+    dispatch(triggerGenerateFees());
   };
 
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setForm({ ...form, paymentDate: date });
+  const validateForm = (): string[] => {
+    const errors: string[] = [];
+    
+    if (!studentId) {
+      errors.push('Please search for a valid student first');
+      return errors;
     }
+
+    if (form.amountPaid <= 0) {
+      errors.push('Amount must be greater than 0');
+    }
+
+    if (form.discount > form.amountPaid) {
+      errors.push('Discount cannot exceed the payment amount');
+    }
+
+    if (form.discount > 0 && !form.discountReason.trim()) {
+      errors.push('Please provide a reason for the discount');
+    }
+
+    return errors;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     const errors = validateForm();
     if (errors.length > 0) {
       setValidationMessages(errors);
       return;
     }
 
-    if (studentId !== null) {
-      dispatch(
-        submitPayment({
-          ...form,
-          studentId,
-          amountPaid: parseFloat(form.amountPaid) || 0,
-          discount: parseFloat(form.discount) || 0
-        })
-      ).unwrap()
-        .then(() => {
-          // Refresh data after successful payment
-          dispatch(fetchPaymentHistory(studentId));
-          dispatch(fetchStudentDepositStatus(studentId));
-          dispatch(fetchStudentBalanceSummary(studentId));
-        })
-        .catch((err) => {
-          console.error('Payment failed:', err);
-        });
-    }
+    dispatch(submitPayment({
+      ...form,
+      studentId: studentId!,
+      amountPaid: form.amountPaid,
+      discount: form.discount,
+      Description: form.Description
+    }));
   };
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: name === 'amountPaid' || name === 'discount' 
+        ? parseFloat(value) || 0 
+        : value
+    }));
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) setForm({ ...form, paymentDate: date });
+  };
+
+  const toggleSection = (section: keyof ExpandedSections) => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section]
@@ -944,105 +664,242 @@ const StudentPaymentPage: React.FC = () => {
 
   return (
     <PageContainer>
-      <Typography variant="h4" gutterBottom>
-        Student Payment Portal
-      </Typography>
-
-      {/* Student Search */}
-      <Box display="flex" gap={2} mb={3}>
-        <TextField
-          label="Enter Student ID"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          error={validationMessages.some(msg => msg.includes('Student ID'))}
-        />
-        <Button 
-          variant="contained" 
-          onClick={handleSearch} 
-          startIcon={<SearchIcon />}
-          aria-label="Search student"
-        >
-          Search
-        </Button>
+      {/* Hidden print component */}
+      <Box sx={{ display: 'none' }}>
+        <div ref={summaryPrintRef}>
+          {studentId && depositStatus && balanceSummary && (
+            <SummaryPrintView 
+              depositStatus={depositStatus} 
+              balanceSummary={balanceSummary} 
+            />
+          )}
+        </div>
       </Box>
 
-      {/* Validation Messages */}
-      {validationMessages.map((message, index) => (
-        <Alert key={index} severity="error" sx={{ mb: 2 }}>
-          {message}
-        </Alert>
-      ))}
+      {/* Header Section */}
+      {/* <PageHeader>
+        <Box>
+          <Typography variant="h4" fontWeight="700" gutterBottom>
+            Student Payment Portal
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage student payments, view balances, and process transactions
+          </Typography>
+        </Box>
+        
+        <SearchContainer>
+          <PaymentInputField
+            label="Enter Student ID"
+            variant="outlined"
+            size="small"
+            fullWidth
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <BadgeRoundedIcon color="action" />
+                </InputAdornment>
+              )
+            }}
+          />
+          <ActionButton
+            variant="contained"
+            onClick={handleSearch}
+            startIcon={<SearchIcon />}
+          >
+            Find Student
+          </ActionButton>
+          <ActionButton
+            variant="outlined"
+            color="secondary"
+            onClick={handleGenerateFees}
+            disabled={generateFeesState.loading}
+            startIcon={
+              generateFeesState.loading ? (
+                <CircularProgress size={20} />
+              ) : (
+                <AutorenewIcon />
+              )
+            }
+          >
+            Generate Fees
+          </ActionButton>
+        </SearchContainer>
+      </PageHeader> */}
+      <PageHeader>
+  <Box>
+    <Typography variant="h4" fontWeight="700" gutterBottom>
+      Student Payment Portal
+    </Typography>
+    <Typography variant="body1" color="text.secondary">
+      Manage student payments, view balances, and process transactions
+    </Typography>
+  </Box>
 
-      <Grid container spacing={4}>
-        {/* Payment Form */}
-        <Grid item xs={12} md={6}>
+  <SearchContainer>
+    <PaymentInputField
+      id="student-search"
+      label="Enter Student ID"
+      variant="outlined"
+      size="small"
+      fullWidth
+      value={searchInput}
+      onChange={(e) => setSearchInput(e.target.value)}
+      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <BadgeRoundedIcon color="action" />
+          </InputAdornment>
+        )
+      }}
+    />
+
+    <ActionButton
+      variant="contained"
+      onClick={handleSearch}
+      startIcon={<SearchIcon />}
+    >
+      Find Student
+    </ActionButton>
+
+    <ActionButton
+      variant="outlined"
+      color="secondary"
+      onClick={handleGenerateFees}
+      disabled={generateFeesState.loading}
+      startIcon={
+        generateFeesState.loading ? (
+          <CircularProgress size={20} />
+        ) : (
+          <AutorenewIcon />
+        )
+      }
+    >
+      Generate Fees
+    </ActionButton>
+
+    <ActionButton
+      variant="outlined"
+      color="primary"
+      onClick={() => {
+        if (studentId !== null) {
+          dispatch(fetchPaymentHistory(studentId));
+          dispatch(fetchStudentDepositStatus(studentId));
+          dispatch(fetchStudentBalanceSummary(studentId));
+        }
+      }}
+      disabled={!studentId}
+      startIcon={<AutorenewIcon />}
+    >
+      Refresh Data
+    </ActionButton>
+  </SearchContainer>
+</PageHeader>
+
+
+      {/* System Alerts */}
+      <Box mb={3}>
+        {generateFeesState.message && (
+          <Alert
+            severity="success"
+            onClose={() => dispatch(clearGenerateFeesMessage())}
+            sx={{ mb: 1 }}
+            icon={<CheckCircleOutlineRoundedIcon fontSize="inherit" />}
+          >
+            <AlertTitle>Success</AlertTitle>
+            {generateFeesState.message}
+          </Alert>
+        )}
+        {generateFeesState.error && (
+          <Alert
+            severity="error"
+            onClose={() => dispatch(clearGenerateFeesMessage())}
+            sx={{ mb: 1 }}
+            icon={<ErrorOutlineRoundedIcon fontSize="inherit" />}
+          >
+            <AlertTitle>Error</AlertTitle>
+            {generateFeesState.error}
+          </Alert>
+        )}
+        {validationMessages.map((msg, idx) => (
+          <Alert key={idx} severity="error" sx={{ mb: 1 }}>
+            {msg}
+          </Alert>
+        ))}
+      </Box>
+
+      {/* Main Content Grid */}
+      <Grid container spacing={3}>
+        {/* Payment Form Column */}
+        <Grid item xs={12} md={5}>
           <PaymentFormCard>
-            <CardHeader
-              title="Make a Payment"
-              avatar={<PaymentIcon />}
+            <SummaryHeader
+              title={
+                <Typography variant="h6" fontWeight="600">
+                  New Payment
+                </Typography>
+              }
+              avatar={
+                <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  <PaymentIcon />
+                </Avatar>
+              }
             />
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <TextField
+                  <Grid item xs={12}>
+                    <PaymentInputField
                       fullWidth
-                      name="amountPaid"
                       label="Amount Paid"
-                      value={form.amountPaid}
+                      name="amountPaid"
+                      value={form.amountPaid === 0 ? '' : form.amountPaid}
                       onChange={handleChange}
                       InputProps={{
-                        startAdornment: <MoneyIcon sx={{ mr: 1 }} />
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <MoneyIcon color="action" />
+                          </InputAdornment>
+                        )
                       }}
                       type="number"
                       required
-                      error={validationMessages.some(msg => msg.includes('amount'))}
-                      inputProps={{
-                        min: 0.01,
-                        step: 0.01
-                      }}
+                      size="small"
                     />
                   </Grid>
-                  <Grid item xs={6}>
-                    <TextField
+                  <Grid item xs={12}>
+                    <PaymentInputField
                       fullWidth
+                      label="Discount Amount"
                       name="discount"
-                      label="Discount"
-                      value={form.discount}
+                      value={form.discount === 0 ? '' : form.discount}
                       onChange={handleChange}
                       InputProps={{
-                        startAdornment: <DiscountIcon sx={{ mr: 1 }} />
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <DiscountIcon color="action" />
+                          </InputAdornment>
+                        )
                       }}
                       type="number"
-                      inputProps={{
-                        min: 0,
-                        step: 0.01
-                      }}
+                      size="small"
                     />
                   </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      name="discountReason"
-                      label="Discount Reason"
-                      value={form.discountReason}
-                      onChange={handleChange}
-                      disabled={!form.discount}
-                      error={validationMessages.some(msg => msg.includes('reason'))}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      name="description"
-                      label="Description"
-                      value={form.description}
-                      onChange={handleChange}
-                      multiline
-                      rows={2}
-                    />
-                  </Grid>
+                  {form.discount > 0 && (
+                    <Grid item xs={12}>
+                      <PaymentInputField
+                        fullWidth
+                        label="Discount Reason"
+                        name="discountReason"
+                        value={form.discountReason}
+                        onChange={handleChange}
+                        size="small"
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DatePicker
@@ -1051,30 +908,56 @@ const StudentPaymentPage: React.FC = () => {
                         onChange={handleDateChange}
                         maxDate={new Date()}
                         renderInput={(params) => (
-                          <TextField 
-                            {...params} 
-                            fullWidth 
-                            error={validationMessages.some(msg => msg.includes('date'))}
+                          <PaymentInputField
+                            {...params}
+                            fullWidth
+                            size="small"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <CalendarTodayIcon color="action" />
+                                </InputAdornment>
+                              )
+                            }}
                           />
                         )}
                       />
                     </LocalizationProvider>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button
-                      type="submit"
+                    <PaymentInputField
                       fullWidth
+                      label="Payment Description"
+                      name="Description"
+                      value={form.Description}
+                      onChange={handleChange}
+                      multiline
+                      rows={3}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={12} mt={2}>
+                    <ActionButton
+                      type="submit"
                       variant="contained"
-                      disabled={loading}
-                      startIcon={loading ? <CircularProgress size={20} /> : <PaymentIcon />}
+                      fullWidth
+                      disabled={loading || !studentId}
+                      startIcon={
+                        loading ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <PaymentIcon />
+                        )
+                      }
+                      size="large"
                     >
                       {loading ? 'Processing...' : 'Submit Payment'}
-                    </Button>
+                    </ActionButton>
                   </Grid>
                 </Grid>
               </form>
 
-              {/* API Error */}
               {error && (
                 <Alert severity="error" sx={{ mt: 3 }}>
                   <AlertTitle>Payment Error</AlertTitle>
@@ -1082,156 +965,352 @@ const StudentPaymentPage: React.FC = () => {
                 </Alert>
               )}
 
-              {/* Payment Success */}
-              {paymentResponse && paymentResponse.payment && (
-                <>
+              {paymentResponse && (
+                <Box>
                   <Alert severity="success" sx={{ mt: 3 }}>
                     <AlertTitle>Payment Successful</AlertTitle>
                     {paymentResponse.message}
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>Receipt #:</strong> {paymentResponse.payment.id}
-                    </Typography>
-                  </Alert>
-
-                  {/* Payment Receipt */}
-                  <Box mt={3} display="flex" justifyContent="center">
-                    <Paper
-                      elevation={3}
-                      sx={{
-                        padding: 2,
-                        width: 300,
-                        borderRadius: 3,
-                        textAlign: 'center',
-                        backgroundColor: '#fafafa',
-                        border: '1px solid #ddd'
-                      }}
-                    >
-                      <Typography variant="h6" gutterBottom>
-                        🧾 Payment Receipt
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        Receipt No: #{paymentResponse.payment.id}
-                      </Typography>
-                      <Typography variant="body1" fontWeight={600} color="primary" gutterBottom>
-                        {formatCurrency(paymentResponse.payment.amountPaid)}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Date: {new Date(paymentResponse.payment.date).toLocaleDateString()}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Discount: {formatCurrency(paymentResponse.payment.discount)}
-                      </Typography>
-                      <Box mt={2} textAlign="left">
-                        <Typography variant="subtitle2">Allocations:</Typography>
-                        {paymentResponse.allocations.map((alloc: PaymentAllocation, idx: number) => (
-                          <Typography key={idx} variant="body2" sx={{ pl: 1 }}>
-                            • Fee ID #{alloc.studentFeeId} → {formatCurrency(alloc.paid)}
-                          </Typography>
-                        ))}
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{ mt: 2, display: 'block', color: 'text.disabled' }}
+                    <Box mt={2}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => window.print()}
+                        startIcon={<ReceiptIcon />}
                       >
-                        Thank you for your payment!
-                      </Typography>
-                    </Paper>
-                  </Box>
-                </>
+                        Print Receipt
+                      </Button>
+                    </Box>
+                  </Alert>
+                  
+                  <ReceiptVoucher
+                    payment={{...paymentResponse.payment,
+                      StudentName: paymentResponse.StudentName}}
+                    allocations={paymentResponse.allocations}
+                    carryForward={paymentResponse.carryForward}
+                  />
+                </Box>
               )}
             </CardContent>
           </PaymentFormCard>
         </Grid>
 
-        {/* Deposit Summary */}
-        {studentId && depositStatus && (
-          <Grid item xs={12} md={6}>
-            <SummaryCard className="deposit-card">
-              <CardHeader
-                title="Deposit Summary"
-                avatar={<InfoIcon color="success" />}
-                action={
-                  <IconButton 
-                    onClick={() => toggleSection('depositSummary')}
-                    aria-label="Toggle deposit summary"
-                  >
-                    {expandedSections.depositSummary ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                }
-              />
-              <Collapse in={expandedSections.depositSummary}>
-                <CardContent>
-                  <Typography><strong>Name:</strong> {depositStatus.name}</Typography>
-                  <Typography><strong>Total Required:</strong> {formatCurrency(depositStatus.totalRequired)}</Typography>
-                  <Typography><strong>Total Paid:</strong> {formatCurrency(depositStatus.totalPaid)}</Typography>
-                  <Typography><strong>Carry Forward:</strong> {formatCurrency(depositStatus.carryForward)}</Typography>
-                  <Typography><strong>Overpaid:</strong> {formatCurrency(depositStatus.overpaid)}</Typography>
-                  <Alert severity={depositStatus.hasExtraDeposit ? 'success' : 'info'} sx={{ mt: 2 }}>
-                    {depositStatus.message}
-                  </Alert>
-                </CardContent>
-              </Collapse>
-            </SummaryCard>
-          </Grid>
-        )}
+        {/* Student Summary Column */}
+        <Grid item xs={12} md={7}>
+          {studentId ? (
+            <>
+              {/* Deposit Status Card */}
+              <SummaryCard className="deposit-card" sx={{ mb: 3 }}>
+                <SummaryHeader
+                  title={
+                    <Typography variant="h6" fontWeight="600">
+                      Deposit Status
+                    </Typography>
+                  }
+                  avatar={
+                    <Avatar sx={{ bgcolor: 'success.light' }}>
+                      <AccountBalanceWalletIcon />
+                    </Avatar>
+                  }
+                  action={
+                    <Box>
+                      <IconButton 
+                        onClick={() => toggleSection('depositSummary')}
+                        size="small"
+                        sx={{ mr: 1 }}
+                      >
+                        {expandedSections.depositSummary ? (
+                          <ExpandLessIcon />
+                        ) : (
+                          <ExpandMoreIcon />
+                        )}
+                      </IconButton>
+                      <IconButton 
+                        onClick={handlePrintSummary}
+                        size="small"
+                        disabled={!studentId}
+                        title="Print Summary"
+                      >
+                        <PrintIcon />
+                      </IconButton>
+                    </Box>
+                  }
+                />
+                <Collapse in={expandedSections.depositSummary}>
+                  <CardContent>
+                    {depositStatus ? (
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Student Name
+                          </Typography>
+                          <Typography variant="body1" fontWeight="500">
+                            {depositStatus.name}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Status
+                          </Typography>
+                          <StatusBadge
+                            label={
+                              depositStatus.hasExtraDeposit
+                                ? 'Sufficient Deposit'
+                                : 'Insufficient Deposit'
+                            }
+                            color={
+                              depositStatus.hasExtraDeposit
+                                ? 'success'
+                                : 'warning'
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Required
+                          </Typography>
+                          <Typography variant="body1" fontWeight="500">
+                            {formatCurrency(depositStatus.totalRequired)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Paid
+                          </Typography>
+                          <Typography variant="body1" fontWeight="500">
+                            {formatCurrency(depositStatus.totalPaid)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Carry Forward
+                          </Typography>
+                          <Typography variant="body1" fontWeight="500">
+                            {formatCurrency(depositStatus.carryForward)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Overpaid
+                          </Typography>
+                          <Typography variant="body1" fontWeight="500">
+                            {formatCurrency(depositStatus.overpaid)}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} mt={1}>
+                          <Alert
+                            severity={
+                              depositStatus.hasExtraDeposit
+                                ? 'success'
+                                : 'info'
+                            }
+                            icon={
+                              depositStatus.hasExtraDeposit ? (
+                                <CheckCircleOutlineRoundedIcon />
+                              ) : (
+                                <InfoOutlinedIcon />
+                              )
+                            }
+                          >
+                            {depositStatus.message}
+                          </Alert>
+                        </Grid>
+                      </Grid>
+                    ) : (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight={100}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    )}
+                  </CardContent>
+                </Collapse>
+              </SummaryCard>
 
-        {/* Balance Summary */}
-        {studentId && balanceSummary && (
-          <Grid item xs={12}>
-            <SummaryCard className="balance-card">
-              <CardHeader
-                title="Balance Summary"
-                avatar={<InfoIcon color="warning" />}
-                action={
-                  <IconButton 
-                    onClick={() => toggleSection('balanceSummary')}
-                    aria-label="Toggle balance summary"
-                  >
-                    {expandedSections.balanceSummary ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                }
-              />
-              <Collapse in={expandedSections.balanceSummary}>
-                <CardContent>
-                  <Typography><strong>Name:</strong> {balanceSummary.name}</Typography>
-                  <Typography><strong>Monthly Fee:</strong> {formatCurrency(balanceSummary.monthlyFee)}</Typography>
-                  <Typography><strong>Unpaid Months:</strong> {balanceSummary.unpaidMonths}</Typography>
+              {/* Balance Summary Card */}
+              <SummaryCard className="balance-card">
+                <SummaryHeader
+                  title={
+                    <Typography variant="h6" fontWeight="600">
+                      Balance Summary
+                    </Typography>
+                  }
+                  avatar={
+                    <Avatar sx={{ bgcolor: 'warning.light' }}>
+                      <ReceiptIcon />
+                    </Avatar>
+                  }
+                  action={
+                    <IconButton onClick={() => toggleSection('balanceSummary')}>
+                      {expandedSections.balanceSummary ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </IconButton>
+                  }
+                />
+                <Collapse in={expandedSections.balanceSummary}>
+                  <CardContent>
+                    {balanceSummary ? (
+                      <>
+                        <Grid container spacing={2} mb={2}>
+                          <Grid item xs={12} sm={6}>
+                            <Typography
+                              variant="subtitle2"
+                              color="text.secondary"
+                            >
+                              Monthly Fee
+                            </Typography>
+                            <Typography variant="body1" fontWeight="500">
+                              {formatCurrency(balanceSummary.monthlyFee)}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6}>
+                            <Typography
+                              variant="subtitle2"
+                              color="text.secondary"
+                            >
+                              Unpaid Months
+                            </Typography>
+                            <Typography variant="body1" fontWeight="500">
+                              {balanceSummary.unpaidMonths}
+                            </Typography>
+                          </Grid>
+                        </Grid>
 
-                  <Divider sx={{ my: 2 }} />
-                  <StyledTable size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Month/Year</TableCell>
-                        <TableCell align="right">Due</TableCell>
-                        <TableCell align="right">Paid</TableCell>
-                        <TableCell align="right">Balance</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {balanceSummary.unpaidDetails.map((item, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell>{item.month}/{item.year}</TableCell>
-                          <TableCell align="right">{formatCurrency(item.due)}</TableCell>
-                          <TableCell align="right">{formatCurrency(item.paid)}</TableCell>
-                          <TableCell align="right">
-                            <Chip
-                              label={formatCurrency(item.due)}
-                              size="small"
-                              sx={{
-                                backgroundColor: item.due > 0 ? 'error.light' : 'success.light',
-                                color: item.due > 0 ? 'error.contrastText' : 'success.contrastText'
-                              }}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </StyledTable>
-                </CardContent>
-              </Collapse>
-            </SummaryCard>
-          </Grid>
-        )}
+                        <Divider sx={{ my: 2 }} />
+
+                        <Typography
+                          variant="subtitle2"
+                          color="text.secondary"
+                          mb={1}
+                        >
+                          Unpaid Details
+                        </Typography>
+                        <Box
+                          sx={{
+                            maxHeight: 300,
+                            overflow: 'auto',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <StyledTable>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell className="header-cell">
+                                  Period
+                                </TableCell>
+                                <TableCell
+                                  className="header-cell"
+                                  align="right"
+                                >
+                                  Due
+                                </TableCell>
+                                <TableCell
+                                  className="header-cell"
+                                  align="right"
+                                >
+                                  Paid
+                                </TableCell>
+                                <TableCell
+                                  className="header-cell"
+                                  align="right"
+                                >
+                                  Status
+                                </TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {balanceSummary.unpaidDetails.map(
+                                (item, index) => (
+                                  <TableRow key={index} hover>
+                                    <TableCell>
+                                      {new Date(
+                                        item.year,
+                                        item.month - 1
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        year: 'numeric'
+                                      })}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                      {formatCurrency(item.due)}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                      {formatCurrency(item.paid)}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                      <StatusBadge
+                                        label={formatCurrency(
+                                          item.due - item.paid
+                                        )}
+                                        color={
+                                          item.due - item.paid > 0
+                                            ? 'error'
+                                            : 'success'
+                                        }
+                                      />
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
+                            </TableBody>
+                          </StyledTable>
+                        </Box>
+                      </>
+                    ) : (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight={100}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    )}
+                  </CardContent>
+                </Collapse>
+              </SummaryCard>
+            </>
+          ) : (
+            <Paper
+              sx={{
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: 300,
+                borderRadius: 2,
+                textAlign: 'center',
+                bgcolor: 'background.paper'
+              }}
+            >
+              <SchoolIcon
+                sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }}
+              />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                No Student Selected
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mb={3}>
+                Search for a student to view payment history and account
+                details
+              </Typography>
+              <ActionButton
+                variant="outlined"
+                onClick={() => document.getElementById('student-search')?.focus()}
+                startIcon={<SearchIcon />}
+              >
+                Search Student
+              </ActionButton>
+            </Paper>
+          )}
+        </Grid>
       </Grid>
     </PageContainer>
   );

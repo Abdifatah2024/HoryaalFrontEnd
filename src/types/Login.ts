@@ -22,4 +22,23 @@ export enum Role {
   ADMIN = "ADMIN",
   USER = "USER",
   Teacher = "Teacher",
+  PARENT = "PARENT",
+}
+
+export interface Advance {
+  id: number;
+  employeeId: number;
+  amount: number;
+  reason: string;
+  dateIssued: string;
+  month: number;
+  year: number;
+  createdById: number;
+  employee: {
+    fullName: string;
+    phone: string;
+  };
+  createdBy: {
+    fullName: string;
+  };
 }

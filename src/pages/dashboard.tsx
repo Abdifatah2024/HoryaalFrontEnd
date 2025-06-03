@@ -212,7 +212,7 @@ const Dashboard = () => {
           color: "text-amber-600"
         },
         {
-          label: "Unpaid",
+          label: "Balance",
           value: incomeToday ? `$${incomeToday.unpaidBalance.toFixed(2)}` : "--",
           color: "text-red-600"
         }
@@ -415,7 +415,7 @@ const Dashboard = () => {
                 icon={<FiPieChart className="text-indigo-600" />}
               />
               <StatCard 
-                title="Balance" 
+                title="Current month balance" 
                 value={`$${monthlyIncome.balance?.toFixed(2) || '0.00'}`}
                 icon={<FiPieChart className="text-red-600" />}
               />
