@@ -296,6 +296,9 @@ import ExpensesPage from './pages/Expenses/ExpensesPage';
 import FinancialReportsPage from './pages/Financial Reports/FinancialReportsPage';
 import UnpaidStudentsList from './pages/Payment/UnpaidStudentsList';
 import SameBusStudents from './pages/Auth/SameBusStudents';
+import ExpenseSummaryPage from './pages/Expenses/ExpenseSummaryPage';
+import FamilyFeePayment from './pages/Payment/FamilyFeePayment';
+import DiscountList from './pages/Payment/DiscountList';
 
 export const router = createBrowserRouter([
   {
@@ -388,6 +391,10 @@ export const router = createBrowserRouter([
                   { path: 'ExpensesManagement', element: <ExpensesPage/> },
                   { path: 'StudentWithBalance', element: <UnpaidStudentsList/> },
                   { path: 'StudentWithSameBus', element: <SameBusStudents/> },
+                  { path: 'ExpensesSummary', element: <ExpenseSummaryPage/> },
+                  { path: 'FamilyPayment', element: <FamilyFeePayment/> },
+                  { path: 'DiscountList', element: <DiscountList/> },
+
                   { path: 'FinancialReport', element: <FinancialReportsPage
 /> },
 

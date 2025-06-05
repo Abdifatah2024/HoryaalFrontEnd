@@ -496,7 +496,10 @@ const SidebarLayout = () => {
           { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
           { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
           { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
+          { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },
           { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
+          { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
+
         ],
       });
     }

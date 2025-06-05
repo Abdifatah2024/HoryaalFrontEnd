@@ -9,7 +9,7 @@ import {
 } from "../../Redux/Payment/advanceSlice";
 import {
   getMonthlyBalance,
-} from "../../Redux/Expense/ExpenseSlice"; // assuming it's reused here
+} from "../../Redux/Expense/ExpenseSlice";
 import { useAppDispatch, useAppSelector } from "../../Redux/store";
 import {
   FiPlus,
@@ -28,18 +28,17 @@ import { Advance } from "../../types/Login";
 
 const EmployeeAdvancePage: React.FC = () => {
   const dispatch = useAppDispatch();
+
   const {
     advances,
-    
     loading,
     error,
     totalCount,
     employeeVerification,
     summary1
-    
   } = useAppSelector((state) => state.paymentAdvance);
 
-  const { summary} = useAppSelector((state) => state.expenses);
+  const { incomeSummary } = useAppSelector((state) => state.expenses);
 
   const [form, setForm] = useState({
     employeeId: "",
@@ -69,7 +68,6 @@ const EmployeeAdvancePage: React.FC = () => {
     );
   }, [dispatch, currentPage, itemsPerPage, searchTerm, filters]);
 
-  // Fetch top-level income summary
   useEffect(() => {
     if (filters.month && filters.year) {
       dispatch(
@@ -153,33 +151,33 @@ const EmployeeAdvancePage: React.FC = () => {
           <h1 className="text-3xl font-bold">Employee Advance Management</h1>
         </header>
 
-        {/* 📊 Income Summary Section */}
-        {summary && (
+        {/* ✅ Monthly Summary from incomeSummary */}
+        {incomeSummary && (
           <section className="bg-gray-50 p-4 rounded shadow mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
             <div>
               <h4 className="text-sm text-gray-500">Total Income</h4>
-              <p className="text-xl font-bold">${summary.totalIncome}</p>
+              <p className="text-xl font-bold">${incomeSummary.totalIncome}</p>
             </div>
             <div>
               <h4 className="text-sm text-gray-500">Total Advance</h4>
-              <p className="text-xl font-bold">${summary.totalAdvance}</p>
+              <p className="text-xl font-bold">${incomeSummary.totalAdvance}</p>
             </div>
             <div>
               <h4 className="text-sm text-gray-500">Total Expense</h4>
-              <p className="text-xl font-bold">${summary.totalExpense}</p>
+              <p className="text-xl font-bold">${incomeSummary.totalExpense}</p>
             </div>
             <div>
               <h4 className="text-sm text-gray-500">Used</h4>
-              <p className="text-xl font-bold">${summary.used}</p>
+              <p className="text-xl font-bold">${incomeSummary.used}</p>
             </div>
             <div>
               <h4 className="text-sm text-gray-500">Remaining</h4>
-              <p className="text-xl font-bold">${summary.remaining}</p>
+              <p className="text-xl font-bold">${incomeSummary.remaining}</p>
             </div>
           </section>
         )}
 
-        {/* 🎯 Filters & Search */}
+        {/* Filters */}
         <section className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-wrap gap-4 items-center">
             <input
@@ -212,7 +210,7 @@ const EmployeeAdvancePage: React.FC = () => {
           </div>
         </section>
 
-        {/* 🧾 Advance Form */}
+        {/* Advance Form */}
         <section className="bg-white rounded-lg shadow-md p-6 mb-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -272,7 +270,7 @@ const EmployeeAdvancePage: React.FC = () => {
           </form>
         </section>
 
-        {/* 📋 Advance List */}
+        {/* Advance List */}
         {!loading && !error && (
           <div className="bg-white rounded-lg shadow overflow-x-auto mb-6">
             <table className="min-w-full divide-y divide-gray-200">
@@ -311,15 +309,14 @@ const EmployeeAdvancePage: React.FC = () => {
           </div>
         )}
 
-        {/* 📈 Advance Summary */}
+        {/* Advance Summary */}
         {summary1 && (
           <section className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Advance Summary</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-gray-500">Employee</h3>
-                <p className="mt-1 text-lg font-semibold text-gray-900">{summary1.employee?.name}
-</p>
+                <p className="mt-1 text-lg font-semibold text-gray-900">{summary1.employee?.name}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-gray-500">Advanced By</h3>
@@ -338,3 +335,4 @@ const EmployeeAdvancePage: React.FC = () => {
 };
 
 export default EmployeeAdvancePage;
+
