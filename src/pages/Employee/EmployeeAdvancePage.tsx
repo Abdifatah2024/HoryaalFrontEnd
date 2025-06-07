@@ -7,6 +7,8 @@ import {
   verifyEmployee,
   clearEmployeeVerification,
 } from "../../Redux/Payment/advanceSlice";
+import toast from "react-hot-toast";
+
 import {
   getMonthlyBalance,
 } from "../../Redux/Expense/ExpenseSlice";
@@ -90,24 +92,31 @@ const EmployeeAdvancePage: React.FC = () => {
     }
   }, [form.employeeId, dispatch]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    const payload = {
-      ...form,
-      employeeId: Number(form.employeeId),
-      amount: Number(form.amount),
-    };
+  const payload = {
+    ...form,
+    employeeId: Number(form.employeeId),
+    amount: Number(form.amount),
+  };
 
+  try {
     if (editingId) {
-      dispatch(updateAdvance({ id: editingId, data: payload }));
+      await dispatch(updateAdvance({ id: editingId, data: payload })).unwrap();
+      toast.success("Advance updated successfully");
       setEditingId(null);
     } else {
-      dispatch(createAdvance(payload));
+      await dispatch(createAdvance(payload)).unwrap();
+      toast.success("Advance created successfully");
     }
-
     resetForm();
-  };
+  } catch (err: any) {
+    const errorMessage = err?.message || err?.data?.message || "Failed to submit";
+    toast.error(errorMessage);
+  }
+};
+
 
   const resetForm = () => {
     setForm({
@@ -130,11 +139,22 @@ const EmployeeAdvancePage: React.FC = () => {
     });
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this advance?")) {
-      dispatch(deleteAdvance(id));
+  // const handleDelete = (id: number) => {
+  //   if (window.confirm("Are you sure you want to delete this advance?")) {
+  //     dispatch(deleteAdvance(id));
+  //   }
+  // };
+const handleDelete = async (id: number) => {
+  if (window.confirm("Are you sure you want to delete this advance?")) {
+    try {
+      await dispatch(deleteAdvance(id)).unwrap();
+      toast.success("Advance deleted");
+    } catch (err: any) {
+      const errorMessage = err?.message || err?.data?.message || "Failed to delete";
+      toast.error(errorMessage);
     }
-  };
+  }
+};
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { name, value } = e.target;

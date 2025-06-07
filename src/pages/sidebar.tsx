@@ -486,6 +486,25 @@ const SidebarLayout = () => {
         ],
       });
     }
+    if (isAdmin) {
+  items.push({
+    title: "Reports",
+    icon: <AiOutlineBarChart className="text-lg" />,
+    subItems: [
+      { title: "Reg Student List Exam", icon: <AiOutlineFileText />, path: "/dashboard/RegiterExam" },
+      { title: "View Results", icon: <AiOutlineFileText />, path: "/dashboard/getExam" },
+      { title: "Midterm Report", icon: <AiOutlineBarChart />, path: "/dashboard/GetReportMidterm" },
+      { title: "Final Report", icon: <AiOutlineBarChart />, path: "/dashboard/FinalReport" },
+      { title: "Yearly Progress", icon: <AiOutlineBarChart />, path: "/dashboard/FinalStudent" },
+      { title: "Attendance Reports", icon: <AiOutlineCalendar />, path: "/dashboard/AttendanceReports" },
+      { title: "Attendance Reports By Date", icon: <AiOutlineCalendar />, path: "/dashboard/AbsentByDate" },
+      { title: "Disciplinary Reports", icon: <AiOutlineUser />, path: "/dashboard/DisciplinaryReports" },
+      { title: "Exam Performance", icon: <AiOutlineFileText />, path: "/dashboard/ExamPerformance" },
+      { title: "Class Reports", icon: <AiOutlineTeam />, path: "/dashboard/ClassReports" },
+      { title: "Custom Reports", icon: <AiOutlineSearch />, path: "/dashboard/CustomReports" },
+    ],
+  });
+}
 
     if (isAdmin || isUser) {
       items.push({

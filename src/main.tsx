@@ -82,7 +82,7 @@ createRoot(document.getElementById('root')!).render(
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Provider store={store}>
             <App />
-            <Toaster />
+            <Toaster  position='top-right'/>
           </Provider>
         </LocalizationProvider>
       </TailwindThemeProvider>
