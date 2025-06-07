@@ -299,6 +299,7 @@ import SameBusStudents from './pages/Auth/SameBusStudents';
 import ExpenseSummaryPage from './pages/Expenses/ExpenseSummaryPage';
 import FamilyFeePayment from './pages/Payment/FamilyFeePayment';
 import DiscountList from './pages/Payment/DiscountList';
+import PaymentAllocationList from './pages/Payment/PaymentAllocationList';
 
 export const router = createBrowserRouter([
   {
@@ -394,6 +395,7 @@ export const router = createBrowserRouter([
                   { path: 'ExpensesSummary', element: <ExpenseSummaryPage/> },
                   { path: 'FamilyPayment', element: <FamilyFeePayment/> },
                   { path: 'DiscountList', element: <DiscountList/> },
+                  { path: 'UpdatedPayment', element: <PaymentAllocationList/> },
 
                   { path: 'FinancialReport', element: <FinancialReportsPage
 /> },

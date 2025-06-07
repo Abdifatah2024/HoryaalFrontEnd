@@ -498,6 +498,7 @@ const SidebarLayout = () => {
           { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
           { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },
           { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
+          { title: "Update Payment", icon: <AiOutlineTeam />, path: "/dashboard/UpdatedPayment" },
           { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
 
         ],

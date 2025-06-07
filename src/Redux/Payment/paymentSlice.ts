@@ -1,3 +1,457 @@
+// // import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+// // import axios, { AxiosError } from "axios";
+// // import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
+
+// // // ---------------- Interfaces ----------------
+
+// // interface PaymentPayload {
+// //   studentId: number;
+// //   amountPaid: number;
+// //   discount: number;
+// //   discountReason: string;
+// //   Description: string;
+// // }
+
+// // interface Payment {
+// //   id: number;
+// //   studentId: number;
+// //   userId: number;
+// //   amountPaid: string;
+// //   discount: string;
+// //   Description: string;
+// //   date: string;
+// // }
+
+// // interface DiscountLog {
+// //   id: number;
+// //   studentId: number;
+// //   studentFeeId: number;
+// //   month: number;
+// //   year: number;
+// //   amount: number;
+// //   reason: string;
+// //   approvedBy: number;
+// //   verified: boolean;
+// //   verifiedBy: string | null;
+// //   verifiedAt: string | null;
+// //   createdAt: string;
+// //   student: {
+// //     id: number;
+// //     fullname: string;
+// //   };
+// //   approvedUser: {
+// //     id: number;
+// //     fullName: string;
+// //     email: string;
+// //   };
+// // }
+
+// // interface PaymentResponse {
+// //   message: string;
+// //   payment: Payment;
+// //   StudentName: string;
+// //   carryForward: number;
+// //   allocations: any[];
+// //   appliedDiscounts: any[];
+// // }
+
+// // interface PaymentHistory {
+// //   studentId: number;
+// //   name: string;
+// //   fee: number;
+// //   records: {
+// //     id: number;
+// //     month: number;
+// //     year: number;
+// //     required: number;
+// //     isPaid: boolean;
+// //     paid: number;
+// //     due: number;
+// //     paymentHistory: {
+// //       amount: number;
+// //       date: string;
+// //       discount: number;
+// //     }[];
+// //   }[];
+// // }
+
+// // interface DepositStatus {
+// //   studentId: number;
+// //   name: string;
+// //   totalRequired: number;
+// //   totalPaid: number;
+// //   carryForward: number;
+// //   overpaid: number;
+// //   hasExtraDeposit: boolean;
+// //   message: string;
+// // }
+
+// // interface BalanceSummary {
+// //   studentId: number;
+// //   name: string;
+// //   monthlyFee: number;
+// //   monthsGenerated: number;
+// //   unpaidMonths: number;
+// //   unpaidDetails: {
+// //     month: number;
+// //     year: number;
+// //     due: number;
+// //     paid: number;
+// //   }[];
+// //   totalRequired: number;
+// //   totalPaid: number;
+// //   carryForward: number;
+// //   rawBalance: number;
+// //   balanceDue: number;
+// //   explanation: string;
+// // }
+
+// // interface UnpaidStudent {
+// //   studentId: number;
+// //   name: string;
+// //   totalRequired: number;
+// //   totalPaid: number;
+// //   unpaidMonths: number;
+// //   carryForward: number;
+// //   balanceDue: number;
+// //   className: string;
+// // }
+
+// // interface State {
+// //   loading: boolean;
+// //   error: string;
+// //   paymentResponse: PaymentResponse | null;
+// //   paymentHistory: PaymentHistory | null;
+// //   depositStatus: DepositStatus | null;
+// //   balanceSummary: BalanceSummary | null;
+// //   unpaidStudents: UnpaidStudent[];
+// //   discountLogs: DiscountLog[];
+// // }
+
+// // // ---------------- Initial State ----------------
+
+// // const initialState: State = {
+// //   loading: false,
+// //   error: "",
+// //   paymentResponse: null,
+// //   paymentHistory: null,
+// //   depositStatus: null,
+// //   balanceSummary: null,
+// //   unpaidStudents: [],
+// //   discountLogs: [],
+// // };
+
+// // // ---------------- Auth Token Helper ----------------
+
+// // const getAuthToken = () => {
+// //   const userData = localStorage.getItem("userData");
+// //   return userData ? JSON.parse(userData).Access_token : null;
+// // };
+
+// // // ---------------- Thunks ----------------
+
+// // export const submitPayment = createAsyncThunk(
+// //   "payment/submitPayment",
+// //   async (data: PaymentPayload, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.post(`${BASE_API_URL}/fee/payment`, data, {
+// //         headers: { Authorization: `Bearer ${token}` },
+// //       });
+
+// //       return res.data;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // export const submitMultiPayment = createAsyncThunk(
+// //   "payment/submitMultiPayment",
+// //   async (data: { students: PaymentPayload[] }, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.post(`${BASE_API_URL}/fee/payment/multi`, data, {
+// //         headers: { Authorization: `Bearer ${token}` },
+// //       });
+
+// //       return res.data;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // export const fetchPaymentHistory = createAsyncThunk(
+// //   "payment/fetchPaymentHistory",
+// //   async (studentId: number, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.get(`${BASE_API_URL}/fee/students/${studentId}`, {
+// //         headers: { Authorization: `Bearer ${token}` },
+// //       });
+
+// //       return res.data;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // export const fetchStudentDepositStatus = createAsyncThunk(
+// //   "payment/fetchStudentDepositStatus",
+// //   async (studentId: number, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.get(
+// //         `${BASE_API_URL}/fee/students/${studentId}/deposit-status`,
+// //         {
+// //           headers: { Authorization: `Bearer ${token}` },
+// //         }
+// //       );
+
+// //       return res.data;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // export const fetchStudentBalanceSummary = createAsyncThunk(
+// //   "payment/fetchStudentBalanceSummary",
+// //   async (studentId: number, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.get(
+// //         `${BASE_API_URL}/fee/students/${studentId}/balance`,
+// //         {
+// //           headers: { Authorization: `Bearer ${token}` },
+// //         }
+// //       );
+
+// //       return res.data;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // export const fetchAllUnpaidStudents = createAsyncThunk(
+// //   "payment/fetchAllUnpaidStudents",
+// //   async (_, { rejectWithValue }) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const res = await axios.get(`${BASE_API_URL}/fee/StudentWithBalance`, {
+// //         headers: { Authorization: `Bearer ${token}` },
+// //       });
+
+// //       return res.data.students;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // // export const fetchAllDiscountLogs = createAsyncThunk(
+// // //   "payment/fetchAllDiscountLogs",
+// // //   async (_, { rejectWithValue }) => {
+// // //     try {
+// // //       const token = getAuthToken();
+// // //       if (!token) return rejectWithValue("Authentication required");
+
+// // //       const res = await axios.get(`${BASE_API_URL}/fee/discounts`, {
+// // //         headers: { Authorization: `Bearer ${token}` },
+// // //       });
+
+// // //       return res.data.discounts;
+// // //     } catch (error) {
+// // //       if (error instanceof AxiosError) {
+// // //         return rejectWithValue(
+// // //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// // //         );
+// // //       }
+// // //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// // //     }
+// // //   }
+// // // );
+
+// // // ---------------- Slice ----------------
+// // export const fetchAllDiscountLogs = createAsyncThunk(
+// //   "payment/fetchAllDiscountLogs",
+// //   async (
+// //     filters: { month?: string; year?: string } = {}, // <-- optional filters
+// //     { rejectWithValue }
+// //   ) => {
+// //     try {
+// //       const token = getAuthToken();
+// //       if (!token) return rejectWithValue("Authentication required");
+
+// //       const queryParams = new URLSearchParams();
+
+// //       if (filters.month) queryParams.append("month", filters.month);
+// //       if (filters.year) queryParams.append("year", filters.year);
+
+// //       const res = await axios.get(
+// //         `${BASE_API_URL}/fee/discounts?${queryParams.toString()}`,
+// //         {
+// //           headers: { Authorization: `Bearer ${token}` },
+// //         }
+// //       );
+
+// //       return res.data.discounts;
+// //     } catch (error) {
+// //       if (error instanceof AxiosError) {
+// //         return rejectWithValue(
+// //           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //         );
+// //       }
+// //       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+// //     }
+// //   }
+// // );
+
+// // const paymentSlice = createSlice({
+// //   name: "payment",
+// //   initialState,
+// //   reducers: {},
+// //   extraReducers: (builder) => {
+// //     builder
+// //       .addCase(submitPayment.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(submitPayment.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.paymentResponse = action.payload;
+// //       })
+// //       .addCase(submitPayment.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(submitMultiPayment.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(submitMultiPayment.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.paymentResponse = action.payload;
+// //       })
+// //       .addCase(submitMultiPayment.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(fetchPaymentHistory.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(fetchPaymentHistory.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.paymentHistory = action.payload;
+// //       })
+// //       .addCase(fetchPaymentHistory.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(fetchStudentDepositStatus.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(fetchStudentDepositStatus.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.depositStatus = action.payload;
+// //       })
+// //       .addCase(fetchStudentDepositStatus.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(fetchStudentBalanceSummary.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(fetchStudentBalanceSummary.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.balanceSummary = action.payload;
+// //       })
+// //       .addCase(fetchStudentBalanceSummary.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(fetchAllUnpaidStudents.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(fetchAllUnpaidStudents.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.unpaidStudents = action.payload;
+// //       })
+// //       .addCase(fetchAllUnpaidStudents.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       })
+
+// //       .addCase(fetchAllDiscountLogs.pending, (state) => {
+// //         state.loading = true;
+// //         state.error = "";
+// //       })
+// //       .addCase(fetchAllDiscountLogs.fulfilled, (state, action) => {
+// //         state.loading = false;
+// //         state.discountLogs = action.payload;
+// //       })
+// //       .addCase(fetchAllDiscountLogs.rejected, (state, action) => {
+// //         state.loading = false;
+// //         state.error = action.payload as string;
+// //       });
+// //   },
+// // });
+
+// // export default paymentSlice.reducer;
 // import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 // import axios, { AxiosError } from "axios";
 // import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
@@ -20,6 +474,30 @@
 //   discount: string;
 //   Description: string;
 //   date: string;
+// }
+
+// interface DiscountLog {
+//   id: number;
+//   studentId: number;
+//   studentFeeId: number;
+//   month: number;
+//   year: number;
+//   amount: number;
+//   reason: string;
+//   approvedBy: number;
+//   verified: boolean;
+//   verifiedBy: string | null;
+//   verifiedAt: string | null;
+//   createdAt: string;
+//   student: {
+//     id: number;
+//     fullname: string;
+//   };
+//   approvedUser: {
+//     id: number;
+//     fullName: string;
+//     email: string;
+//   };
 // }
 
 // interface PaymentResponse {
@@ -93,6 +571,30 @@
 //   className: string;
 // }
 
+// interface PaymentAllocation {
+//   id: number;
+//   amount: string;
+//   paymentId: number;
+//   studentFeeId: number;
+//   studentId: number;
+//   payment: {
+//     id: number;
+//     amountPaid: string;
+//     discount: string;
+//     date: string;
+//   };
+//   studentFee: {
+//     id: number;
+//     month: number;
+//     year: number;
+//     isPaid: boolean;
+//   };
+//   Student: {
+//     id: number;
+//     fullname: string;
+//   };
+// }
+
 // interface State {
 //   loading: boolean;
 //   error: string;
@@ -101,6 +603,8 @@
 //   depositStatus: DepositStatus | null;
 //   balanceSummary: BalanceSummary | null;
 //   unpaidStudents: UnpaidStudent[];
+//   discountLogs: DiscountLog[];
+//   allocations: PaymentAllocation[];
 // }
 
 // // ---------------- Initial State ----------------
@@ -113,6 +617,8 @@
 //   depositStatus: null,
 //   balanceSummary: null,
 //   unpaidStudents: [],
+//   discountLogs: [],
+//   allocations: [],
 // };
 
 // // ---------------- Auth Token Helper ----------------
@@ -268,6 +774,95 @@
 //   }
 // );
 
+// // Fetch Discount Logs
+// export const fetchAllDiscountLogs = createAsyncThunk(
+//   "payment/fetchAllDiscountLogs",
+//   async (
+//     filters: { month?: string; year?: string } = {},
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const token = getAuthToken();
+//       if (!token) return rejectWithValue("Authentication required");
+
+//       const queryParams = new URLSearchParams();
+//       if (filters.month) queryParams.append("month", filters.month);
+//       if (filters.year) queryParams.append("year", filters.year);
+
+//       const res = await axios.get(
+//         `${BASE_API_URL}/fee/discounts?${queryParams.toString()}`,
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+
+//       return res.data.discounts;
+//     } catch (error) {
+//       if (error instanceof AxiosError) {
+//         return rejectWithValue(
+//           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//         );
+//       }
+//       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+//     }
+//   }
+// );
+
+// // Fetch All Allocations
+// export const fetchAllPaymentAllocations = createAsyncThunk(
+//   "payment/fetchAllPaymentAllocations",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const token = getAuthToken();
+//       if (!token) return rejectWithValue("Authentication required");
+
+//       const res = await axios.get(`${BASE_API_URL}/fee/payment-allocations`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+
+//       return res.data;
+//     } catch (error) {
+//       if (error instanceof AxiosError) {
+//         return rejectWithValue(
+//           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//         );
+//       }
+//       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+//     }
+//   }
+// );
+
+// // Update Allocation
+// export const updatePaymentAllocation = createAsyncThunk(
+//   "payment/updatePaymentAllocation",
+//   async (
+//     { id, amount }: { id: number; amount: string },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const token = getAuthToken();
+//       if (!token) return rejectWithValue("Authentication required");
+
+//       const res = await axios.put(
+//         `${BASE_API_URL}/fee/payment-allocations/${id}`,
+//         { amount },
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+
+//       return res.data.updatedAllocation;
+//     } catch (error) {
+//       if (error instanceof AxiosError) {
+//         return rejectWithValue(
+//           error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//         );
+//       }
+//       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+//     }
+//   }
+// );
+
 // // ---------------- Slice ----------------
 
 // const paymentSlice = createSlice({
@@ -276,82 +871,17 @@
 //   reducers: {},
 //   extraReducers: (builder) => {
 //     builder
-//       .addCase(submitPayment.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(submitPayment.fulfilled, (state, action) => {
+//       // Handle all the cases — skipped to reduce size
+//       .addCase(fetchAllPaymentAllocations.fulfilled, (state, action) => {
 //         state.loading = false;
-//         state.paymentResponse = action.payload;
+//         state.allocations = action.payload;
 //       })
-//       .addCase(submitPayment.rejected, (state, action) => {
+//       .addCase(updatePaymentAllocation.fulfilled, (state, action) => {
 //         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-
-//       .addCase(submitMultiPayment.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(submitMultiPayment.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.paymentResponse = action.payload;
-//       })
-//       .addCase(submitMultiPayment.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-
-//       .addCase(fetchPaymentHistory.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(fetchPaymentHistory.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.paymentHistory = action.payload;
-//       })
-//       .addCase(fetchPaymentHistory.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-
-//       .addCase(fetchStudentDepositStatus.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(fetchStudentDepositStatus.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.depositStatus = action.payload;
-//       })
-//       .addCase(fetchStudentDepositStatus.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-
-//       .addCase(fetchStudentBalanceSummary.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(fetchStudentBalanceSummary.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.balanceSummary = action.payload;
-//       })
-//       .addCase(fetchStudentBalanceSummary.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
-//       })
-
-//       .addCase(fetchAllUnpaidStudents.pending, (state) => {
-//         state.loading = true;
-//         state.error = "";
-//       })
-//       .addCase(fetchAllUnpaidStudents.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.unpaidStudents = action.payload;
-//       })
-//       .addCase(fetchAllUnpaidStudents.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload as string;
+//         const index = state.allocations.findIndex(
+//           (a) => a.id === action.payload.id
+//         );
+//         if (index !== -1) state.allocations[index] = action.payload;
 //       });
 //   },
 // });
@@ -381,6 +911,26 @@ interface Payment {
   date: string;
 }
 
+interface PaymentHistory {
+  studentId: number;
+  name: string;
+  fee: number;
+  records: {
+    id: number;
+    month: number;
+    year: number;
+    required: number;
+    isPaid: boolean;
+    paid: number;
+    due: number;
+    paymentHistory: {
+      amount: number;
+      date: string;
+      discount: number;
+    }[];
+  }[];
+}
+
 interface DiscountLog {
   id: number;
   studentId: number;
@@ -403,35 +953,6 @@ interface DiscountLog {
     fullName: string;
     email: string;
   };
-}
-
-interface PaymentResponse {
-  message: string;
-  payment: Payment;
-  StudentName: string;
-  carryForward: number;
-  allocations: any[];
-  appliedDiscounts: any[];
-}
-
-interface PaymentHistory {
-  studentId: number;
-  name: string;
-  fee: number;
-  records: {
-    id: number;
-    month: number;
-    year: number;
-    required: number;
-    isPaid: boolean;
-    paid: number;
-    due: number;
-    paymentHistory: {
-      amount: number;
-      date: string;
-      discount: number;
-    }[];
-  }[];
 }
 
 interface DepositStatus {
@@ -476,6 +997,39 @@ interface UnpaidStudent {
   className: string;
 }
 
+interface PaymentAllocation {
+  id: number;
+  amount: string;
+  paymentId: number;
+  studentFeeId: number;
+  studentId: number;
+  payment: {
+    id: number;
+    amountPaid: string;
+    discount: string;
+    date: string;
+  };
+  studentFee: {
+    id: number;
+    month: number;
+    year: number;
+    isPaid: boolean;
+  };
+  Student: {
+    id: number;
+    fullname: string;
+  };
+}
+
+interface PaymentResponse {
+  message: string;
+  payment: Payment;
+  StudentName: string;
+  carryForward: number;
+  allocations: any[];
+  appliedDiscounts: any[];
+}
+
 interface State {
   loading: boolean;
   error: string;
@@ -485,6 +1039,7 @@ interface State {
   balanceSummary: BalanceSummary | null;
   unpaidStudents: UnpaidStudent[];
   discountLogs: DiscountLog[];
+  allocations: PaymentAllocation[];
 }
 
 // ---------------- Initial State ----------------
@@ -498,9 +1053,10 @@ const initialState: State = {
   balanceSummary: null,
   unpaidStudents: [],
   discountLogs: [],
+  allocations: [],
 };
 
-// ---------------- Auth Token Helper ----------------
+// ---------------- Token Helper ----------------
 
 const getAuthToken = () => {
   const userData = localStorage.getItem("userData");
@@ -515,11 +1071,9 @@ export const submitPayment = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.post(`${BASE_API_URL}/fee/payment`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -538,11 +1092,9 @@ export const submitMultiPayment = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.post(`${BASE_API_URL}/fee/payment/multi`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -561,11 +1113,9 @@ export const fetchPaymentHistory = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.get(`${BASE_API_URL}/fee/students/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -584,14 +1134,12 @@ export const fetchStudentDepositStatus = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.get(
         `${BASE_API_URL}/fee/students/${studentId}/deposit-status`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -610,14 +1158,12 @@ export const fetchStudentBalanceSummary = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.get(
         `${BASE_API_URL}/fee/students/${studentId}/balance`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       return res.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -636,11 +1182,9 @@ export const fetchAllUnpaidStudents = createAsyncThunk(
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
-
       const res = await axios.get(`${BASE_API_URL}/fee/StudentWithBalance`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       return res.data.students;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -655,16 +1199,95 @@ export const fetchAllUnpaidStudents = createAsyncThunk(
 
 export const fetchAllDiscountLogs = createAsyncThunk(
   "payment/fetchAllDiscountLogs",
+  async (
+    filters: { month?: string; year?: string } = {},
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = getAuthToken();
+      if (!token) return rejectWithValue("Authentication required");
+
+      const queryParams = new URLSearchParams();
+      if (filters.month) queryParams.append("month", filters.month);
+      if (filters.year) queryParams.append("year", filters.year);
+
+      const res = await axios.get(
+        `${BASE_API_URL}/fee/discounts?${queryParams}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      return res.data.discounts;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(
+          error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        );
+      }
+      return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+    }
+  }
+);
+
+export const fetchAllPaymentAllocations = createAsyncThunk(
+  "payment/fetchAllPaymentAllocations",
   async (_, { rejectWithValue }) => {
     try {
       const token = getAuthToken();
       if (!token) return rejectWithValue("Authentication required");
 
-      const res = await axios.get(`${BASE_API_URL}/fee/discounts`, {
+      const res = await axios.get(`${BASE_API_URL}/fee/payments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      return res.data.discounts;
+      const payments = res.data.payments;
+
+      // Flatten and attach student, payment, discount, etc.
+      const flatAllocations = payments.flatMap((payment: any) =>
+        payment.allocations.map((alloc: any) => ({
+          ...alloc,
+          Student: payment.student,
+          payment: {
+            id: payment.id,
+            amountPaid: payment.amountPaid,
+            discount: payment.discount,
+            date: payment.date,
+          },
+        }))
+      );
+
+      return flatAllocations;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(
+          error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        );
+      }
+      return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+    }
+  }
+);
+
+export const updatePaymentAllocation = createAsyncThunk(
+  "payment/updatePaymentAllocation",
+  async (
+    { id, amount }: { id: number; amount: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = getAuthToken();
+      if (!token) return rejectWithValue("Authentication required");
+
+      const res = await axios.put(
+        `${BASE_API_URL}/fee/payment-allocations/${id}`,
+        { amount },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      return res.data.updatedAllocation;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(
@@ -684,96 +1307,63 @@ const paymentSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(submitPayment.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(submitPayment.fulfilled, (state, action) => {
-        state.loading = false;
         state.paymentResponse = action.payload;
-      })
-      .addCase(submitPayment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(submitMultiPayment.pending, (state) => {
-        state.loading = true;
-        state.error = "";
       })
       .addCase(submitMultiPayment.fulfilled, (state, action) => {
-        state.loading = false;
         state.paymentResponse = action.payload;
       })
-      .addCase(submitMultiPayment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchPaymentHistory.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(fetchPaymentHistory.fulfilled, (state, action) => {
-        state.loading = false;
         state.paymentHistory = action.payload;
       })
-      .addCase(fetchPaymentHistory.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchStudentDepositStatus.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(fetchStudentDepositStatus.fulfilled, (state, action) => {
-        state.loading = false;
         state.depositStatus = action.payload;
       })
-      .addCase(fetchStudentDepositStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchStudentBalanceSummary.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(fetchStudentBalanceSummary.fulfilled, (state, action) => {
-        state.loading = false;
         state.balanceSummary = action.payload;
       })
-      .addCase(fetchStudentBalanceSummary.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchAllUnpaidStudents.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(fetchAllUnpaidStudents.fulfilled, (state, action) => {
-        state.loading = false;
         state.unpaidStudents = action.payload;
       })
-      .addCase(fetchAllUnpaidStudents.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchAllDiscountLogs.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(fetchAllDiscountLogs.fulfilled, (state, action) => {
-        state.loading = false;
         state.discountLogs = action.payload;
       })
-      .addCase(fetchAllDiscountLogs.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      });
+      .addCase(fetchAllPaymentAllocations.fulfilled, (state, action) => {
+        state.allocations = action.payload;
+      })
+      .addCase(updatePaymentAllocation.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const index = state.allocations.findIndex((a) => a.id === updated.id);
+        if (index !== -1) {
+          state.allocations[index] = updated;
+        }
+      })
+      .addMatcher(
+        (action) =>
+          action.type.startsWith("payment/") &&
+          action.type.endsWith("/pending"),
+        (state) => {
+          state.loading = true;
+          state.error = "";
+        }
+      )
+      .addMatcher(
+        (action) =>
+          action.type.startsWith("payment/") &&
+          action.type.endsWith("/fulfilled"),
+        (state) => {
+          state.loading = false;
+        }
+      )
+      .addMatcher(
+        (action) =>
+          action.type.startsWith("payment/") &&
+          action.type.endsWith("/rejected"),
+        (state, action) => {
+          state.loading = false;
+          state.error = action.payload as string;
+        }
+      );
   },
 });
 

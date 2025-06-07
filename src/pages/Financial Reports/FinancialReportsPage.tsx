@@ -8,6 +8,7 @@ import {
   getCashFlow,
 } from "../Financial Reports/financialSlice";
 import { 
+  ChevronRight,
   AlertCircle, 
   ArrowUp, 
   ArrowDown, 
@@ -140,20 +141,22 @@ const FinancialReportsPage = () => {
               </div>
               
               {/* Clickable Discount Row */}
-              <div 
-                className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer group"
-                onClick={() => navigate("/dashboard/DiscountList")}
-              >
-                <div className="flex items-center">
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:underline group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Discount
-                  </span>
-                </div>
-                <span className="font-medium text-red-500 group-hover:text-red-700 dark:group-hover:text-red-400">
-                  {formatCurrency(incomeStatement.totalDiscounts)}
-                </span>
-              </div>
               
+        <div 
+  className="flex justify-between items-center cursor-pointer group"
+  onClick={() => navigate("/dashboard/DiscountList")}
+>
+  <div className="flex items-center gap-2">
+    <span className="text-gray-600 dark:text-gray-300 group-hover:underline group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      Discount
+    </span>
+    <ChevronRight className="w-4 h-4 text-blue-500 group-hover:translate-x-1 transition-transform" />
+  </div>
+  <span className="font-medium text-red-500 group-hover:text-red-700 dark:group-hover:text-red-400">
+    {formatCurrency(incomeStatement.totalDiscounts)}
+  </span>
+</div>
+
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-gray-600 dark:text-gray-300">Net Revenue</span>
                 <span className="font-medium">{formatCurrency(incomeStatement.netRevenue)}</span>
@@ -161,19 +164,20 @@ const FinancialReportsPage = () => {
               
               {/* Clickable Total Expenses Row */}
               <div 
-                className="flex justify-between items-center cursor-pointer group"
-                onClick={() => navigate("/dashboard/ExpensesSummary")}
-              >
-                <div className="flex items-center">
-                  <span className="text-gray-600 dark:text-gray-300 group-hover:underline group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Total Expenses
-                  </span>
-                </div>
-                <span className="font-medium text-red-500 group-hover:text-red-700 dark:group-hover:text-red-400">
-                  {formatCurrency(incomeStatement.totalExpenses + incomeStatement.totalAdvances)}
-                </span>
-              </div>
-              
+  className="flex justify-between items-center cursor-pointer group"
+  onClick={() => navigate("/dashboard/ExpensesSummary")}
+>
+  <div className="flex items-center gap-2">
+    <span className="text-gray-600 dark:text-gray-300 group-hover:underline group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      Total Expenses
+    </span>
+        <ChevronRight className="w-4 h-4 text-blue-500 group-hover:translate-x-1 transition-transform" />
+  </div>
+  <span className="font-medium text-red-500 group-hover:text-red-700 dark:group-hover:text-red-400">
+    {formatCurrency(incomeStatement.totalExpenses + incomeStatement.totalAdvances)}
+  </span>
+</div>
+
               <div className="flex justify-between items-center pt-4 mt-3 border-t border-gray-100 dark:border-gray-700">
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">Net Income</span>
                 <span className={`text-xl font-bold flex items-center ${
