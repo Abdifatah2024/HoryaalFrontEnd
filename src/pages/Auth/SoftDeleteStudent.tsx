@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteStudent, resetDeleteState, selectDeleteStudent } from '../../Redux/Auth/SofteDeleteSlice';
-import { RootState } from '../../app/store';
+// import { RootState } from '../../Redux/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiTrash2, FiX, FiCheck, FiAlertCircle, FiLoader } from 'react-icons/fi';
 
