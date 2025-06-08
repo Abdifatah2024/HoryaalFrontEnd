@@ -7,7 +7,7 @@ import { RootState } from '../Redux/store';
 import { Role } from '../types/Login'
 
 export interface ProtectedRouteProps {
-  allowedRoles: ('ADMIN' | 'USER' | 'Teacher')[];
+  allowedRoles: ('ADMIN' | 'USER' | 'Teacher'|'PARENT')[];
 }
 
 interface JwtPayload {
