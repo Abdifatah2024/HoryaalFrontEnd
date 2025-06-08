@@ -15,7 +15,9 @@ const AttendanceComponent = ({ studentId }: { studentId: number }) => {
   const markStatus = useAppSelector(selectAttendanceMarkStatus);
 
   useEffect(() => {
-    dispatch(fetchAttendanceRecords(studentId));
+    // dispatch(fetchAttendanceRecords(studentId));
+    dispatch(fetchAttendanceRecords({ studentId }));
+
     return () => {
       dispatch(clearAttendanceRecords());
     };

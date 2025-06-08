@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, createAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
-import { RootState } from "../store";
+
 
 // 🔥 Updated Student Interface
 export interface Student {
@@ -100,7 +100,7 @@ export const getStudentById = createAsyncThunk(
 export const updateStudent = createAsyncThunk(
   "students/updateStudent",
   async (
-    { studentId, studentData }: { studentId: string; studentData: Partial<Student> },
+    { studentId, studentData }: { studentId: number; studentData: Partial<Student> },
     { rejectWithValue }
   ) => {
     try {
