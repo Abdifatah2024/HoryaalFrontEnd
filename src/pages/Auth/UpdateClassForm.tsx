@@ -9,7 +9,7 @@ import {
 import type { RootState, AppDispatch } from '../../Redux/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FiUser, FiBook, FiPhone, FiCheck, 
+  FiUser, FiBook, FiCheck, 
   FiX, FiRefreshCw, FiAlertCircle,
   FiArrowLeft, FiInfo, FiAward
 } from 'react-icons/fi';

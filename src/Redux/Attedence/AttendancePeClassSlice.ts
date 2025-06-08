@@ -18,7 +18,7 @@ interface AbsentStudent {
   date: string;
 }
 
-interface AttendanceState {
+export interface AttendanceState {
   loading: boolean;
   saving: boolean;
   classList: ClassItem[];

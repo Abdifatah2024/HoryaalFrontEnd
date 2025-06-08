@@ -22,6 +22,7 @@ const StudentAbsentRecorder: React.FC = () => {
 
   useEffect(() => { dispatch(fetchClasses()); }, [dispatch]);
 
+  
   const handleExpand = useCallback((classId: number) => {
     setExpandedClassId(prev => (prev === classId ? null : classId));
   }, []);

@@ -42,7 +42,7 @@ import studentScoreUpdate from "../Redux/Exam/studentScoreUpdateSlice";
 import teacherRegisterReducer from "../Redux/Epmloyee/teacherRegisterSlice";
 import teacherManagementReducer from "../Redux/Exam/teacherManagementSlice";
 import teacherDashboardReducer from "../Redux/Exam/teacherDashboardSlice";
-import attendanceClassPerday from "../Redux/Attedence/AttendancePeClassSlicePerDay";
+import attendanceClassPerday from "../Redux/Attedence/AttendancePeClassSlice";
 import generateFeesReducer from "../Redux/Payment/FeegenerateSlice";
 import studentParent from "../Redux/Parent/ParentstudentSlice";
 import advanceReducer from "../Redux/Payment/advanceSlice";
@@ -57,7 +57,7 @@ export const store = configureStore({
     photoSlice: photoSlice,
     classSlice: classSlice,
     studentReducer: studentReducer,
-    attendance: attendanceReducer,
+    attendance: attendanceClassPerday,
     studentClassUpdate: UpdateClass,
     studentClass: studentClassReducer,
     ListStdinClass: ListStdinClass,

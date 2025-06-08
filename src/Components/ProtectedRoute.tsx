@@ -6,8 +6,8 @@ import { jwtDecode } from "jwt-decode";
 import { RootState } from '../Redux/store';
 import { Role } from '../types/Login'
 
-interface ProtectedRouteProps {
-  allowedRoles: Role[];
+export interface ProtectedRouteProps {
+  allowedRoles: ('ADMIN' | 'USER' | 'Teacher')[];
 }
 
 interface JwtPayload {

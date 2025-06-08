@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant/index";
 import axios from "axios";
-import type { RootState } from "../Redux/store";
 
 interface Student {
   id: number;

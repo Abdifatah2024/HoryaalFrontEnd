@@ -23,7 +23,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
-        <Route element={<ProtectedRoute />}>
+        {/* <Route element={<ProtectedRoute />}> */}
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'USER', 'Teacher']} />}>
+
           <Route path="/" element={<Dashboard />} />
           {/* Add other protected routes here */}
         </Route>
@@ -32,3 +34,5 @@ function App() {
     </BrowserRouter>
   );
 }
+export default App;
+
