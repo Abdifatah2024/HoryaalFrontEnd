@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProgressReport } from "../../Redux/Exam/progressReportSlice";
 import { RootState, AppDispatch } from "../../Redux/store";
-
 interface Props {
-  studentId: number;
-  academicYearId: number;
+  studentId?: number;
+  academicYearId?: number;
 }
+
 
 const YearlyProgressReport = ({ studentId, academicYearId }: Props) => {
   const dispatch = useDispatch<AppDispatch>();

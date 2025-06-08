@@ -1961,17 +1961,12 @@ const StudentPaymentPage: React.FC = () => {
   const [edahabNumber, setEdahabNumber] = useState('');
 
   const summaryPrintRef = useRef<HTMLDivElement>(null);
-  const handlePrintSummary = useReactToPrint({
-    content: () => summaryPrintRef.current,
-    pageStyle: `
-      @page { size: A4; margin: 20mm; }
-      @media print {
-        body { -webkit-print-color-adjust: exact; }
-        .no-print { display: none !important; }
-      }
-    `,
-    documentTitle: `Student_Account_Summary_${studentId}_${new Date().toISOString().slice(0, 10)}`
-  });
+ const handlePrintSummary = useReactToPrint({
+  content: () => summaryPrintRef.current||null,
+  documentTitle: `Summary_${studentId}`,
+  pageStyle: `@page { size: A4; margin: 20mm; }`
+});
+
 
   useEffect(() => {
     const globalStyles = `

@@ -40,7 +40,7 @@ const AttendanceForm = () => {
             studentId: +values.studentId,
             present: values.present,
             remark: values.remark,
-            attendanceId: +values.attendanceId,
+            attedenceId: +values.attendanceId,
           })
         );
       } finally {

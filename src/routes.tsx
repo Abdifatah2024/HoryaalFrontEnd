@@ -27,7 +27,6 @@ import StudentForm from './pages/Auth/StdReg';
 import RegisterMultipleStudents from './pages/Auth/RegisterMultipleStudents';
 import UploadStudents from './pages/Auth/UploadStudentFromExcel';
 import StudentList from './Redux/Auth/StudentList';
-import StudentSearch from './pages/GetOneStudent';
 import StudentDetail from './pages/Auth/StudentDetail';
 import DeleteStudent from './pages/Auth/SoftDeleteStudent';
 import PaymentForm from './pages/Payment/PaymentForm';
@@ -40,7 +39,7 @@ import ClassList from './pages/Auth/ClassStudentList';
 
 // Attendance
 import Attendance from './pages/Auth/Attedence';
-import MarkAbsentees from './pages/Auth/AbsentList';
+// import MarkAbsentees from './pages/Auth/AbsentList';
 import AttendanceForm from './pages/Auth/DeleteAndUpdateAbsent';
 import AbsenceList from './pages/Auth/GetMostStudentAbsent';
 import StudentAbsentRecorder from './pages/Attendence/StudentAbsentRecorderPerClass';
@@ -206,7 +205,7 @@ export const router = createBrowserRouter([
                   { path: 'ChangePassword', element: <ChangePassword /> },
                   { path: 'userPhoto', element: <UserProfile /> },
                   { path: 'upload/photo', element: <PhotoUpload /> },
-                  { path: 'Final Student', element: <YearlyProgressReport /> },
+                  { path: 'Final Student', element: <YearlyProgressReport/> },
                   { path: 'GetReportMidterm', element: <ExamMidtermReport /> },
                   { path: 'FinalReport', element: <ExamReportFinal /> },
                   { path: 'ListStd', element: <StudentList /> },
