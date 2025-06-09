@@ -95,3 +95,13 @@ export interface NewStudentInput {
   fee: number;
   status?: string; // default is "ACTIVE"
 }
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  photo: string;
+  Role: "ADMIN" | "TEACHER" | "PARENT" | "STUDENT" | "USER"; // Adjust roles as needed
+  createdAt?: string;
+  updatedAt?: string;
+}
