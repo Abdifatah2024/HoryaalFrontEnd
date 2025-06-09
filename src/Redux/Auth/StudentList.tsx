@@ -13,7 +13,7 @@ interface Student {
   classId: number;
   phone: string;
   gender: string;
-  Age: number;
+  age: number;
   fee: number;
   Amount: number;
   isdeleted: boolean;
@@ -59,7 +59,7 @@ const StudentList = () => {
     { label: "Fullname", key: "fullname" },
     { label: "Class", key: "classes.name" },
     { label: "Gender", key: "gender" },
-    { label: "Age", key: "Age" },
+    { label: "ge", key: "age" },
     { label: "Phone", key: "phone" },
   ];
 
@@ -226,7 +226,7 @@ const StudentList = () => {
                         label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       >
                         {genderData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell-${entry.name ?? entry.value}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -407,7 +407,7 @@ const StudentList = () => {
                         {student.gender}
                       </span>
                     </td>
-                    <td className="p-3">{student.Age}</td>
+                    <td className="p-3">{student.age}</td>
                     <td className="p-3">{student.phone}</td>
                   </motion.tr>
                 ))}

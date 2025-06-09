@@ -388,8 +388,7 @@ interface JwtPayload {
 
 type MenuItem = {
   title: string;
-  icon: JSX.Element;
-  path?: string;
+    path?: string;
   subItems?: MenuItem[];
 };
 

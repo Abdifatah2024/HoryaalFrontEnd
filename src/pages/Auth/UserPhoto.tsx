@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../Redux/store';
 import { fetchUserProfile, uploadUserPhoto } from '../../Redux/Auth/userPhotoSlice';
-import {
-  FiUser,
-  FiUpload,
-  FiEdit,
-  FiLoader,
-  FiAlertCircle,
-  FiActivity,
-  FiSettings
-} from 'react-icons/fi';
+import { FiUser, FiUpload, FiEdit, FiLoader, FiAlertCircle } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+
+// ✅ Define User type
+interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  role: 'ADMIN' | 'Teacher' | 'USER';
+  photoUrl?: string;
+}
 
 const UserProfile: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data: loginData } = useAppSelector((state) => state.loginSlice);
-  const { userData, loading, error } = useAppSelector((state) => state.user);
+  const { userData, loading, error } = useAppSelector(
+    (state) => state.user
+  ) as { userData: User | null; loading: boolean; error: string | null };
+
   const currentUserId = loginData?.user?.id;
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -24,10 +28,9 @@ const UserProfile: React.FC = () => {
   const [imageError, setImageError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({ fullName: '', email: '' });
-  const [activeTab, setActiveTab] = useState<'profile' | 'activity' | 'settings'>('profile');
   const [isUploading, setIsUploading] = useState(false);
 
-  const getFullPhotoUrl = (url: string) => {
+  const getFullPhotoUrl = (url?: string) => {
     if (!url) return null;
     if (/^https?:\/\//i.test(url)) return url;
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
@@ -53,6 +56,11 @@ const UserProfile: React.FC = () => {
     setPreviewUrl(objectUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
+
+  // ✅ Reset image error if user photo changes
+  useEffect(() => {
+    setImageError(false);
+  }, [userData?.photoUrl]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,7 +92,11 @@ const UserProfile: React.FC = () => {
   };
 
   if (!currentUserId) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400 text-lg">Please log in to view profile.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-400 text-lg">
+        Please log in to view profile.
+      </div>
+    );
   }
 
   if (loading) {
@@ -115,6 +127,8 @@ const UserProfile: React.FC = () => {
     );
   }
 
+  const photoSrc = getFullPhotoUrl(userData?.photoUrl);
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -136,14 +150,13 @@ const UserProfile: React.FC = () => {
               transition={{ duration: 0.3 }}
               className="bg-white rounded-3xl shadow-md border border-gray-200 p-6"
             >
-              {/* Header Info */}
               <div className="flex flex-col lg:flex-row gap-10">
-                {/* Profile Picture + Upload */}
+                {/* Profile Picture */}
                 <div className="flex flex-col items-center lg:items-start">
                   <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md bg-gray-50">
-                    {userData.photoUrl && !imageError ? (
+                    {photoSrc && !imageError ? (
                       <img
-                        src={getFullPhotoUrl(userData.photoUrl)}
+                        src={photoSrc}
                         alt="Profile"
                         className="w-full h-full object-cover"
                         onError={() => setImageError(true)}
@@ -170,7 +183,10 @@ const UserProfile: React.FC = () => {
                       <div className="mt-4">
                         <img src={previewUrl} alt="Preview" className="rounded-lg shadow" />
                         <button
-                          onClick={() => setPreviewUrl(null)}
+                          onClick={() => {
+                            setPreviewUrl(null);
+                            setSelectedFile(null);
+                          }}
                           className="mt-2 text-sm text-red-500 hover:underline"
                         >
                           Remove Preview
@@ -190,7 +206,7 @@ const UserProfile: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Info Section */}
+                {/* User Info */}
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-6">
                     <div>
@@ -211,21 +227,33 @@ const UserProfile: React.FC = () => {
                   </div>
 
                   {isEditing && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input
-                        className="border p-2 rounded-md"
-                        value={editValues.fullName}
-                        onChange={(e) => setEditValues({ ...editValues, fullName: e.target.value })}
-                      />
-                      <input
-                        className="border p-2 rounded-md"
-                        value={editValues.email}
-                        onChange={(e) => setEditValues({ ...editValues, email: e.target.value })}
-                      />
-                    </div>
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          className="border p-2 rounded-md"
+                          value={editValues.fullName}
+                          onChange={(e) => setEditValues({ ...editValues, fullName: e.target.value })}
+                        />
+                        <input
+                          className="border p-2 rounded-md"
+                          value={editValues.email}
+                          onChange={(e) => setEditValues({ ...editValues, email: e.target.value })}
+                        />
+                      </div>
+                      <button
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                        onClick={() => {
+                          // TODO: Dispatch updateUserProfile action here
+                          setIsEditing(false);
+                          toast.success('Changes saved (mock)');
+                        }}
+                      >
+                        Save Changes
+                      </button>
+                    </>
                   )}
 
-                  {/* Access Summary */}
+                  {/* Access Info */}
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Access Permissions</h3>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700 list-disc pl-4">

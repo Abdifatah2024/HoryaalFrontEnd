@@ -150,7 +150,7 @@ export const updateStudent = createAsyncThunk(
 // Delete student
 export const deleteStudent = createAsyncThunk(
   "students/deleteStudent",
-  async (studentId: string, { rejectWithValue }) => {
+  async (studentId: number, { rejectWithValue }) => {
     try {
       await axios.delete(`${BASE_API_URL}/students/${studentId}`);
       return studentId;

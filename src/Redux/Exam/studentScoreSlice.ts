@@ -2,19 +2,22 @@
 // import axios, { AxiosError } from "axios";
 // import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-// // Score type
+// // Define the structure for a single score item
 // interface ScoreItem {
 //   subjectId: number;
 //   marks: number;
 //   subjectName: string;
 // }
 
+// // Define the structure for student information
 // interface StudentInfo {
 //   id: number;
-//   name: string;
+//   fullname: string;
 //   email?: string;
+//   classId?: number;
 // }
 
+// // Define the initial state structure
 // interface StudentScoreState {
 //   scores: ScoreItem[];
 //   studentInfo: StudentInfo | null;
@@ -24,7 +27,7 @@
 //   verificationLoading: boolean;
 // }
 
-// // Initial state
+// // Initialize the state
 // const initialState: StudentScoreState = {
 //   scores: [],
 //   studentInfo: null,
@@ -34,26 +37,29 @@
 //   verificationLoading: false,
 // };
 
-// // ✅ Fetch student's scores for an exam
+// // Async thunk to fetch student's scores for a specific exam and academic year
 // export const fetchStudentExamScores = createAsyncThunk<
 //   { scores: ScoreItem[] },
-//   { studentId: number; examId: number },
+//   { studentId: number; examId: number; academicYearId: number },
 //   { rejectValue: string }
-// >("student/fetchScores", async ({ studentId, examId }, { rejectWithValue }) => {
-//   try {
-//     const res = await axios.get(
-//       `${BASE_API_URL}/exam/student/${studentId}/exam/${examId}`
-//     );
-//     return res.data;
-//   } catch (err) {
-//     const error = err as AxiosError;
-//     return rejectWithValue(
-//       error.response?.data?.message || DEFAULT_ERROR_MESSAGE
-//     );
+// >(
+//   "student/fetchScores",
+//   async ({ studentId, examId, academicYearId }, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.get(
+//         `${BASE_API_URL}/exam/student/${studentId}/exam/${examId}/year/${academicYearId}`
+//       );
+//       return res.data;
+//     } catch (err) {
+//       const error = err as AxiosError;
+//       return rejectWithValue(
+//         error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//       );
+//     }
 //   }
-// });
+// );
 
-// // ✅ Update or insert all 10 scores
+// // Async thunk to update or insert all 10 subject scores
 // export const updateTenSubjectScores = createAsyncThunk<
 //   any,
 //   {
@@ -84,7 +90,7 @@
 //   }
 // });
 
-// // ✅ Verify student before updating
+// // Async thunk to verify student before updating
 // export const verifyStudent = createAsyncThunk<
 //   StudentInfo,
 //   number,
@@ -101,7 +107,7 @@
 //   }
 // });
 
-// // ✅ Slice
+// // Create the slice
 // const studentScoreSlice = createSlice({
 //   name: "studentScores",
 //   initialState,
@@ -113,7 +119,7 @@
 //   },
 //   extraReducers: (builder) => {
 //     builder
-//       // fetch scores
+//       // Handle fetch scores
 //       .addCase(fetchStudentExamScores.pending, (state) => {
 //         state.loading = true;
 //         state.error = null;
@@ -127,7 +133,7 @@
 //         state.error = action.payload ?? "Failed to fetch scores";
 //       })
 
-//       // update scores
+//       // Handle update scores
 //       .addCase(updateTenSubjectScores.pending, (state) => {
 //         state.loading = true;
 //         state.error = null;
@@ -142,7 +148,7 @@
 //         state.error = action.payload ?? "Failed to update scores";
 //       })
 
-//       // verify student
+//       // Handle verify student
 //       .addCase(verifyStudent.pending, (state) => {
 //         state.verificationLoading = true;
 //         state.studentInfo = null;
@@ -160,20 +166,22 @@
 
 // export const { clearMessages } = studentScoreSlice.actions;
 // export default studentScoreSlice.reducer;
-// Redux/Exam/studentScoreSlice.ts
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-// Define the structure for a single score item
+// ------------------ Types ------------------
+
+interface APIErrorResponse {
+  message: string;
+}
+
 interface ScoreItem {
   subjectId: number;
   marks: number;
   subjectName: string;
 }
 
-// Define the structure for student information
 interface StudentInfo {
   id: number;
   fullname: string;
@@ -181,7 +189,6 @@ interface StudentInfo {
   classId?: number;
 }
 
-// Define the initial state structure
 interface StudentScoreState {
   scores: ScoreItem[];
   studentInfo: StudentInfo | null;
@@ -191,7 +198,8 @@ interface StudentScoreState {
   verificationLoading: boolean;
 }
 
-// Initialize the state
+// ------------------ Initial State ------------------
+
 const initialState: StudentScoreState = {
   scores: [],
   studentInfo: null,
@@ -201,7 +209,16 @@ const initialState: StudentScoreState = {
   verificationLoading: false,
 };
 
-// Async thunk to fetch student's scores for a specific exam and academic year
+// ------------------ Helper Function ------------------
+
+function extractErrorMessage(error: unknown): string {
+  const err = error as AxiosError<APIErrorResponse>;
+  return err.response?.data?.message || DEFAULT_ERROR_MESSAGE;
+}
+
+// ------------------ Async Thunks ------------------
+
+// Fetch student's scores
 export const fetchStudentExamScores = createAsyncThunk<
   { scores: ScoreItem[] },
   { studentId: number; examId: number; academicYearId: number },
@@ -215,15 +232,12 @@ export const fetchStudentExamScores = createAsyncThunk<
       );
       return res.data;
     } catch (err) {
-      const error = err as AxiosError;
-      return rejectWithValue(
-        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
-      );
+      return rejectWithValue(extractErrorMessage(err));
     }
   }
 );
 
-// Async thunk to update or insert all 10 subject scores
+// Update 10 subject scores
 export const updateTenSubjectScores = createAsyncThunk<
   any,
   {
@@ -247,14 +261,11 @@ export const updateTenSubjectScores = createAsyncThunk<
     );
     return res.data;
   } catch (err) {
-    const error = err as AxiosError;
-    return rejectWithValue(
-      error.response?.data?.message || DEFAULT_ERROR_MESSAGE
-    );
+    return rejectWithValue(extractErrorMessage(err));
   }
 });
 
-// Async thunk to verify student before updating
+// Verify student before updating
 export const verifyStudent = createAsyncThunk<
   StudentInfo,
   number,
@@ -264,14 +275,12 @@ export const verifyStudent = createAsyncThunk<
     const res = await axios.get(`${BASE_API_URL}/student/Get/${studentId}`);
     return res.data;
   } catch (err) {
-    const error = err as AxiosError;
-    return rejectWithValue(
-      error.response?.data?.message || DEFAULT_ERROR_MESSAGE
-    );
+    return rejectWithValue(extractErrorMessage(err));
   }
 });
 
-// Create the slice
+// ------------------ Slice ------------------
+
 const studentScoreSlice = createSlice({
   name: "studentScores",
   initialState,
@@ -283,7 +292,7 @@ const studentScoreSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Handle fetch scores
+      // Fetch scores
       .addCase(fetchStudentExamScores.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -297,7 +306,7 @@ const studentScoreSlice = createSlice({
         state.error = action.payload ?? "Failed to fetch scores";
       })
 
-      // Handle update scores
+      // Update scores
       .addCase(updateTenSubjectScores.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -312,7 +321,7 @@ const studentScoreSlice = createSlice({
         state.error = action.payload ?? "Failed to update scores";
       })
 
-      // Handle verify student
+      // Verify student
       .addCase(verifyStudent.pending, (state) => {
         state.verificationLoading = true;
         state.studentInfo = null;

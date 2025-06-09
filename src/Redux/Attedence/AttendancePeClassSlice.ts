@@ -4,10 +4,17 @@ import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 import axios, { AxiosError } from "axios";
 import { RootState } from "../../Redux/store";
 
+interface Student {
+  id: number;
+  fullname: string;
+  classId: number;
+  // Add other relevant fields
+}
+
 interface ClassItem {
   id: number;
   name: string;
-  // ... other properties
+  students?: Student[]; // ✅ added
 }
 
 interface AbsentStudent {
