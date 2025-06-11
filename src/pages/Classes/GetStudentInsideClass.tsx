@@ -128,7 +128,7 @@ const StudentClassListStd: React.FC = () => {
                   <TableCell sx={{ fontWeight: 500 }}>{student.fullname}</TableCell>
                   <TableCell>{student.gender}</TableCell>
                   <TableCell>{student.phone}</TableCell>
-                  <TableCell>{student.phone2 || "N/A"}</TableCell>
+                  <TableCell>{student.phone || "N/A"}</TableCell>
                   <TableCell>${student.fee}</TableCell>
                 </TableRow>
               ))}

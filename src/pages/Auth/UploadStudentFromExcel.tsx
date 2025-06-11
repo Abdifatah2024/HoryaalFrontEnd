@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import * as XLSX from 'xlsx';
 import { AppDispatch } from '../../Redux/store';
-import  uploadStudentsExcel  from '../../Redux/Auth/studentUploadSlice';
+import  {uploadStudentsExcel}  from '../../Redux/Auth/studentUploadSlice';
 
 import { FiUpload, FiCheck,  FiFile, FiDownload, FiAlertCircle } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -238,25 +238,32 @@ const UploadStudents = () => {
     reader.readAsBinaryString(file);
   }, []);
 
-  const handleSubmit = useCallback(async () => {
-    if (!studentsData.length || !file) return;
-    setIsLoading(true);
-    setError(null);
+ const handleSubmit = useCallback(async () => {
+  if (!studentsData.length || !file) return;
+  
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      await dispatch(uploadStudentsExcel(formData)).unwrap();
-      setSuccess(true);
-      setStudentsData([]);
-      setFile(null);
-    } catch (err) {
-      setError(err.message || 'Upload failed. Please check the file and try again.');
-    } finally {
-      setIsLoading(false);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await dispatch(uploadStudentsExcel(formData)).unwrap();
+
+    setSuccess(true);
+    setStudentsData([]);
+    setFile(null);
+  } catch (err) {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError("Upload failed. Please check the file and try again.");
     }
-  }, [dispatch, file, studentsData]);
+  } finally {
+    setIsLoading(false);
+  }
+}, [dispatch, file, studentsData]);
+
 
   const handleDownloadTemplate = useCallback(() => {
     const sample = [

@@ -31,6 +31,7 @@ type MenuItem = {
   title: string;
     path?: string;
   subItems?: MenuItem[];
+   icon: React.ReactNode; // ✅ Correct type for JSX elements
 };
 
 const SidebarLayout = () => {

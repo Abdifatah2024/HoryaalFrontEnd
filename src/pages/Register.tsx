@@ -349,27 +349,41 @@ const Register = () => {
         otherwise: (schema) => schema.notRequired(),
       }),
     }),
-    onSubmit(values, { resetForm }) {
-      if (editing) {
-        const { password, confirmPassword, role, ...userData } = values;
-        dispatch(updateUser({ userId: values.id, userData })).then((action) => {
-          if (updateUser.fulfilled.match(action)) {
-            dispatch(updateUserRole({ userId: values.id, role }));
-            toast.success("User updated successfully!", { id: toastId });
-            resetForm();
-            dispatch(clearUser());
-            setEditing(false);
-          }
-        });
-      } else {
-        dispatch(Registerfn(values)).then((action) => {
-          if (Registerfn.fulfilled.match(action)) {
-            toast.success("Registration Successful!", { id: toastId });
-            resetForm();
-          }
-        });
+   onSubmit(values, { resetForm }) {
+  if (editing) {
+    const { role, ...userData } = values;
+
+    dispatch(updateUser({ userId: values.id, userData })).then((action) => {
+      if (updateUser.fulfilled.match(action)) {
+        if (role === "ADMIN" || role === "USER") {
+          dispatch(updateUserRole({ userId: values.id, role }));
+        }
+        toast.success("User updated successfully!", { id: toastId });
+        resetForm();
+        dispatch(clearUser());
+        setEditing(false);
       }
-    },
+    });
+  } else {
+    const registerPayload = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+      fullName: values.fullName,
+      phoneNumber: values.phoneNumber,
+      Role: values.role as "ADMIN" | "USER",
+      photoUrl: "", // add actual photo URL if needed
+    };
+
+    dispatch(Registerfn(registerPayload)).then((action) => {
+      if (Registerfn.fulfilled.match(action)) {
+        toast.success("Registration Successful!", { id: toastId });
+        resetForm();
+      }
+    });
+  }
+}
+
   });
 
   useEffect(() => {

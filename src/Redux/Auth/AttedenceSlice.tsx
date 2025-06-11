@@ -34,22 +34,65 @@ const initialState: AttendanceState = {
 };
 
 // 🔹 Mark Attendance
+// export const markAttendance = createAsyncThunk(
+//   'attendance/mark',
+//   async (
+//     { studentId, present, remark }: { studentId: number; present: boolean; remark: string },
+//     { rejectWithValue, getState }
+//   ) => {
+//     const stateData: any = getState();
+//          // add Bearar token.
+//         //  const userData = localStorage.getItem("userData");
+//         //  const parsedData = userData ? JSON.parse(userData) : null;
+//     const { Access_token = null } = stateData?.loginSlice?.data || {};
+//     try {
+//       const response = await axios.post(
+//         `${BASE_API_URL}/student/createattedence`,
+//         { studentId, present, remark },
+//         { headers: { Authorization: `Bearer ${Access_token}` } }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       if (error instanceof AxiosError) {
+//         return rejectWithValue(error.response?.data?.message || DEFAULT_ERROR_MESSAGE);
+//       }
+//       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+//     }
+//   }
+// );
 export const markAttendance = createAsyncThunk(
   'attendance/mark',
   async (
-    { studentId, present, remark }: { studentId: number; present: boolean; remark: string },
+    {
+      studentId,
+      present,
+      remark,
+      date, // ✅ Accept `date`
+    }: {
+      studentId: number;
+      present: boolean;
+      remark: string;
+      date: string;
+    },
     { rejectWithValue, getState }
   ) => {
     const stateData: any = getState();
-         // add Bearar token.
-         const userData = localStorage.getItem("userData");
-         const parsedData = userData ? JSON.parse(userData) : null;
     const { Access_token = null } = stateData?.loginSlice?.data || {};
+
     try {
       const response = await axios.post(
         `${BASE_API_URL}/student/createattedence`,
-        { studentId, present, remark },
-        { headers: { Authorization: `Bearer ${Access_token}` } }
+        {
+          studentId,
+          present,
+          remark,
+          date, // ✅ Send to API
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Access_token}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -60,6 +103,7 @@ export const markAttendance = createAsyncThunk(
     }
   }
 );
+
 
 // 🔹 Fetch Attendance with optional date/present
 export const fetchAttendanceRecords = createAsyncThunk(

@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
 import { fetchMidtermReport } from "../../Redux/Exam/ExamMidtermReportSlice";
-import { useReactToPrint } from "react-to-print";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { FiPrinter, FiDownload, FiSearch } from "react-icons/fi";
+import { FiPrinter, FiDownload} from "react-icons/fi";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import { useReactToPrint, UseReactToPrintOptions } from 'react-to-print';
 
 // Constants
 const CLASS_LIST = [
@@ -93,10 +93,15 @@ const ExamMidtermReport: React.FC = () => {
     return sortConfig.direction === "ascending" ? <FaSortUp className="ml-1" /> : <FaSortDown className="ml-1" />;
   };
 
-  const handlePrint = useReactToPrint({
-    content: () => reportRef.current,
-    documentTitle: `Midterm Report - ${className}`,
-  });
+  // const handlePrint = useReactToPrint({
+  //   content: () => reportRef.current,
+  //   documentTitle: `Midterm Report - ${className}`,
+  // });
+  
+const handlePrint = useReactToPrint({
+  content: () => reportRef.current,
+  documentTitle: `Midterm Report - ${className}`,
+} as unknown as UseReactToPrintOptions);
 
   const exportToPDF = () => {
     if (!report.length) return;
@@ -114,14 +119,23 @@ const ExamMidtermReport: React.FC = () => {
     doc.text(`Total Students: ${report.length}`, 15, 37);
     doc.text(`Passed: ${passed} | Failed: ${failed}`, 15, 44);
 
+    // const headers = [
+    //   "Student Name",
+    //   ...report[0]?.subjects.map((s) => s.subject),
+    //   "Total",
+    //   "Percentage",
+    //   "Rank",
+    //   "Status",
+    // ];
     const headers = [
-      "Student Name",
-      ...report[0]?.subjects.map((s) => s.subject),
-      "Total",
-      "Percentage",
-      "Rank",
-      "Status",
-    ];
+  "Student Name",
+  ...(report[0]?.subjects?.map((s) => s.subject) || []),
+  "Total",
+  "Percentage",
+  "Rank",
+  "Status",
+];
+
 
     const data = report.map((student) => [
       student.fullName,

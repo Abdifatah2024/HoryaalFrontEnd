@@ -11,7 +11,12 @@ export interface Student {
   fullname: string;
   classId: number;
   phone: string;
+  bus: string;
+  phone2: string;
   gender: string;
+  address: string;
+  motherName: string;
+  previousSchool: string;
   Age: number;
   fee: number;
   Amount: number;

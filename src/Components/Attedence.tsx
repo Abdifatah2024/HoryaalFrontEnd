@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../Redux/store';
 import {
-  markAttendance,
+  // markAttendance,
   fetchAttendanceRecords,
-  updateAttendanceRecord,
+  // updateAttendanceRecord,
   clearAttendanceRecords,
   selectAttendanceRecords,
   selectAttendanceMarkStatus
@@ -23,13 +23,13 @@ const AttendanceComponent = ({ studentId }: { studentId: number }) => {
     };
   }, [dispatch, studentId]);
 
-  const handleMarkAttendance = (present: boolean, remark: string) => {
-    dispatch(markAttendance({ studentId, present, remark }));
-  };
+  // const handleMarkAttendance = (present: boolean, remark: string) => {
+  //   dispatch(markAttendance({ studentId, present, remark }));
+  // };
 
-  const handleUpdateRecord = (id: number, present: boolean, remark: string) => {
-    dispatch(updateAttendanceRecord({ id, present, remark }));
-  };
+  // const handleUpdateRecord = (id: number, present: boolean, remark: string) => {
+  //   dispatch(updateAttendanceRecord({ id, present, remark }));
+  // };
 
   return (
     <div>

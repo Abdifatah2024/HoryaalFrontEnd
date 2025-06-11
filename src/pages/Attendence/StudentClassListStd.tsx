@@ -29,7 +29,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { markAttendance } from "../../Redux/Auth/AttedenceSlice";
-import { CheckCircleOutline, CancelOutlined, HelpOutline } from "@mui/icons-material";
+import { CheckCircleOutline, CancelOutlined } from "@mui/icons-material";
 
 const classList = [
   { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },

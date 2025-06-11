@@ -20,7 +20,7 @@ import { FaChalkboardTeacher } from 'react-icons/fa';
 
 interface AttendanceRecord {
   id: number;
-  date: string;
+  date: string,
   present: boolean;
   remark: string;
   user?: {
@@ -139,77 +139,105 @@ const Attendance = () => {
             );
           },
         },
-        error: {
-          render({ data }) {
-            return (
-              <div className="flex items-center">
-                <FiXCircle className="mr-2 text-red-500" />
-                Error: {data || 'Failed to fetch records'}
-              </div>
-            );
-          },
-        },
+       error: {
+  render({ data }: { data?: string }) {
+    return (
+      <div className="flex items-center text-sm text-red-600">
+        <FiXCircle className="mr-2 text-red-500" />
+        Error: {data || 'Failed to fetch records'}
+      </div>
+    );
+  },
+}
+
       }
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    const id = parseInt(inputId);
-    if (isNaN(id) || id <= 0) {
-      toast.error(
-        <div className="flex items-center">
-          <FiXCircle className="mr-2 text-red-500" />
-          Please enter a valid Student ID.
-        </div>
-      );
-      return;
-    }
+  //   const id = parseInt(inputId);
+  //   if (isNaN(id) || id <= 0) {
+  //     toast.error(
+  //       <div className="flex items-center">
+  //         <FiXCircle className="mr-2 text-red-500" />
+  //         Please enter a valid Student ID.
+  //       </div>
+  //     );
+  //     return;
+  //   }
 
-    if (!present && !remark.trim()) {
-      toast.error(
-        <div className="flex items-center">
-          <FiXCircle className="mr-2 text-red-500" />
-          Please enter a remark for absence.
-        </div>
-      );
-      return;
-    }
+  //   if (!present && !remark.trim()) {
+  //     toast.error(
+  //       <div className="flex items-center">
+  //         <FiXCircle className="mr-2 text-red-500" />
+  //         Please enter a remark for absence.
+  //       </div>
+  //     );
+  //     return;
+  //   }
 
-    const action = editMode && editingId
-      ? dispatch(updateAttendanceRecord({ id: editingId, present, remark }))
-      : dispatch(markAttendance({ studentId: id, present, remark, date: attendanceDate }));
+  //   const action = editMode && editingId
+  //     ? dispatch(updateAttendanceRecord({ id: editingId, present, remark }))
+  //     : dispatch(markAttendance({ studentId: id, present, remark, date: attendanceDate }));
 
-    toast.promise(action, {
-      pending: {
-        render: () => (
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
-            {editMode ? 'Updating attendance...' : 'Marking attendance...'}
-          </div>
-        )
-      },
-      success: {
-        render: () => (
-          <div className="flex items-center">
-            <FiCheckCircle className="mr-2 text-green-500" />
-            {editMode ? 'Attendance updated!' : 'Attendance marked!'}
-          </div>
-        )
-      },
-      error: {
-        render({ data }) {
-          return (
-            <div className="flex items-center">
-              <FiXCircle className="mr-2 text-red-500" />
-              Error: {data || 'Operation failed'}
-            </div>
-          );
-        },
-      },
-    });
-  };
+  //   toast.promise(action, {
+  //     pending: {
+
+  //       render: () => (
+  //         <div className="flex items-center">
+  //           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
+  //           {editMode ? 'Updating attendance...' : 'Marking attendance...'}
+  //         </div>
+  //       )
+  //     },
+  //     success: {
+  //       render: () => (
+  //         <div className="flex items-center">
+  //           <FiCheckCircle className="mr-2 text-green-500" />
+  //           {editMode ? 'Attendance updated!' : 'Attendance marked!'}
+  //         </div>
+  //       )
+  //     },
+  //     error: {
+  //       render({ data }) {
+  //         return (
+  //           <div className="flex items-center">
+  //             <FiXCircle className="mr-2 text-red-500" />
+  //             Error: {data || 'Operation failed'}
+  //           </div>
+  //         );
+  //       },
+  //     },
+  //   });
+  // };
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const id = parseInt(inputId); // ✅ this line defines `id`
+  if (isNaN(id) || id <= 0) {
+    toast.error(
+      <div className="flex items-center">
+        <FiXCircle className="mr-2 text-red-500" />
+        Invalid Student ID
+      </div>
+    );
+    return;
+  }
+
+  if (!present && !remark.trim()) {
+    toast.error('Please provide a remark for absence.');
+    return;
+  }
+
+  if (editMode && editingId) {
+    dispatch(updateAttendanceRecord({ id: editingId, present, remark }));
+  } else {
+    dispatch(markAttendance({ studentId: id, present, remark, date: attendanceDate }));
+  }
+};
+
 
   const handleEdit = (record: AttendanceRecord) => {
     setEditMode(true);

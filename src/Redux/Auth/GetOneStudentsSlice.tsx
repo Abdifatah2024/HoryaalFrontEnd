@@ -38,7 +38,7 @@ interface StudentClassState {
   student: Student | null;
   verificationLoading: boolean;
   verificationError: string;
-  verifiedStudent: Student | null;
+  verifiedStudent: Student[];
   sameFamilyStudents?: Student[]; // ✅ new state
 }
 
@@ -49,7 +49,7 @@ const initialState: StudentClassState = {
   student: null,
   verificationLoading: false,
   verificationError: "",
-  verifiedStudent: null,
+  verifiedStudent: [],
   sameFamilyStudents: [],
 };
 
@@ -117,7 +117,7 @@ const studentClassSlice = createSlice({
     clearVerificationData: (state) => {
       state.verificationLoading = false;
       state.verificationError = "";
-      state.verifiedStudent = null;
+      state.verifiedStudent = [];
     },
   },
   extraReducers: (builder) => {

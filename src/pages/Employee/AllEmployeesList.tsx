@@ -3,19 +3,8 @@ import { useAppDispatch, useAppSelector } from '../../Redux/store';
 import { fetchEmployees } from '../../Redux/Epmloyee/employeeListSlice';
 import {
   FiUser,
-  FiMail,
-  FiBriefcase,
-  FiCalendar,
-  FiUserCheck,
+
   FiSearch,
-  FiChevronDown,
-  FiFilter,
-  FiDollarSign,
-  FiPhone,
-  FiMapPin,
-  FiBook,
-  FiAward,
-  FiCreditCard,
   FiEdit2,
   FiMoreVertical,
   FiPlus,

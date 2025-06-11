@@ -217,13 +217,17 @@ const studentSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      .addCase(deleteStudent.fulfilled, (state, action) => {
-        state.loading = false;
-        state.students = state.students.filter((s) => s.id !== action.payload);
-        if (state.student?.id === action.payload) {
-          state.student = null;
-        }
-      })
+    .addCase(deleteStudent.fulfilled, (state, action) => {
+  const id = Number(action.payload); // Convert to number
+
+  state.loading = false;
+  state.students = state.students.filter((s) => s.id !== id);
+
+  if (state.student?.id === id) {
+    state.student = null;
+  }
+})
+
       .addCase(deleteStudent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
