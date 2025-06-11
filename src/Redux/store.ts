@@ -48,6 +48,8 @@ import studentParent from "../Redux/Parent/ParentstudentSlice";
 import advanceReducer from "../Redux/Payment/advanceSlice";
 import expenseReducer from "../Redux/Expense/ExpenseSlice";
 import financialReducer from "../pages/Financial Reports/financialSlice";
+import studentBusReducer from "../Redux/studentBusSlice";
+import pdfUploadReducer from "../pages/PdfFiles/PdfUploadSlice";
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -100,6 +102,8 @@ export const store = configureStore({
     paymentAdvance: advanceReducer,
     expenses: expenseReducer,
     financial: financialReducer,
+    studentBus: studentBusReducer,
+    pdfUpload: pdfUploadReducer,
   },
   devTools: true,
 });

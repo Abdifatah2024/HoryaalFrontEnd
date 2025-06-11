@@ -94,6 +94,9 @@ import ExpenseSummaryPage from './pages/Expenses/ExpenseSummaryPage';
 import FamilyFeePayment from './pages/Payment/FamilyFeePayment';
 import DiscountList from './pages/Payment/DiscountList';
 import PaymentAllocationList from './pages/Payment/PaymentAllocationList';
+import StudentBusList from './pages/Auth/StudentBusList';
+import PdfUpload from './pages/PdfFiles/PdfUpload';
+import PdfDocumentsList from './pages/PdfFiles/DocumentsPage';
 
 export const router = createBrowserRouter([
   {
@@ -190,6 +193,9 @@ export const router = createBrowserRouter([
                   { path: 'FamilyPayment', element: <FamilyFeePayment/> },
                   { path: 'DiscountList', element: <DiscountList/> },
                   { path: 'UpdatedPayment', element: <PaymentAllocationList/> },
+                  { path: 'StudentBusses', element: <StudentBusList/> },
+                  { path: 'UploadPdf', element: <PdfUpload/> },
+               
 
                   { path: 'FinancialReport', element: <FinancialReportsPage
 /> },
@@ -215,6 +221,7 @@ export const router = createBrowserRouter([
                   { path: 'DisciplinaryReports', element: <DisciplinePage /> },
                   { path: 'RegiterExam', element: <RegisterExam /> },
                   { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
+                     { path: 'Rules', element: <PdfDocumentsList/> },
                  
                 ],
               }
