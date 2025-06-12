@@ -170,6 +170,7 @@ const SidebarLayout = () => {
         subItems: [
           { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
           { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
+          { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },
           { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
           { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
           { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },

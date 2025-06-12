@@ -97,6 +97,7 @@ import PaymentAllocationList from './pages/Payment/PaymentAllocationList';
 import StudentBusList from './pages/Auth/StudentBusList';
 import PdfUpload from './pages/PdfFiles/PdfUpload';
 import PdfDocumentsList from './pages/PdfFiles/DocumentsPage';
+import EmployeeAdvanceComponent from './pages/Employee/EmployeeAdvanceComponent';
 
 export const router = createBrowserRouter([
   {
@@ -195,6 +196,7 @@ export const router = createBrowserRouter([
                   { path: 'UpdatedPayment', element: <PaymentAllocationList/> },
                   { path: 'StudentBusses', element: <StudentBusList/> },
                   { path: 'UploadPdf', element: <PdfUpload/> },
+                  { path: 'AdvanceDetail', element: <EmployeeAdvanceComponent/> },
                
 
                   { path: 'FinancialReport', element: <FinancialReportsPage

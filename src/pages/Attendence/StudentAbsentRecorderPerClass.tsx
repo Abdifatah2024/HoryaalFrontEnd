@@ -90,7 +90,7 @@ const StudentAbsentRecorder: React.FC = () => {
             />
             <Collapse in={expandedClassId === classItem.id}>
               <CardContent>
-                {classItem.Student && classItem.Student.length > 0 ? (
+                {classItem.student && classItem.student.length > 0 ? (
                   <>
                     <TableContainer component={Paper}>
                       <Table>
@@ -102,7 +102,7 @@ const StudentAbsentRecorder: React.FC = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {classItem.Student.map((student) => (
+                          {classItem.student.map((student) => (
                             <TableRow key={student.id}>
                               <TableCell>{student.fullname}</TableCell>
                               <TableCell>

@@ -25,6 +25,13 @@ interface StudentBusState {
   error: string;
 }
 
+export interface Student {
+  id: number;
+  fullname: string;
+  email: string;
+  busNumber?: string; // Adjust fields based on your actual API response
+}
+
 // Initial State
 const initialState: StudentBusState = {
   withBus: [],
@@ -34,38 +41,46 @@ const initialState: StudentBusState = {
 };
 
 // Fetch students with bus
-export const fetchStudentsWithBus = createAsyncThunk(
-  "studentBus/fetchWithBus",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get(`${BASE_API_URL}/student/students/with-bus`);
-      return res.data.students;
-    } catch (error) {
-      const err = error as AxiosError;
-      return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
-      );
-    }
+
+export const fetchStudentsWithBus = createAsyncThunk<
+  // Return type on success:
+  StudentBus[],
+  // Argument type:
+  void,
+  // ThunkAPI config (includes rejectWithValue type):
+  {
+    rejectValue: string;
   }
-);
+>("studentBus/fetchWithBus", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(`${BASE_API_URL}/student/students/with-bus`);
+    return res.data.students;
+  } catch (error) {
+    const err = error as AxiosError<{ message?: string }>;
+    return rejectWithValue(
+      err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+    );
+  }
+});
 
 // Fetch students without bus
-export const fetchStudentsWithoutBus = createAsyncThunk(
-  "studentBus/fetchWithoutBus",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get(
-        `${BASE_API_URL}/student/students/without-bus`
-      );
-      return res.data.students;
-    } catch (error) {
-      const err = error as AxiosError;
-      return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
-      );
-    }
+export const fetchStudentsWithoutBus = createAsyncThunk<
+  StudentBus[], // ✅ Success return type
+  void, // ✅ No parameters
+  {
+    rejectValue: string; // ✅ Rejected value type
   }
-);
+>("studentBus/fetchWithoutBus", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(`${BASE_API_URL}/student/students/without-bus`);
+    return res.data.students;
+  } catch (error) {
+    const err = error as AxiosError<{ message?: string }>;
+    return rejectWithValue(
+      err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+    );
+  }
+});
 
 // Slice
 const studentBusSlice = createSlice({

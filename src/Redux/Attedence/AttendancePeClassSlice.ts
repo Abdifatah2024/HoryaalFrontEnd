@@ -14,7 +14,7 @@ interface Student {
 interface ClassItem {
   id: number;
   name: string;
-  students?: Student[]; // ✅ added
+  student?: Student[]; // ✅ added
 }
 
 interface AbsentStudent {
