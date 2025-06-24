@@ -49,7 +49,7 @@ export const fetchAllTeachers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     const token = localStorage.getItem("Access_token");
     try {
-      const res = await axios.get(`${BASE_API_URL}/user/list`, {
+      const res = await axios.get(`${BASE_API_URL}/user/listTeachers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data;

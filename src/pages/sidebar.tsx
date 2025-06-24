@@ -91,13 +91,18 @@ const SidebarLayout = () => {
     if (isAdmin || isTeacher || isUser) {
   const rulesSubItems: MenuItem[] = [
     ...(isAdmin
-      ? [{ title: "Upload And Delete Files", icon: <AiOutlineSetting />, path: "/dashboard/UploadPdf" }]
+      ? [{ title: "Upload And Delete Files", icon: <AiOutlineSetting />, path: "/dashboard/UploadPdf" },
+         { title: "Announcementst", icon: <AiOutlineSearch />, path: "/dashboard/Announcements" },
+         { title: "Announcement List", icon: <AiOutlineSearch />, path: "/dashboard/AnnouncementsList" },
+      ]
       : []),
     { title: "Rules", icon: <AiOutlineSetting />, path: "/dashboard/Rules" },
+    { title: "Work Plan", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlan" },
+    { title: "Work Plan And Comment", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlanAndComment" },
   ];
 
   items.push({
-    title: "Rules And Regulations",
+    title: "Rules And Announcements",
     icon: <AiOutlineUser className="text-lg" />,
     subItems: rulesSubItems,
   });
@@ -112,9 +117,11 @@ const SidebarLayout = () => {
             ? [
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
                 { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+               
               ]
             : [
                 { title: "Register Student", icon: <AiOutlineSetting />, path: "/dashboard/regstd" },
+                { title: "Check Transfer", icon: <AiOutlineSetting />, path: "/dashboard/CheckTransfer" },
                 { title: "Register Multiple", icon: <AiOutlineSetting />, path: "/dashboard/RegisterMulti" },
                 { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
@@ -168,6 +175,8 @@ const SidebarLayout = () => {
         title: "Payments",
         icon: <AiOutlineTeam className="text-lg" />,
         subItems: [
+          { title: "Paid", icon: <AiOutlineTeam />, path: "/dashboard/Paypayment" },
+          { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
           { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
           { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
           { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },

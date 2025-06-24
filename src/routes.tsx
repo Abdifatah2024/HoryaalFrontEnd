@@ -98,6 +98,14 @@ import StudentBusList from './pages/Auth/StudentBusList';
 import PdfUpload from './pages/PdfFiles/PdfUpload';
 import PdfDocumentsList from './pages/PdfFiles/DocumentsPage';
 import EmployeeAdvanceComponent from './pages/Employee/EmployeeAdvanceComponent';
+import CreateStudentPaymentForm from './pages/Payment/CreateStudentPaymentForm';
+import FamilyPayment from './pages/Payment/FamilyPayment';
+import ManageAnnouncements from './pages/ManageAnnouncements';
+import AdminAnnouncements from './pages/announcement/AdminAnnouncements';
+import WorkPlanList from './pages/WorkPlan/WorkPlanList';
+import WorkPlanListPage from './pages/WorkPlan/WorkPlanList';
+import WorkPlanCommentsPage from './pages/WorkPlan/WorkPlanCommentsPage';
+import ManageTransfer from './pages/Auth/Students/ManageTransfer';
 
 export const router = createBrowserRouter([
   {
@@ -134,6 +142,8 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
                 children: [
                   { path: 'register', element: <Register /> },
+                                   { path: 'Announcements', element: <ManageAnnouncements/> },
+                  { path: 'AnnouncementsList', element: <AdminAnnouncements/> },
                   { path: 'user/list', element: <UsersList /> },
                   { path: 'DeleteStd', element: <DeleteStudent /> },
                   { path: 'CeateClass', element: <CreateClassForm /> },
@@ -197,6 +207,12 @@ export const router = createBrowserRouter([
                   { path: 'StudentBusses', element: <StudentBusList/> },
                   { path: 'UploadPdf', element: <PdfUpload/> },
                   { path: 'AdvanceDetail', element: <EmployeeAdvanceComponent/> },
+                  { path: 'Paypayment', element: <CreateStudentPaymentForm/> },
+                  { path: 'FamilyPaypayment', element: <FamilyPayment/> },
+                  { path: 'WorkPlan', element: <WorkPlanList/> },
+                { path: 'WorkPlanAndComment', element: < WorkPlanCommentsPage/> },
+                { path: 'CheckTransfer', element: < ManageTransfer/> },
+
                
 
                   { path: 'FinancialReport', element: <FinancialReportsPage

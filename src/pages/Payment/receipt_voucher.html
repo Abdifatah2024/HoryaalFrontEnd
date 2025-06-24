@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt Voucher</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-area {
+                width: 100%;
+                margin: 0;
+                padding: 20mm; /* A4 margins, adjust as needed */
+                box-sizing: border-box;
+            }
+        }
+        body {
+            font-family: 'Inter', sans-serif; /* Modern font, ensure it's available or fallback */
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .receipt-container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            background-color: #3b82f6; /* Blue-600 */
+            color: #ffffff;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid #2563eb; /* Darker blue for emphasis */
+        }
+        .header h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1rem; /* text-lg */
+            opacity: 0.9;
+        }
+        .content {
+            padding: 2rem 2.5rem;
+        }
+        .section-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* gray-900 */
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+            padding-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+        .section-title svg {
+            margin-right: 0.75rem;
+            color: #4b5563; /* gray-600 */
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .info-item p {
+            font-size: 0.95rem; /* text-base */
+            color: #4a5568; /* gray-700 */
+            line-height: 1.5;
+        }
+        .info-item strong {
+            color: #1f2937; /* gray-900 */
+            font-weight: 600;
+        }
+        .total-summary {
+            background-color: #ecfdf5; /* green-50 */
+            border: 1px solid #a7f3d0; /* green-200 */
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .total-summary h3 {
+            font-size: 1.6rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #065f46; /* green-800 */
+        }
+        .total-summary span {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #047857; /* green-700 */
+        }
+        .footer {
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid #e5e7eb; /* gray-200 */
+            text-align: center;
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* gray-500 */
+            margin-top: 2rem;
+        }
+        .student-list {
+            margin-top: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .student-list div {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-list div:last-child {
+            border-bottom: none;
+        }
+        .student-list div:nth-child(even) {
+            background-color: #f8fafc; /* gray-50 */
+        }
+        .student-list .student-name {
+            font-weight: 600;
+            color: #1a202c; /* gray-900 */
+            flex-grow: 1;
+        }
+        .student-list .student-paid {
+            font-weight: 700;
+            color: #065f46; /* green-800 */
+            font-size: 1.1rem;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container print-area">
+        <div class="header">
+            <h1>Payment Receipt</h1>
+            <p>Confirmation of your recent payment</p>
+        </div>
+        <div class="content">
+            <div class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Payment Details
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <p><strong>Parent Name:</strong> Hoodo Mohammed Muse</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Parent Phone:</strong> 0634463075</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Payment For:</strong> June 2025</p>
+                </div>
+                <div class="info-item">
+                    <p><strong>Payment Method:</strong> Cash</p>
+                </div>
+                 <div class="info-item">
+                    <p><strong>Date Processed:</strong> June 17, 2025, 3:32 PM EAT</p>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.141-1.282-.407-1.84M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.141-1.282.407-1.84M3 10v1.5a1.5 1.5 0 00-.75 1.3V14h.5a1.5 1.5 0 011.5 1.5v.5h2.5a1 1 0 001-1V9a1 1 0 00-1-1H7a1 1 0 00-1 1v1h.5a1.5 1.5 0 001.5 1.5v.5h.5zm-3 0v1.5a1.5 1.5 0 00-.75 1.3V14h.5a1.5 1.5 0 011.5 1.5v.5h2.5a1 1 0 001-1V9a1 1 0 00-1-1H7a1 1 0 00-1 1v1h.5a1.5 1.5 0 001.5 1.5v.5h.5z" />
+                </svg>
+                Student Allocations
+            </div>
+            <div class="student-list">
+                <div>
+                    <span class="font-bold text-gray-700 w-1/2">Student Name</span>
+                    <span class="font-bold text-gray-700 w-1/4 text-right">Amount Paid</span>
+                </div>
+                <div>
+                    <span class="student-name">Nimo Hassan Muuse Ahmed</span>
+                    <span class="student-paid">$28.00</span>
+                </div>
+                <div>
+                    <span class="student-name">Sahra Hassan Muuse Ahmed</span>
+                    <span class="student-paid">$28.00</span>
+                </div>
+                <div>
+                    <span class="student-name">Luqmaan Muse Jam Ahmed</span>
+                    <span class="student-paid">$40.00</span>
+                </div>
+            </div>
+
+            <div class="total-summary">
+                <h3>Total Amount Paid:</h3>
+                <span>$96.00</span>
+            </div>
+
+            <div class="footer">
+                <p>Thank you for your payment!</p>
+                <p>This is an official payment receipt. Please keep it for your records.</p>
+                <p class="mt-2 text-gray-400">Generated on: June 17, 2025, 3:32:46 PM EAT</p>
+            </div>
+        </div>
+
+        <div class="button-group no-print">
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 4V3a1 1 0 011-1h8a1 1 0 011 1v1h.5A1.5 1.5 0 0118 5.5v7a1.5 1.5 0 01-1.5 1.5H15v2a1 1 0 01-1 1H6a1 1 0 01-1-1v-2H2.5A1.5 1.5 0 011 12.5v-7A1.5 1.5 0 012.5 4H5zm6 4a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+                </svg>
+                Print Receipt
+            </button>
+            <button onclick="window.close()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Close
+            </button>
+        </div>
+    </div>
+</body>
+</html>

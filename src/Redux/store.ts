@@ -51,6 +51,10 @@ import financialReducer from "../pages/Financial Reports/financialSlice";
 import studentBusReducer from "../Redux/studentBusSlice";
 import pdfUploadReducer from "../pages/PdfFiles/PdfUploadSlice";
 import employeeAdvanceReducer from "../Redux/Epmloyee/employeeAdvanceSlice";
+import familyPaymentReducer from "../Redux/Payment/familyPaymentSlice";
+import announcementReducer from "../pages/announcement/announcementSlice";
+import workPlanReducer from "../pages/WorkPlan/workPlanSlice";
+
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
@@ -106,6 +110,9 @@ export const store = configureStore({
     financial: financialReducer,
     studentBus: studentBusReducer,
     pdfUpload: pdfUploadReducer,
+    familyPayment: familyPaymentReducer,
+    announcement: announcementReducer,
+    workPlan: workPlanReducer,
   },
   devTools: true,
 });
