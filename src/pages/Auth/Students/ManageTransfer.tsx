@@ -60,7 +60,7 @@ const ManageTransfer = () => {
         return newState;
       });
     } catch (error) {
-      toast.error(`Transfer failed: ${error.message}`);
+      toast.error(`Transfer failed`);
     } finally {
       setUpdatingIds(prev => prev.filter(id => id !== studentId));
     }
@@ -153,7 +153,7 @@ const ManageTransfer = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {student.classname}
+                      {student.classes?.name || "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

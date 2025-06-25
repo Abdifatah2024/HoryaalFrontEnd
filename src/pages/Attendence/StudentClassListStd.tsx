@@ -106,13 +106,22 @@ const StudentClassListStd2: React.FC = () => {
             ? data.remark || "Absent - Other" 
             : `Absent - ${absentReasons.find(r => r.value === data.reason)?.label || "Unknown"}`;
 
+        // const resultAction = await dispatch(
+        //   markAttendance({
+        //     studentId: +id,
+        //     present: data.present,
+        //     remark,
+        //   })
+        // );
         const resultAction = await dispatch(
-          markAttendance({
-            studentId: +id,
-            present: data.present,
-            remark,
-          })
-        );
+  markAttendance({
+    studentId: +id,
+    present: data.present,
+    remark,
+    date: new Date().toISOString(), // Add date here
+  })
+);
+
 
         if (markAttendance.rejected.match(resultAction)) {
           throw new Error(resultAction.payload as string);

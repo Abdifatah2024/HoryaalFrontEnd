@@ -1,5 +1,3 @@
-// src/features/discipline/disciplineSlice.ts
-
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,6 +11,10 @@ export interface Discipline {
   actionTaken?: string;
   recordedAt?: string;
   isDeleted?: boolean;
+  fullname?: string;
+  student?: {
+    fullname: string;
+  }; // ✅ Fix: student is an object, not a string
 }
 
 export interface StudentVerification {

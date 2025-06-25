@@ -781,7 +781,7 @@ const StudentForm = () => {
       });
       setEditing(true);
     }
-  }, [studentState.student, editing]);
+  }, [studentState.student, editing, formik]);
 
   useEffect(() => {
     const trimmedPhone = formik.values.phone.trim();
@@ -817,7 +817,7 @@ const StudentForm = () => {
       toast.success("Sibling data auto-filled.");
       setPrefilled(true);
     }
-  }, [studentState.siblingStudent, editing, prefilled]);
+  }, [studentState.siblingStudent, editing, prefilled, formik]);
 
   return (
     <div className="p-4">
@@ -844,22 +844,42 @@ const StudentForm = () => {
       )}
 
       <form onSubmit={formik.handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.keys(formik.initialValues).map((key) => (
-          <div key={key} className="mb-2">
-            <label className="block text-sm font-medium capitalize mb-1">{key}</label>
-            <input
-              name={key}
-              value={formik.values[key as keyof typeof formik.values] || ""}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="w-full border px-3 py-2 rounded text-sm"
-              placeholder={`Enter ${key}`}
-            />
-            {formik.touched[key as keyof typeof formik.values] && formik.errors[key as keyof typeof formik.values] && (
-              <p className="text-red-500 text-sm mt-0.5">{formik.errors[key as keyof typeof formik.values]}</p>
-            )}
-          </div>
-        ))}
+     {Object.entries(formik.initialValues).map(([key]) => {
+  const value = formik.values[key as keyof typeof formik.values];
+
+  return (
+    <div key={key} className="mb-2">
+      <label className="block text-sm font-medium capitalize mb-1">{key}</label>
+
+      {typeof value === "boolean" ? (
+        <input
+          type="checkbox"
+          name={key}
+          checked={value}
+          onChange={(e) => formik.setFieldValue(key, e.target.checked)}
+          onBlur={formik.handleBlur}
+        />
+      ) : (
+        <input
+          type={typeof value === "number" ? "number" : "text"}
+          name={key}
+          value={value ?? ""}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="w-full border px-3 py-2 rounded text-sm"
+        />
+      )}
+
+      {formik.touched[key as keyof typeof formik.touched] &&
+        formik.errors[key as keyof typeof formik.errors] && (
+          <p className="text-red-500 text-sm mt-0.5">
+            {formik.errors[key as keyof typeof formik.errors]}
+          </p>
+        )}
+    </div>
+  );
+})}
+
 
         <div className="md:col-span-2 flex items-center justify-between mt-6">
           <button

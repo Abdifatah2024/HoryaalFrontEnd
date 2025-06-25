@@ -164,7 +164,12 @@ const ParentDashboard: React.FC = () => {
           .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
         `);
         printWindow.document.write('</style></head><body>');
-        printWindow.document.write('<h1>Exam Summary for ' + students.find(s => s.id === studentId)?.fullname + '</h1>');
+       printWindow.document.write(
+  '<h1>Exam Summary for ' +
+    (students.find(s => s.id === Number(studentId))?.fullname || 'Unknown Student') +
+  '</h1>'
+);
+
         printWindow.document.write(content.innerHTML);
         printWindow.document.write('</body></html>');
         printWindow.document.close();
@@ -204,6 +209,8 @@ const ParentDashboard: React.FC = () => {
       pdf.save(`${studentName}_Exam_Summary.pdf`);
     }
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col font-sans">
@@ -482,7 +489,7 @@ const ParentDashboard: React.FC = () => {
                 </h3>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => handlePrint(student.id)}
+                onClick={() => handlePrint(student.id.toString())}
                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                   >
                     <FiPrinter /> Print

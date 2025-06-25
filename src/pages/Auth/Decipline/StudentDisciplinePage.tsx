@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentDiscipline, clearStudentRecord } from "../../../Redux/Auth/Decipline/studentDisciplineSlice";
 import { RootState, AppDispatch } from "../../../Redux/store";
 import html2pdf from "html2pdf.js";
-import { FiSearch, FiX, FiPrinter, FiDownload, FiUser, FiCalendar, FiAward, FiAlertTriangle } from "react-icons/fi";
+import { FiSearch, FiX, FiPrinter, FiDownload, FiUser, FiCalendar, FiAward, FiAlertTriangle, FiCheckCircle} from "react-icons/fi";
 import { motion } from "framer-motion";
 
 const StudentDisciplinePage = () => {

@@ -42,7 +42,8 @@ const SameBusStudents: React.FC = () => {
   const handleFetch = () => {
     const idNum = Number(studentId.trim());
     if (!isNaN(idNum) && idNum > 0) {
-      dispatch(fetchStudentsWithSameBus(idNum));
+   dispatch(fetchStudentsWithSameBus(idNum.toString()));
+
     }
   };
 

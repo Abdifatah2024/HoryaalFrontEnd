@@ -1,14 +1,14 @@
 // features/students/DeleteStudent.tsx
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../Redux/store';
 import { deleteStudent, resetDeleteState, selectDeleteStudent } from '../../Redux/Auth/SofteDeleteSlice';
 // import { RootState } from '../../Redux/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiTrash2, FiX, FiCheck, FiAlertCircle, FiLoader } from 'react-icons/fi';
 
 const DeleteStudent: React.FC = () => {
-  const dispatch = useDispatch();
-  const { loading, error, success, deletedStudent } = useSelector(selectDeleteStudent);
+  const dispatch = useAppDispatch(); // ✅ no more errors
+const { loading, error, success, deletedStudent } = useAppSelector(selectDeleteStudent);
   const [studentId, setStudentId] = useState<string>('');
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
 

@@ -1,10 +1,10 @@
+// src/Redux/WorkPlan/workPlanSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const BASE_API_URL = "http://localhost:4000";
 const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
-// ----------------- Interfaces -----------------
 interface User {
   id: number;
   fullName: string;
@@ -42,6 +42,7 @@ interface WorkPlanState {
   workPlans: WorkPlan[];
   selectedPlan: WorkPlan | null;
   comments: WorkPlanComment[];
+  users: User[];
 }
 
 const initialState: WorkPlanState = {
@@ -51,10 +52,10 @@ const initialState: WorkPlanState = {
   workPlans: [],
   selectedPlan: null,
   comments: [],
+  users: [], // ✅ important for default
 };
 
-// ----------------- Thunks -----------------
-
+// Thunks
 export const fetchAllWorkPlansWithComments = createAsyncThunk(
   "workPlan/fetchAllWorkPlansWithComments",
   async (_, { rejectWithValue }) => {
@@ -73,14 +74,17 @@ export const fetchAllWorkPlansWithComments = createAsyncThunk(
   }
 );
 
-export const fetchWorkPlanById = createAsyncThunk(
-  "workPlan/fetchWorkPlanById",
-  async (id: number, { rejectWithValue }) => {
+export const fetchAllUsers = createAsyncThunk(
+  "workPlan/fetchAllUsers",
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${BASE_API_URL}/work-plans/${id}`);
+      const token = localStorage.getItem("Access_token");
+      const res = await axios.get(`${BASE_API_URL}/user/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return res.data;
     } catch {
-      return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+      return rejectWithValue("Failed to fetch users");
     }
   }
 );
@@ -89,7 +93,10 @@ export const createWorkPlan = createAsyncThunk(
   "workPlan/createWorkPlan",
   async (data: any, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${BASE_API_URL}/work-plans`, data);
+      const token = localStorage.getItem("Access_token");
+      const res = await axios.post(`${BASE_API_URL}/api/workplans`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return res.data.workPlan;
     } catch {
       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
@@ -101,7 +108,10 @@ export const updateWorkPlan = createAsyncThunk(
   "workPlan/updateWorkPlan",
   async ({ id, data }: { id: number; data: any }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${BASE_API_URL}/work-plans/${id}`, data);
+      const token = localStorage.getItem("Access_token");
+      const res = await axios.put(`${BASE_API_URL}/work-plans/${id}`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return res.data.workPlan;
     } catch {
       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
@@ -113,7 +123,10 @@ export const deleteWorkPlan = createAsyncThunk(
   "workPlan/deleteWorkPlan",
   async (id: number, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_API_URL}/work-plans/${id}`);
+      const token = localStorage.getItem("Access_token");
+      await axios.delete(`${BASE_API_URL}/api/workplans/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return id;
     } catch {
       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
@@ -146,7 +159,7 @@ export const addComment = createAsyncThunk(
   }
 );
 
-// ----------------- Slice -----------------
+// Slice
 const workPlanSlice = createSlice({
   name: "workPlan",
   initialState,
@@ -161,7 +174,6 @@ const workPlanSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch All WorkPlans with Comments
       .addCase(fetchAllWorkPlansWithComments.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -175,27 +187,18 @@ const workPlanSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // Fetch WorkPlan by ID
-      .addCase(fetchWorkPlanById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.users = action.payload || []; // ✅ safe default
       })
-      .addCase(fetchWorkPlanById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.selectedPlan = action.payload;
-      })
-      .addCase(fetchWorkPlanById.rejected, (state, action) => {
-        state.loading = false;
+      .addCase(fetchAllUsers.rejected, (state, action) => {
         state.error = action.payload as string;
       })
 
-      // Create
       .addCase(createWorkPlan.fulfilled, (state, action) => {
         state.workPlans.unshift(action.payload);
         state.success = "Work plan created.";
       })
 
-      // Update
       .addCase(updateWorkPlan.fulfilled, (state, action) => {
         const idx = state.workPlans.findIndex(
           (wp) => wp.id === action.payload.id
@@ -204,7 +207,6 @@ const workPlanSlice = createSlice({
         state.success = "Work plan updated.";
       })
 
-      // Delete
       .addCase(deleteWorkPlan.fulfilled, (state, action) => {
         state.workPlans = state.workPlans.filter(
           (wp) => wp.id !== action.payload
@@ -212,10 +214,8 @@ const workPlanSlice = createSlice({
         state.success = "Work plan deleted.";
       })
 
-      // Add Comment
       .addCase(addComment.fulfilled, (state, action) => {
         state.comments.unshift(action.payload);
-
         const plan = state.workPlans.find(
           (wp) => wp.id === action.payload.workPlanId
         );
