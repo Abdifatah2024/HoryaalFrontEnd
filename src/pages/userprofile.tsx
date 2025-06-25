@@ -127,7 +127,7 @@ const UserSearch = () => {
                                     <div>
                                         <p className="text-xs text-gray-400">Joined</p>
                                         <p className="text-gray-600">
-                                            {new Date(user.createdAt).toLocaleDateString('en-US', {
+                                            {new Date(user.createdAt ?? "").toLocaleDateString('en-US', {
                                                 year: 'numeric',
                                                 month: 'short',
                                                 day: 'numeric'

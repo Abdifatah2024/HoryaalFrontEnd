@@ -1,9 +1,9 @@
-// import { createAsyncThunk } from "@reduxjs/toolkit";
+// import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"; // Import PayloadAction
 // import axios, { AxiosError } from "axios";
 // import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-// // ========== Types ==========
-// interface Advance {
+// // ================== Types ===================
+// export interface Advance {
 //   id: number;
 //   amount: number;
 //   reason: string;
@@ -19,37 +19,186 @@
 //   };
 // }
 
+// interface CreateAdvanceResponse {
+//   message: string;
+//   advance: Advance;
+// }
+
+// interface GetAdvanceResponse {
+//   count: number;
+//   summary1: {
+//     totalAdvance: number;
+//     advancesBy: string | null;
+//     employee: {
+//       name: string;
+//       phone: string;
+//     } | null;
+//   };
+//   advances: Advance[];
+// }
+
 // interface UpdateAdvanceResponse {
 //   message: string;
 //   updated: Advance;
 // }
 
-// // ========== Thunk ==========
-// export const updateAdvance = createAsyncThunk<
-//   UpdateAdvanceResponse,
-//   { id: number; data: { amount: number; reason?: string } },
+// interface DeleteAdvanceResponse {
+//   id: number;
+//   message: string;
+// }
+
+// export interface AdvanceState {
+//   loading: boolean;
+//   error: string | null;
+//   success: string | null;
+//   advances: Advance[];
+//   totalAdvance: number;
+//   selectedAdvance: Advance | null;
+// }
+
+// const initialState: AdvanceState = {
+//   loading: false,
+//   error: null,
+//   success: null,
+//   advances: [],
+//   totalAdvance: 0,
+//   selectedAdvance: null,
+// };
+
+// // ================ Thunks =================
+// export const createAdvance = createAsyncThunk<
+//   CreateAdvanceResponse,
+//   { employeeId: number; data: any },
 //   { rejectValue: string }
 // >(
-//   "employeeAdvance/update",
-//   async ({ id, data }, { rejectWithValue }) => {
+//   "employeeAdvance/create",
+//   async ({ employeeId, data }, { rejectWithValue }) => {
 //     try {
 //       const token = localStorage.getItem("Access_token");
-//       const response = await axios.put(
-//         `${BASE_API_URL}/employee-advance/${id}`,
+//       const response = await axios.post(
+//         `${BASE_API_URL}/EmployeeAdvance/employees/${employeeId}/advance-and-update-income`,
 //         data,
-//         {
-//           headers: { Authorization: `Bearer ${token}` },
-//         }
+//         { headers: { Authorization: `Bearer ${token}` } }
 //       );
 //       return response.data;
 //     } catch (error) {
-//       const err = error as AxiosError<{ message: string }>;
+//       const err = error as AxiosError;
 //       return rejectWithValue(
 //         err.response?.data?.message || DEFAULT_ERROR_MESSAGE
 //       );
 //     }
 //   }
 // );
+
+// export const fetchEmployeeAdvances = createAsyncThunk<
+//   GetAdvanceResponse,
+//   { employeeId?: number; employeeName?: string; month?: number; year?: number },
+//   { rejectValue: string }
+// >(
+//   "employeeAdvance/fetch",
+//   async ({ employeeId, employeeName, month, year }, { rejectWithValue }) => {
+//     try {
+//       const params = new URLSearchParams();
+//       if (employeeId) params.append("employeeId", String(employeeId));
+//       if (employeeName) params.append("employeeName", employeeName);
+//       if (month) params.append("month", String(month));
+//       if (year) params.append("year", String(year));
+
+//       const token = localStorage.getItem("Access_token");
+//       const response = await axios.get(
+//         `${BASE_API_URL}/EmployeeAdvance/employee-advanceDetail/?${params.toString()}`,
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       const err = error as AxiosError;
+//       return rejectWithValue(
+//         err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//       );
+//     }
+//   }
+// );
+
+// // export const updateAdvance = createAsyncThunk<
+// //   UpdateAdvanceResponse,
+// //   {
+// //     id: number;
+// //     data: { amount: number; reason?: string; employeeId?: number };
+// //   },
+// //   { rejectValue: string }
+// // >("employeeAdvance/update", async ({ id, data }, { rejectWithValue }) => {
+// //   try {
+// //     const token = localStorage.getItem("Access_token");
+// //     const response = await axios.put(
+// //       `${BASE_API_URL}/employee-advance/${id}`,
+// //       data,
+// //       {
+// //         headers: { Authorization: `Bearer ${token}` },
+// //       }
+// //     );
+// //     return response.data;
+// //   } catch (error) {
+// //     const err = error as AxiosError;
+// //     return rejectWithValue(
+// //       err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+// //     );
+// //   }
+// // });
+// export const updateAdvance = createAsyncThunk<
+//   UpdateAdvanceResponse,
+//   {
+//     id: number;
+//     data: {
+//       amount: number;
+//       reason?: string;
+//       employeeId?: number;
+//       month?: number;
+//       year?: number; // ✅ added this
+//     };
+//   },
+//   { rejectValue: string }
+// >("employeeAdvance/update", async ({ id, data }, { rejectWithValue }) => {
+//   try {
+//     const token = localStorage.getItem("Access_token");
+//     const response = await axios.put(
+//       `${BASE_API_URL}/employee-advance/${id}`,
+//       data,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     const err = error as AxiosError;
+//     return rejectWithValue(
+//       err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//     );
+//   }
+// });
+
+// export const deleteAdvance = createAsyncThunk<
+//   DeleteAdvanceResponse,
+//   number,
+//   { rejectValue: string }
+// >("employeeAdvance/delete", async (id, { rejectWithValue }) => {
+//   try {
+//     const token = localStorage.getItem("Access_token");
+//     const response = await axios.delete(
+//       `${BASE_API_URL}/employee-advance/${id}`,
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//       }
+//     );
+//     return { id, message: response.data.message };
+//   } catch (error) {
+//     const err = error as AxiosError;
+//     return rejectWithValue(
+//       err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//     );
+//   }
+// });
 
 // // ================ Slice =================
 // const employeeAdvanceSlice = createSlice({
@@ -158,11 +307,11 @@
 //   employeeAdvanceSlice.actions; // Export both actions
 
 // export default employeeAdvanceSlice.reducer;
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"; // Import PayloadAction
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-// ================== Types ===================
+// =============== Types ===============
 export interface Advance {
   id: number;
   amount: number;
@@ -225,7 +374,7 @@ const initialState: AdvanceState = {
   selectedAdvance: null,
 };
 
-// ================ Thunks =================
+// =============== Thunks ===============
 export const createAdvance = createAsyncThunk<
   CreateAdvanceResponse,
   { employeeId: number; data: any },
@@ -244,7 +393,8 @@ export const createAdvance = createAsyncThunk<
     } catch (error) {
       const err = error as AxiosError;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        (err.response?.data as { message?: string })?.message ||
+          DEFAULT_ERROR_MESSAGE
       );
     }
   }
@@ -267,45 +417,19 @@ export const fetchEmployeeAdvances = createAsyncThunk<
       const token = localStorage.getItem("Access_token");
       const response = await axios.get(
         `${BASE_API_URL}/EmployeeAdvance/employee-advanceDetail/?${params.toString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;
     } catch (error) {
       const err = error as AxiosError;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        (err.response?.data as { message?: string })?.message ||
+          DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// export const updateAdvance = createAsyncThunk<
-//   UpdateAdvanceResponse,
-//   {
-//     id: number;
-//     data: { amount: number; reason?: string; employeeId?: number };
-//   },
-//   { rejectValue: string }
-// >("employeeAdvance/update", async ({ id, data }, { rejectWithValue }) => {
-//   try {
-//     const token = localStorage.getItem("Access_token");
-//     const response = await axios.put(
-//       `${BASE_API_URL}/employee-advance/${id}`,
-//       data,
-//       {
-//         headers: { Authorization: `Bearer ${token}` },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     const err = error as AxiosError;
-//     return rejectWithValue(
-//       err.response?.data?.message || DEFAULT_ERROR_MESSAGE
-//     );
-//   }
-// });
 export const updateAdvance = createAsyncThunk<
   UpdateAdvanceResponse,
   {
@@ -315,7 +439,7 @@ export const updateAdvance = createAsyncThunk<
       reason?: string;
       employeeId?: number;
       month?: number;
-      year?: number; // ✅ added this
+      year?: number;
     };
   },
   { rejectValue: string }
@@ -325,15 +449,14 @@ export const updateAdvance = createAsyncThunk<
     const response = await axios.put(
       `${BASE_API_URL}/employee-advance/${id}`,
       data,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return response.data;
   } catch (error) {
     const err = error as AxiosError;
     return rejectWithValue(
-      err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+      (err.response?.data as { message?: string })?.message ||
+        DEFAULT_ERROR_MESSAGE
     );
   }
 });
@@ -347,20 +470,19 @@ export const deleteAdvance = createAsyncThunk<
     const token = localStorage.getItem("Access_token");
     const response = await axios.delete(
       `${BASE_API_URL}/employee-advance/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return { id, message: response.data.message };
   } catch (error) {
     const err = error as AxiosError;
     return rejectWithValue(
-      err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+      (err.response?.data as { message?: string })?.message ||
+        DEFAULT_ERROR_MESSAGE
     );
   }
 });
 
-// ================ Slice =================
+// =============== Slice ===============
 const employeeAdvanceSlice = createSlice({
   name: "employeeAdvance",
   initialState,
@@ -371,14 +493,13 @@ const employeeAdvanceSlice = createSlice({
       state.success = null;
       state.selectedAdvance = null;
     },
-    // NEW: Action to specifically clear advances data and total
     clearAdvancesData: (state) => {
       state.advances = [];
       state.totalAdvance = 0;
-      state.loading = false; // Ensure loading is off
-      state.error = null; // Clear any existing errors
-      state.success = null; // Clear any existing success messages
-      state.selectedAdvance = null; // Also clear selected advance if any
+      state.loading = false;
+      state.error = null;
+      state.success = null;
+      state.selectedAdvance = null;
     },
   },
   extraReducers: (builder) => {
@@ -399,8 +520,8 @@ const employeeAdvanceSlice = createSlice({
 
       .addCase(fetchEmployeeAdvances.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear error on new fetch attempt
-        state.success = null; // Clear success on new fetch attempt
+        state.error = null;
+        state.success = null;
       })
       .addCase(fetchEmployeeAdvances.fulfilled, (state, action) => {
         state.loading = false;
@@ -410,8 +531,8 @@ const employeeAdvanceSlice = createSlice({
       .addCase(fetchEmployeeAdvances.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch advances";
-        state.advances = []; // Clear advances on error
-        state.totalAdvance = 0; // Reset total on error
+        state.advances = [];
+        state.totalAdvance = 0;
       })
 
       .addCase(updateAdvance.pending, (state) => {
@@ -422,14 +543,12 @@ const employeeAdvanceSlice = createSlice({
       .addCase(updateAdvance.fulfilled, (state, action) => {
         state.loading = false;
         state.success = action.payload.message;
-        // Update the specific advance in the list
         const index = state.advances.findIndex(
           (adv) => adv.id === action.payload.updated.id
         );
         if (index !== -1) {
           const oldAmount = state.advances[index].amount;
           state.advances[index] = action.payload.updated;
-          // Recalculate totalAdvance based on the change
           state.totalAdvance =
             state.totalAdvance - oldAmount + action.payload.updated.amount;
         }
@@ -450,7 +569,6 @@ const employeeAdvanceSlice = createSlice({
         state.advances = state.advances.filter(
           (a) => a.id !== action.payload.id
         );
-        // Recalculate total after deletion
         state.totalAdvance = state.advances.reduce(
           (sum, adv) => sum + adv.amount,
           0
@@ -464,6 +582,5 @@ const employeeAdvanceSlice = createSlice({
 });
 
 export const { clearAdvanceState, clearAdvancesData } =
-  employeeAdvanceSlice.actions; // Export both actions
-
+  employeeAdvanceSlice.actions;
 export default employeeAdvanceSlice.reducer;

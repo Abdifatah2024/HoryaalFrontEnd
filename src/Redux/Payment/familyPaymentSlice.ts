@@ -20,6 +20,7 @@ interface StudentBalance {
 interface FamilyBalance {
   parentName: string;
   phone: string;
+  familyName: string; // ✅ Add this line
   totalFamilyBalance: number;
   students: StudentBalance[];
 }

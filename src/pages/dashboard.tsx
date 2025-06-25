@@ -32,7 +32,6 @@ import {
 } from 'react-icons/fi';
 import { HiOutlineAcademicCap } from 'react-icons/hi';
 import { motion } from 'framer-motion';
-import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
 // Define Interfaces for better type checking (if using TypeScript)
 interface JwtPayload {
