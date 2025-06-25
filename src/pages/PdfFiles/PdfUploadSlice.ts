@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { AxiosError } from "axios"; // ✅ This is required
+
 import { BASE_API_URL } from "../../Constant";
 
 interface Document {

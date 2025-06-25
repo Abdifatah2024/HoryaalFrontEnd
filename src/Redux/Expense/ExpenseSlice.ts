@@ -59,25 +59,24 @@ const getToken = () => {
 };
 
 // Get all expenses
-export const getAllExpenses = createAsyncThunk<
-  any,
-  any,
-  { rejectValue: APIError }
->("expenses/getAll", async (filters, { rejectWithValue }) => {
-  try {
-    const token = getToken();
-    const res = await axios.get(`${BASE_API_URL}/expenses`, {
-      params: filters,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
-  } catch (error) {
-    const err = error as AxiosError<APIError>;
-    return rejectWithValue(
-      err.response?.data || { message: DEFAULT_ERROR_MESSAGE }
-    );
+export const getAllExpenses = createAsyncThunk<any, { rejectValue: APIError }>(
+  "expenses/getAll",
+  async (filters, { rejectWithValue }) => {
+    try {
+      const token = getToken();
+      const res = await axios.get(`${BASE_API_URL}/expenses`, {
+        params: filters,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    } catch (error) {
+      const err = error as AxiosError<APIError>;
+      return rejectWithValue(
+        err.response?.data || { message: DEFAULT_ERROR_MESSAGE }
+      );
+    }
   }
-});
+);
 
 // Create expense
 export const createExpense = createAsyncThunk<
