@@ -1,7 +1,17 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
+import { checkAuth } from "./Redux/Auth/LoginSlice";
 
-import { RouterProvider } from "react-router-dom"
-import { router } from "./routes"
+const App = () => {
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(checkAuth()); // ✅ load access token on app start
+  }, [dispatch]);
 
-const App = () => <RouterProvider router={router} />
-export default App
+  return <RouterProvider router={router} />;
+};
+
+export default App;

@@ -179,6 +179,8 @@ const SidebarLayout = () => {
           { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
           { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
           { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
+          { title: "Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAvanceRemainder" },
+          { title: "All Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeeAdvance" },
           { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },
           { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
           { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
@@ -239,6 +241,7 @@ const SidebarLayout = () => {
           ...(isAdmin
             ? [
                 { title: "Today Absent", icon: <AiOutlineSearch />, path: "/dashboard/TodayAbsent" },
+                { title: "Parent Absent Call", icon: <AiOutlineSearch />, path: "/dashboard/AbsentReport" },
                 { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
                 { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
               ]

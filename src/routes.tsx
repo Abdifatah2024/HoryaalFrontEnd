@@ -25,7 +25,7 @@ import ChangePassword from './pages/ChangePassword';
 import PhotoUpload from './pages/PhotoUpload';
 
 // Student Management
-import StudentForm from './pages/Auth/StdReg';
+import StudentForm from './pages/Auth/StudentRegister';
 import RegisterMultipleStudents from './pages/Auth/RegisterMultipleStudents';
 import UploadStudents from './pages/Auth/UploadStudentFromExcel';
 import StudentList from './Redux/Auth/StudentList';
@@ -108,6 +108,9 @@ import WorkPlanList from './pages/WorkPlan/WorkPlanList';
 import WorkPlanListPage from './pages/WorkPlan/WorkPlanList';
 import WorkPlanCommentsPage from './pages/WorkPlan/WorkPlanCommentsPage';
 import ManageTransfer from './pages/Auth/Students/ManageTransfer';
+import EmployeeAdvanceBalance from './pages/Employee/EmployeeAdvanceBalance';
+import AllEmployeeAdvances from './pages/Employee/AllEmployeeAdvances';
+import AttendanceReport from './pages/Attendence/AttendanceReport';
 
 export const router = createBrowserRouter([
   {
@@ -194,11 +197,13 @@ export const router = createBrowserRouter([
                   { path: 'Decipline', element: <DisciplinePage /> },
                   { path: 'GetOneStudentDecipline', element: <StudentDisciplinePage /> },
                   { path: 'MarkAtetendenceClass', element: <StudentClassListStd2 /> },
+                  { path: 'AbsentReport', element: <AttendanceReport /> },
                   { path: 'PaidFee', element: <PaymentForm /> },
                   { path: 'AbsentByDate', element: <AbsentStudentsByDate /> },
                   { path: 'UpdateExam', element: <UpdateStudentScores /> },
                   { path: 'UpdateStudentParent', element: <UpdateParentForm /> },
                   { path: 'EmolpoyeeAdvacne', element: <EmployeeAdvancePage/> },
+                  { path: 'AllEmployeeAdvance', element: <AllEmployeeAdvances/> },
                   { path: 'ExpensesManagement', element: <ExpensesPage/> },
                   { path: 'StudentWithBalance', element: <UnpaidStudentsList/> },
                   { path: 'StudentWithSameBus', element: <SameBusStudents/> },
@@ -214,6 +219,7 @@ export const router = createBrowserRouter([
                   { path: 'WorkPlan', element: <WorkPlanList/> },
                 { path: 'WorkPlanAndComment', element: < WorkPlanCommentsPage/> },
                 { path: 'CheckTransfer', element: < ManageTransfer/> },
+                { path: 'EmployeeAvanceRemainder', element: < EmployeeAdvanceBalance/> },
 
                
 
