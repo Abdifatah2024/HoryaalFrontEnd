@@ -111,6 +111,13 @@ import ManageTransfer from './pages/Auth/Students/ManageTransfer';
 import EmployeeAdvanceBalance from './pages/Employee/EmployeeAdvanceBalance';
 import AllEmployeeAdvances from './pages/Employee/AllEmployeeAdvances';
 import AttendanceReport from './pages/Attendence/AttendanceReport';
+import { DailyAttendanceOverview } from './pages/Attendence/DailyAttendanceOverview';
+import { ClassAbsentDashboard } from './pages/Attendence/ClassAttendanceSummary';
+import { ClassMonthlyAttendanceSummary } from './pages/Attendence/ClassMonthlyAttendanceSummary';
+import AssetManager from './Redux/Auth/Asset/AssetManager';
+import AssetReport from './Redux/Auth/Asset/AssetReport';
+import VoucherList from './pages/Financial Reports/VoucherList';
+import UserPaymentCollection from './pages/Financial Reports/UserPaymentCollection';
 
 export const router = createBrowserRouter([
   {
@@ -200,6 +207,9 @@ export const router = createBrowserRouter([
                   { path: 'AbsentReport', element: <AttendanceReport /> },
                   { path: 'PaidFee', element: <PaymentForm /> },
                   { path: 'AbsentByDate', element: <AbsentStudentsByDate /> },
+                  { path: 'DailyAttendceReport', element: <DailyAttendanceOverview /> },
+                  { path: 'MonthAttendceReport', element: <ClassAbsentDashboard /> },
+                  { path: 'ClassAttendenceReport', element: <ClassMonthlyAttendanceSummary/> },
                   { path: 'UpdateExam', element: <UpdateStudentScores /> },
                   { path: 'UpdateStudentParent', element: <UpdateParentForm /> },
                   { path: 'EmolpoyeeAdvacne', element: <EmployeeAdvancePage/> },
@@ -220,6 +230,10 @@ export const router = createBrowserRouter([
                 { path: 'WorkPlanAndComment', element: < WorkPlanCommentsPage/> },
                 { path: 'CheckTransfer', element: < ManageTransfer/> },
                 { path: 'EmployeeAvanceRemainder', element: < EmployeeAdvanceBalance/> },
+                { path: 'AssetManager', element: < AssetManager/> },
+                { path: 'AssetReport', element: <AssetReport/> },
+                { path: 'VoucherList', element: <VoucherList/> },
+                { path: 'UserCollection', element: <UserPaymentCollection/> },
 
                
 

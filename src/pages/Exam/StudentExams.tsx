@@ -208,7 +208,7 @@ import {
   fetchStudentExams,
   clearStudentExams,
 } from "../../Redux/Exam/studentExamsSlice";
-import logo from '../../assets/logo.png'; // Adjust path as needed
+import logo from '../../../public/assets/logo.png'; // Adjust path as needed
 
 
 const StudentExams = () => {

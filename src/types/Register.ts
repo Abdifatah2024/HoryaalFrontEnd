@@ -58,6 +58,12 @@ export interface AttendancePayload {
 //   isdeleted: boolean;
 //   userid: number;
 // }
+export enum SchoolType {
+  PRIVATE = "PRIVATE",
+  PUBLIC = "PUBLIC",
+  NOT_SPECIFIC = "NOT_SPECIFIC",
+}
+
 export interface Student {
   firstname: string;
   middlename?: string;
@@ -69,10 +75,12 @@ export interface Student {
   gender?: string;
   Age?: string | number;
   fee?: string | number;
-  bus?: string; // ✅ Make sure this is string
+  bus?: string;
   address?: string;
   previousSchool?: string;
+  previousSchoolType?: SchoolType;
   motherName?: string;
+  fourtname?: string;
 }
 
 export interface RegisterStudentsResponse {

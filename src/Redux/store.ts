@@ -54,6 +54,8 @@ import employeeAdvanceReducer from "../Redux/Epmloyee/employeeAdvanceSlice";
 import familyPaymentReducer from "../Redux/Payment/familyPaymentSlice";
 import announcementReducer from "../pages/announcement/announcementSlice";
 import workPlanReducer from "../pages/WorkPlan/workPlanSlice";
+import assetReducer from "../Redux/Auth/Asset/assetSlice";
+import voucherReducer from "../pages/Financial Reports/VoucherSlice";
 
 export const store = configureStore({
   reducer: {
@@ -113,6 +115,8 @@ export const store = configureStore({
     familyPayment: familyPaymentReducer,
     announcement: announcementReducer,
     workPlan: workPlanReducer,
+    assets: assetReducer,
+    voucher: voucherReducer,
   },
   devTools: true,
 });

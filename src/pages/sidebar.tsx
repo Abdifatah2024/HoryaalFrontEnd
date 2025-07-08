@@ -178,6 +178,7 @@ const SidebarLayout = () => {
           { title: "Paid", icon: <AiOutlineTeam />, path: "/dashboard/Paypayment" },
           { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
           { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+          { title: "Voucher Management", icon: <AiOutlineTeam />, path: "/dashboard/VoucherList" },
           { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
           { title: "Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAvanceRemainder" },
           { title: "All Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeeAdvance" },
@@ -188,6 +189,7 @@ const SidebarLayout = () => {
           { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
           { title: "Update Payment", icon: <AiOutlineTeam />, path: "/dashboard/UpdatedPayment" },
           { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
+          { title: "Casheir Collection", icon: <AiOutlineTeam />, path: "/dashboard/UserCollection" },
 
         ],
       });
@@ -242,6 +244,8 @@ const SidebarLayout = () => {
             ? [
                 { title: "Today Absent", icon: <AiOutlineSearch />, path: "/dashboard/TodayAbsent" },
                 { title: "Parent Absent Call", icon: <AiOutlineSearch />, path: "/dashboard/AbsentReport" },
+                { title: "Class Attendance Summary", icon: <AiOutlineSearch />, path: "/dashboard/MonthAttendceReport" },
+                { title: "Class Attendance All Months", icon: <AiOutlineSearch />, path: "/dashboard/ClassAttendenceReport" },
                 { title: "Delete & Update", icon: <AiOutlineSearch />, path: "/dashboard/DeleteAttendace" },
                 { title: "Top Absentees", icon: <AiOutlineSearch />, path: "/dashboard/GetTobAbsent" },
               ]
@@ -258,6 +262,16 @@ const SidebarLayout = () => {
           { title: "Manage Discipline", icon: <AiOutlineSetting />, path: "/dashboard/Decipline" },
           { title: "Get One Student", icon: <AiOutlineSetting />, path: "/dashboard/GetOneStudentDecipline" },
         ],
+      });
+    }
+      if (isAdmin || isUser) {
+      items.push({
+        title: "Asset Manager",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          { title: "Asset Manager", icon: <AiOutlineSetting />, path: "/dashboard/AssetManager" },
+          { title: "Asset Summary Report", icon: <AiOutlineSetting />, path: "/dashboard/AssetReport" },
+               ],
       });
     }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/store";
 import {
   fetchFamilyBalance,
+  fetchStudentBalance,
   payFamilyMonthly,
   payStudentMonthly,
   clearFamilyPaymentStatus,
@@ -18,10 +19,11 @@ const FamilyPayment: React.FC = () => {
     paymentError,
     paymentSuccess,
     checkLoading,
-    lastPaymentInfo,
+    // lastPaymentInfo,
   } = useAppSelector((state) => state.familyPayment);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchSingleStudent, setSearchSingleStudent] = useState(false);
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [discount, setDiscount] = useState<number>(0);
@@ -31,61 +33,106 @@ const FamilyPayment: React.FC = () => {
   const [edahabNumber, setEdahabNumber] = useState("");
   const [isDiscountVisible, setIsDiscountVisible] = useState(false);
   const [numberChecked, setNumberChecked] = useState(false);
-  const [paySingle, setPaySingle] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
-    null
-  );
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [showStudentModal, setShowStudentModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState<{
+    type: "family" | "student";
+    payload: any;
+  } | null>(null);
 
-  // Calculate total balance using useMemo for efficiency
+  const [usedNumberInfo, setUsedNumberInfo] = useState<null | {
+    message: string;
+    description?: string;
+    createdAt?: string;
+    paidFor?: { student: string; month: number; year: number; amount: string }[];
+  }>(null);
+
+  const currentStudent = useMemo(() => {
+    if (selectedStudentId && family?.students?.length) {
+      return family.students.find((s) => s.studentId === selectedStudentId) || family.students[0];
+    }
+    if (family?.students?.length) {
+      return family.students[0];
+    }
+    return null;
+  }, [family, selectedStudentId]);
+
+  const displayBalance = useMemo(() => {
+    if (!currentStudent) return 0;
+    return currentStudent.balance || 0;
+  }, [currentStudent]);
+
   const totalBalance = useMemo(() => {
     if (!family || !family.students) return 0;
-    return family.students.reduce((sum, student) => sum + student.balance, 0);
+    return family.students.reduce((sum, s) => sum + (s.balance || 0), 0);
   }, [family]);
 
-  const handleSearch = (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSearch = () => {
     const query = searchQuery.trim();
     if (!query) {
-      toast.error("Please enter a phone number or family name to search.");
+      toast.error(
+        searchSingleStudent
+          ? "Enter a student ID."
+          : "Enter a phone number or family name."
+      );
       return;
     }
-    dispatch(fetchFamilyBalance(query));
+    if (searchSingleStudent) {
+      dispatch(fetchStudentBalance(query));
+    } else {
+      dispatch(fetchFamilyBalance(query));
+    }
     dispatch(clearLastPaymentInfo());
   };
 
   const handleCheckNumber = () => {
     const number = paymentMethod === "ZAAD" ? zaadNumber : edahabNumber;
     if (!number) {
-      toast.error("Please enter the payment number to check.");
+      toast.error("Enter the payment number to check.");
       return;
     }
+
+    setUsedNumberInfo(null);
+
     dispatch(
       checkPaymentNumberUsed({ number, month, year, method: paymentMethod })
     ).then((res) => {
       const success = res.meta.requestStatus === "fulfilled";
       setNumberChecked(success);
-     if (
-  success &&
-  res.payload &&
-  typeof res.payload === "object" &&
-  "message" in res.payload
-) {
-  toast.success((res.payload as { message: string }).message);
-}
-      
+
+      if (
+        success &&
+        res.payload &&
+        typeof res.payload === "object" &&
+        "alreadyUsed" in res.payload &&
+        res.payload.alreadyUsed === true
+      ) {
+        setUsedNumberInfo(res.payload);
+        toast.error(res.payload.message);
+      } else if (
+        success &&
+        res.payload &&
+        typeof res.payload === "object" &&
+        "message" in res.payload
+      ) {
+        toast.success(res.payload.message);
+      }
     });
+
     dispatch(checkLastPaymentByNumber({ number, method: paymentMethod }));
   };
 
   const handlePay = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!family) {
-      toast.error("Please search for a family first.");
+      toast.error("Search for a family or student first.");
       return;
     }
+
     if (paymentMethod !== "Cash" && !numberChecked) {
-      toast.error("Please check the payment number before submitting.");
+      toast("⚠️ You have not verified this payment number.", { icon: "⚠️" });
       return;
     }
 
@@ -96,36 +143,52 @@ const FamilyPayment: React.FC = () => {
         ? `E-dahab - ${edahabNumber}`
         : paymentMethod;
 
-    if (paySingle) {
-      if (!selectedStudentId) {
-        toast.error("Please select a student to pay for.");
+    if (searchSingleStudent) {
+      if (!currentStudent) {
+        toast.error("No student found.");
         return;
       }
-      dispatch(
-        payStudentMonthly({
-          studentId: selectedStudentId,
+      setPendingPayment({
+        type: "student",
+        payload: {
+          studentId: currentStudent.studentId,
           month,
           year,
           discount,
           discountReason,
           description: desc,
-        })
-      );
+        },
+      });
     } else {
-      const isPhone = /^\d{6,}$/.test(searchQuery.trim());
-      dispatch(
-        payFamilyMonthly({
-          ...(isPhone
-            ? { parentPhone: searchQuery.trim() }
-            : { familyName: searchQuery.trim() }),
+      setPendingPayment({
+        type: "family",
+        payload: {
+          parentPhone: family.phone,
           month,
           year,
           discount,
           discountReason,
           description: desc,
-        })
-      );
+        },
+      });
     }
+    setShowConfirmModal(true);
+  };
+
+  const confirmPayment = () => {
+    if (!pendingPayment) return;
+    if (pendingPayment.type === "student") {
+      dispatch(payStudentMonthly(pendingPayment.payload));
+    } else {
+      dispatch(payFamilyMonthly(pendingPayment.payload));
+    }
+    setShowConfirmModal(false);
+    setPendingPayment(null);
+  };
+
+  const cancelPayment = () => {
+    setShowConfirmModal(false);
+    setPendingPayment(null);
   };
 
   useEffect(() => {
@@ -139,9 +202,10 @@ const FamilyPayment: React.FC = () => {
       setNumberChecked(false);
       setIsDiscountVisible(false);
       setSelectedStudentId(null);
-      setSearchQuery(""); // Clear search query after successful payment
-      dispatch(clearLastPaymentInfo()); // Clear last payment info
-      setShowStudentModal(false); // Close modal on success
+      setSearchQuery("");
+      dispatch(clearLastPaymentInfo());
+      setShowStudentModal(false);
+      setUsedNumberInfo(null);
     }
     if (paymentError) {
       toast.error(paymentError);
@@ -150,346 +214,302 @@ const FamilyPayment: React.FC = () => {
   }, [paymentSuccess, paymentError, dispatch]);
 
   return (
-    <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-2xl max-w-4xl my-8">
-      <h2 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
-        Family Payment Dashboard
-      </h2>
-      <form onSubmit={handlePay} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column: Search, Family Details, Pay Single */}
-        <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold text-blue-700 mb-4 border-b pb-2">
-            Family Information
-          </h3>
-          {/* Search Family Section */}
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1 w-full">
-              <label
-                htmlFor="searchQuery"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Search Family (Name or Phone)
-              </label>
-              <input
-                type="text"
-                id="searchQuery"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                placeholder="e.g., 615xxxxxx or Hussein Family"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
-            >
-              Search
-            </button>
-          </div>
+  <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-2xl max-w-4xl my-8">
+    <h2 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
+      {searchSingleStudent ? "Single Student Payment" : "Family Payment Dashboard"}
+    </h2>
 
-          {/* Family and Student Details Summary */}
-          {family && (
-            <div className="border border-gray-200 rounded-xl p-5 bg-blue-50/50 shadow-sm">
-              <h4 className="font-bold text-xl text-blue-800 mb-3">
-                Family: {family.familyName}
-              </h4>
-              <div className="flex justify-between items-center mb-3">
-                <p className="text-gray-700 text-md font-semibold">
-                  Total Balance:{" "}
-                  <span className="text-green-700 text-lg">
-                    ${totalBalance.toFixed(2)}
-                  </span>
-                </p>
-                {family?.students?.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowStudentModal(true)}
-                    className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm transition duration-150 ease-in-out"
-                  >
-                    View Student Details ({family?.students?.length})
-                  </button>
-                )}
-              </div>
-              {family?.students?.length === 0 && (
-                <p className="text-gray-600 italic">
-                  No students found for this family.
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Pay Single Student Option */}
-          <div className="flex items-center gap-3 mt-6">
-            <input
-              type="checkbox"
-              checked={paySingle}
-              onChange={() => setPaySingle(!paySingle)}
-              id="paySingle"
-              className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-            />
-            <label
-              htmlFor="paySingle"
-              className="text-base font-medium text-gray-800 cursor-pointer"
-            >
-              Pay for a Single Student
-            </label>
-          </div>
-
-         {paySingle && family?.students?.length > 0 && (
-  <div>
-    <label htmlFor="selectStudent" className="block text-sm font-medium text-gray-700 mb-1">
-      Select Student
-    </label>
-    <select
-      id="selectStudent"
-      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-      value={selectedStudentId ?? ""}
-      onChange={(e) => setSelectedStudentId(Number(e.target.value))}
-    >
-      <option value="">-- Select a Student --</option>
-      {family?.students?.map((s) => (
-        <option key={s.studentId} value={s.studentId}>
-          {s.fullname} (${s.balance.toFixed(2)})
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-
-        </div>
-
-        {/* Right Column: Payment Details, Discount, Submit */}
-        <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold text-green-700 mb-4 border-b pb-2">
-            Payment Details
-          </h3>
-          {/* Month and Year Selection */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="month"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Month
-              </label>
-              <input
-                type="number"
-                id="month"
-                min={1}
-                max={12}
-                value={month}
-                onChange={(e) => setMonth(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="year"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Year
-              </label>
-              <input
-                type="number"
-                id="year"
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              />
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div>
-            <label
-              htmlFor="paymentMethod"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Payment Method
-            </label>
-            <select
-              id="paymentMethod"
-              value={paymentMethod}
-              onChange={(e) => {
-                setPaymentMethod(e.target.value);
-                setNumberChecked(false); // Reset check when method changes
-                dispatch(clearLastPaymentInfo()); // Clear last payment info when method changes
-              }}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-            >
-              <option value="Cash">Cash</option>
-              <option value="ZAAD">ZAAD</option>
-              <option value="E-dahab">E-dahab</option>
-            </select>
-          </div>
-
-          {/* Mobile Payment Number Check */}
-          {(paymentMethod === "ZAAD" || paymentMethod === "E-dahab") && (
-            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50/50 shadow-sm">
-              <h4 className="text-lg font-semibold text-gray-800 mb-3">
-                Mobile Payment Verification
-              </h4>
-              <div className="flex flex-col sm:flex-row gap-4 items-end">
-                <div className="flex-1 w-full">
-                  <label
-                    htmlFor="paymentNumber"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    {paymentMethod === "ZAAD" ? "ZAAD" : "E-dahab"} Number
-                  </label>
-                  <input
-                    type="text"
-                    id="paymentNumber"
-                    value={
-                      paymentMethod === "ZAAD" ? zaadNumber : edahabNumber
-                    }
-                    onChange={(e) =>
-                      paymentMethod === "ZAAD"
-                        ? setZaadNumber(e.target.value)
-                        : setEdahabNumber(e.target.value)
-                    }
-                    placeholder="Enter payment number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCheckNumber}
-                  className={`w-full sm:w-auto font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105
-                ${
-                  numberChecked
-                    ? "bg-green-500 text-white"
-                    : "bg-yellow-500 hover:bg-yellow-600 text-white"
-                }
-              `}
-                  disabled={checkLoading}
-                >
-                  {checkLoading
-                    ? "Checking..."
-                    : numberChecked
-                    ? "Checked!"
-                    : "Check Number"}
-                </button>
-              </div>
-              {lastPaymentInfo?.message && (
-                <p className="text-sm text-gray-600 italic bg-gray-100 p-3 rounded-md border border-gray-200 mt-4">
-                  <span className="font-semibold">Last Payment Info:</span>{" "}
-                  {lastPaymentInfo.message}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Discount Section */}
-          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50/50 shadow-sm">
-            <h4 className="text-lg font-semibold text-gray-800 mb-3">
-              Discount Options
-            </h4>
-            <label className="flex items-center gap-2 text-base font-medium text-gray-800 cursor-pointer mb-3">
-              <input
-                type="checkbox"
-                checked={isDiscountVisible}
-                onChange={() => setIsDiscountVisible(!isDiscountVisible)}
-                className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-              />
-              Apply Discount
-            </label>
-            {isDiscountVisible && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="discountAmount"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Discount Amount ($)
-                  </label>
-                  <input
-                    type="number"
-                    id="discountAmount"
-                    placeholder="e.g., 10"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                    value={discount}
-                    onChange={(e) => setDiscount(Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="discountReason"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Reason for Discount
-                  </label>
-                  <input
-                    type="text"
-                    id="discountReason"
-                    placeholder="e.g., Early payment, Sibling discount"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-                    value={discountReason}
-                    onChange={(e) => setDiscountReason(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Submit Button */}
+    <form onSubmit={handlePay} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Left Column */}
+      <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+        <div className="flex flex-col sm:flex-row gap-4 items-end">
+          <input
+            type="text"
+            placeholder={searchSingleStudent ? "Student ID" : "Family name or phone number"}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 border border-gray-300 rounded-lg py-2 px-4"
+          />
           <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 mt-auto"
-            // mt-auto pushes the button to the bottom if the right column is shorter
+            type="button"
+            onClick={handleSearch}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg"
           >
-            Submit Payment
+            Search
           </button>
         </div>
-      </form>
 
-      {/* Student List Pop-up (Modal) */}
-      {showStudentModal && family && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold text-gray-800">
-                Students of {family.familyName}
-              </h3>
-              <button
-                onClick={() => setShowStudentModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-3xl font-semibold leading-none"
-              >
-                &times;
-              </button>
-            </div>
-            {family?.students?.length > 0 ? (
-              <ul className="space-y-3 max-h-80 overflow-y-auto pr-2">
-                {family?.students?.map((s) => (
-                  <li
-                    key={s.studentId}
-                    className="flex justify-between items-center text-base text-gray-800 bg-gray-50 p-3 rounded-lg border border-gray-100"
-                  >
-                    <span className="font-medium">{s.fullname}</span>
-                    <span className="font-semibold text-green-600">
-                      ${s.balance.toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-600 italic">
-                No students found for this family.
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={searchSingleStudent}
+            onChange={() => setSearchSingleStudent(!searchSingleStudent)}
+            className="h-5 w-5 text-blue-600 rounded"
+          />
+          <label className="text-base font-medium text-gray-800">Single Student</label>
+        </div>
+
+        {family && (
+          <div className="border border-gray-200 rounded-xl p-5 bg-blue-50/50 shadow-sm space-y-4">
+            <div>
+              <h4 className="font-bold text-xl text-blue-800 mb-1">
+                Parent: {family.parentName}
+              </h4>
+              <p className="text-gray-700 font-medium">Phone: {family.phone}</p>
+              <p className="text-gray-700 font-medium">
+                Total Balance:{" "}
+                <span className="text-green-700 font-semibold">
+                  ${family.totalFamilyBalance?.toFixed(2)}
+                </span>
               </p>
-            )}
-            <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-              <span className="text-lg font-bold text-gray-800">
-                Overall Total:
-              </span>
-              <span className="text-2xl font-bold text-green-700">
-                ${totalBalance.toFixed(2)}
-              </span>
+              {family.students?.length > 1 && (
+                <button
+                  onClick={() => setShowStudentModal(true)}
+                  className="mt-2 text-sm text-blue-600 underline"
+                >
+                  View Students ({family.students.length})
+                </button>
+              )}
             </div>
+            {currentStudent && (
+              <div className="border-t border-gray-300 pt-4">
+                <h4 className="font-bold text-lg text-blue-700">
+                  Student: {currentStudent.fullname}
+                </h4>
+                <p className="text-gray-700 font-medium">
+                  Balance:{" "}
+                  <span className="text-green-700 font-semibold">
+                    ${currentStudent.balance?.toFixed(2)}
+                  </span>
+                </p>
+                {currentStudent.months?.length > 0 && (
+                  <ul className="mt-2 list-disc pl-5 text-gray-700 text-sm">
+                    {currentStudent.months.map((m, idx) => (
+                      <li key={idx}>
+                        {m.month}/{m.year}: ${m.due?.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Right Column */}
+      <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Month</label>
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Year</label>
+            <input
+              type="number"
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded px-4 py-2"
+            />
           </div>
         </div>
-      )}
-    </div>
-  );
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Payment Method</label>
+          <select
+            value={paymentMethod}
+            onChange={(e) => {
+              setPaymentMethod(e.target.value);
+              setNumberChecked(false);
+              setUsedNumberInfo(null);
+              dispatch(clearLastPaymentInfo());
+            }}
+            className="w-full border border-gray-300 rounded px-4 py-2"
+          >
+            <option value="Cash">Cash</option>
+            <option value="ZAAD">ZAAD</option>
+            <option value="E-dahab">E-dahab</option>
+          </select>
+        </div>
+
+        {(paymentMethod === "ZAAD" || paymentMethod === "E-dahab") && (
+          <div className="space-y-2 border border-gray-200 p-4 rounded bg-gray-50">
+            <label className="block text-sm font-medium mb-1">
+              {paymentMethod} Number
+            </label>
+            <input
+              type="text"
+              value={paymentMethod === "ZAAD" ? zaadNumber : edahabNumber}
+              onChange={(e) =>
+                paymentMethod === "ZAAD"
+                  ? setZaadNumber(e.target.value)
+                  : setEdahabNumber(e.target.value)
+              }
+              className="w-full border border-gray-300 rounded px-4 py-2"
+            />
+            <button
+              type="button"
+              onClick={handleCheckNumber}
+              className={`w-full mt-2 py-2 rounded text-white font-semibold ${
+                numberChecked
+                  ? "bg-green-500"
+                  : "bg-yellow-500 hover:bg-yellow-600"
+              }`}
+              disabled={checkLoading}
+            >
+              {checkLoading
+                ? "Checking..."
+                : numberChecked
+                ? "Checked!"
+                : "Check Number"}
+            </button>
+
+            {/* Used Number Info Display */}
+            {usedNumberInfo && (
+              <div className="mt-3 text-sm bg-red-50 border border-red-200 rounded p-3 space-y-2">
+                <p className="font-semibold text-red-700">{usedNumberInfo.message}</p>
+                {usedNumberInfo.description && (
+                  <p><span className="font-medium">Description:</span> {usedNumberInfo.description}</p>
+                )}
+                {usedNumberInfo.createdAt && (
+                  <p><span className="font-medium">Created At:</span> {new Date(usedNumberInfo.createdAt).toLocaleString()}</p>
+                )}
+                {usedNumberInfo.paidFor?.length > 0 && (
+                  <div>
+                    <p className="font-medium mb-1">Paid For:</p>
+                    <ul className="list-disc pl-5 text-gray-700">
+                      {usedNumberInfo.paidFor.map((entry, idx) => (
+                        <li key={idx}>
+                          {entry.student} — {entry.month}/{entry.year} — ${entry.amount}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="border border-gray-200 rounded p-4 bg-gray-50">
+          <label className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              checked={isDiscountVisible}
+              onChange={() => setIsDiscountVisible(!isDiscountVisible)}
+              className="h-5 w-5 text-blue-600"
+            />
+            Apply Discount
+          </label>
+          {isDiscountVisible && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Discount Amount ($)
+                </label>
+                <input
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded px-4 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Reason</label>
+                <input
+                  type="text"
+                  value={discountReason}
+                  onChange={(e) => setDiscountReason(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-4 py-2"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded"
+        >
+          Submit Payment
+        </button>
+      </div>
+    </form>
+
+    {/* Confirm Modal */}
+    {showConfirmModal && (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div className="bg-white p-6 rounded-lg w-full max-w-md space-y-4">
+          <h3 className="text-xl font-bold">Confirm Payment</h3>
+          {pendingPayment?.type === "student" ? (
+            <>
+              <p><strong>Student:</strong> {currentStudent?.fullname}</p>
+              <p><strong>Amount:</strong> ${displayBalance.toFixed(2)}</p>
+            </>
+          ) : (
+            <>
+              <p><strong>Family:</strong> {family?.parentName}</p>
+              <p><strong>Total Amount:</strong> ${totalBalance.toFixed(2)}</p>
+            </>
+          )}
+          <p><strong>Month:</strong> {month}</p>
+          <p><strong>Year:</strong> {year}</p>
+          <p><strong>Discount:</strong> ${discount.toFixed(2)}</p>
+          <p><strong>Description:</strong> {pendingPayment?.payload.description}</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={cancelPayment} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+            <button onClick={confirmPayment} className="px-4 py-2 bg-green-600 text-white rounded">Confirm</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Student Modal */}
+    {showStudentModal && family?.students && (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div className="bg-white p-6 rounded-lg w-full max-w-md space-y-4 overflow-y-auto max-h-[80vh]">
+          <h3 className="text-xl font-bold">Students</h3>
+          {family.students.map((s) => (
+            <div
+              key={s.studentId}
+              className={`border-b py-2 ${selectedStudentId === s.studentId ? "bg-blue-50" : ""}`}
+              onClick={() => setSelectedStudentId(s.studentId)}
+            >
+              <div className="flex justify-between">
+                <span>{s.fullname}</span>
+                <span>${(s.balance || 0).toFixed(2)}</span>
+              </div>
+              {s.months?.length > 0 && (
+                <ul className="mt-1 pl-4 text-sm">
+                  {s.months.map((m, i) => (
+                    <li key={i}>
+                      {m.month}/{m.year}: ${(m.due || 0).toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+          <button
+            onClick={() => setShowStudentModal(false)}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default FamilyPayment;
