@@ -9,12 +9,14 @@ import {
 } from "./VoucherSlice";
 import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import "jspdf-autotable";
+
 
 const VoucherList: React.FC = () => {
   const dispatch = useAppDispatch();
   const { vouchers, voucherGroups, selectedVoucher, loading, error } =
     useAppSelector(selectVoucherState);
+
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [amountPaid, setAmountPaid] = useState(0);
@@ -45,65 +47,102 @@ const VoucherList: React.FC = () => {
     return `${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  const handlePrint = () => {
-    if (!selectedVoucher) return;
+  const renderVoucherHTML = () => {
+    const student = selectedVoucher?.student?.fullname || "";
+    const amount = selectedVoucher?.amountPaid ?? 0;
+    const discount = selectedVoucher?.discount ?? 0;
+    const desc = selectedVoucher?.Description ?? "";
+    const date = new Date(selectedVoucher?.date).toLocaleDateString();
+    const user = selectedVoucher?.user?.fullName || "";
+    const monthYear = getMonthYear();
 
-    const content = `
+    return `
       <html>
         <head>
-          <title>Voucher</title>
           <style>
             body { font-family: Arial; padding: 20px; }
-            h1, h2 { text-align: center; margin: 0; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            td, th { border: 1px solid #000; padding: 8px; }
+            .header { text-align: center; font-size: 16px; font-weight: bold; }
+            .section-title { font-weight: bold; margin-top: 20px; }
+            .info-table, .summary-table {
+              width: 100%; border-collapse: collapse; margin-top: 10px;
+            }
+            .info-table td, .summary-table td, .summary-table th {
+              border: 1px solid #000; padding: 8px;
+            }
+            .row { margin-top: 30px; display: flex; justify-content: space-between; }
+            .signature { margin-top: 50px; text-align: left; }
           </style>
         </head>
         <body>
-          <h1>AL-IRSHAAD SECONDARY SCHOOL</h1>
-          <h2>Payment Voucher</h2>
-          <p><strong>Month/Year:</strong> ${getMonthYear()}</p>
-          <table>
-            <tr><td><strong>Student</strong></td><td>${selectedVoucher.student?.fullname || ""}</td></tr>
-            <tr><td><strong>Amount Paid</strong></td><td>${selectedVoucher.amountPaid}</td></tr>
-            <tr><td><strong>Discount</strong></td><td>${selectedVoucher.discount}</td></tr>
-            <tr><td><strong>Date</strong></td><td>${new Date(selectedVoucher.date).toLocaleString()}</td></tr>
-            <tr><td><strong>Description</strong></td><td>${selectedVoucher.Description}</td></tr>
-            <tr><td><strong>User</strong></td><td>${selectedVoucher.user?.fullName || ""}</td></tr>
-          </table>
+          ${["OFFICE COPY", "STUDENT COPY"].map(copy => `
+            <div>
+              <div class="header">
+                AL-IRSHAAD SECONDARY SCHOOL<br/>
+                ZAAD NO: 515449 Tel: 4740303 / 4422850 / 6388881<br/>
+                <u>CASH RECEIPT - ${copy}</u> - DATE: ${date}
+              </div>
+              <table class="info-table">
+                <tr><td><strong>Student:</strong></td><td>${student}</td></tr>
+                <tr><td><strong>Month/Year:</strong></td><td>${monthYear}</td></tr>
+                <tr><td><strong>Amount Paid:</strong></td><td>$${amount}</td></tr>
+                <tr><td><strong>Discount:</strong></td><td>$${discount}</td></tr>
+                <tr><td><strong>Description:</strong></td><td>${desc}</td></tr>
+                <tr><td><strong>Received By:</strong></td><td>${user}</td></tr>
+              </table>
+              <div class="signature">
+                <p><strong>CASHIER:</strong> ${user}</p>
+                <p><strong>Sign:</strong> ___________________</p>
+              </div>
+              <hr style="margin: 40px 0;" />
+            </div>
+          `).join("")}
           <script>window.print();</script>
         </body>
       </html>
     `;
+  };
 
-    const newWindow = window.open("", "_blank");
-    if (newWindow) {
-      newWindow.document.write(content);
-      newWindow.document.close();
+  const handlePrint = () => {
+    if (!selectedVoucher) return;
+    const voucherWindow = window.open("", "_blank");
+    if (voucherWindow) {
+      voucherWindow.document.write(renderVoucherHTML());
+      voucherWindow.document.close();
     }
   };
 
   const handleDownloadPDF = () => {
     if (!selectedVoucher) return;
-
     const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("AL-IRSHAAD SECONDARY SCHOOL", 70, 10);
-    doc.text("Payment Voucher", 85, 20);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [["Field", "Value"]],
-      body: [
-        ["Month/Year", getMonthYear()],
-        ["Student", selectedVoucher.student?.fullname || ""],
-        ["Amount Paid", selectedVoucher.amountPaid],
-        ["Discount", selectedVoucher.discount],
-        ["Date", new Date(selectedVoucher.date).toLocaleString()],
-        ["Description", selectedVoucher.Description],
-        ["User", selectedVoucher.user?.fullName || ""]
-      ]
-    });
+    const drawVoucher = (yStart: number, copyType: string) => {
+      doc.setFontSize(12);
+      doc.text("AL-IRSHAAD SECONDARY SCHOOL", 70, yStart);
+      doc.text("ZAAD NO: 515449 Tel: 4740303 / 4102666 / 638888815", 50, yStart + 6);
+      doc.text(`CASH RECEIPT - ${copyType}`, 80, yStart + 12);
+      doc.text(`DATE: ${new Date(selectedVoucher.date).toLocaleDateString()}`, 150, yStart + 12);
+
+      autoTable(doc, {
+        startY: yStart + 20,
+        head: [["Field", "Value"]],
+        body: [
+          ["Student", selectedVoucher.student?.fullname || ""],
+          ["Month/Year", getMonthYear()],
+          ["Amount Paid", `$${selectedVoucher.amountPaid}`],
+          ["Discount", `$${selectedVoucher.discount}`],
+          ["Description", selectedVoucher.Description ?? ""],
+          ["Received By", selectedVoucher.user?.fullName ?? ""],
+        ],
+        styles: { fontSize: 10 },
+        margin: { left: 15 },
+      });
+
+      doc.text("CASHIER: " + (selectedVoucher.user?.fullName ?? ""), 15, doc.lastAutoTable.finalY + 15);
+      doc.text("Sign: ___________________", 15, doc.lastAutoTable.finalY + 25);
+    };
+
+    drawVoucher(10, "OFFICE COPY");
+    drawVoucher(doc.lastAutoTable.finalY + 40, "STUDENT COPY");
 
     doc.save(`Voucher-${selectedVoucher.id}.pdf`);
   };
@@ -158,9 +197,7 @@ const VoucherList: React.FC = () => {
               <td className="p-2 border">{voucher.student?.fullname}</td>
               <td className="p-2 border">{voucher.amountPaid}</td>
               <td className="p-2 border">{voucher.discount}</td>
-              <td className="p-2 border">
-                {new Date(voucher.date).toLocaleDateString()}
-              </td>
+              <td className="p-2 border">{new Date(voucher.date).toLocaleDateString()}</td>
               <td className="p-2 border">{voucher.user?.fullName}</td>
               <td className="p-2 border space-x-2">
                 <button
