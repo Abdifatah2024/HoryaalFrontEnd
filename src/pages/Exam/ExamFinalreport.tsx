@@ -40,6 +40,9 @@ const CLASS_LIST: Class[] = [
 const ACADEMIC_YEARS: AcademicYear[] = [
   { id: 1, name: "2024-2025" },
   { id: 2, name: "2025-2026" },
+  { id: 2, name: "2026-2027" },
+  { id: 2, name: "2027-2028" },
+  { id: 2, name: "2028-2029" },
 ];
 
 const ExamReportFinal: React.FC = () => {

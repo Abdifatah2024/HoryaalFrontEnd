@@ -45,6 +45,10 @@ interface Announcement {
   createdBy: {
     fullName: string;
     role: string;
+isExpired?: boolean;
+  timeRemaining?: string;
+  isUrgent?: boolean;
+
   };
 }
 
@@ -80,7 +84,7 @@ const AdminAnnouncements: React.FC = () => {
   const processAnnouncements = (anns: any[]): Announcement[] => {
     return anns.map((ann) => {
       const now = dayjs();
-      const startDate = dayjs.utc(ann.startDate);
+      // const startDate = dayjs.utc(ann.startDate);
       const endDate = ann.endDate ? dayjs.utc(ann.endDate) : null;
 
       const isExpired = endDate ? endDate.isBefore(now) : false;
@@ -115,6 +119,9 @@ const AdminAnnouncements: React.FC = () => {
         return dayjs(b.createdAt).diff(dayjs(a.createdAt));
     });
   };
+
+
+  
 
   const processedAnnouncements = processAnnouncements(announcements);
 

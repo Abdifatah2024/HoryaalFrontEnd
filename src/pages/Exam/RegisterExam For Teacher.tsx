@@ -30,7 +30,6 @@
 // import { toast } from "react-toastify";
 // import { Save, Refresh } from "@mui/icons-material";
 
-// // Constants
 // const classList = [
 //   { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
 //   { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
@@ -79,7 +78,7 @@
 //   const [examId, setExamId] = useState<string>("");
 //   const [academicYearId, setAcademicYearId] = useState<string>("");
 //   const [marksData, setMarksData] = useState<MarksData>({});
-//   const [selectedSubjects, setSelectedSubjects] = useState<number[]>(subjectsList.map(s => s.id));
+//   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
 //   const [isSaving, setIsSaving] = useState<boolean>(false);
 
 //   const maxMarks = examTypes.find(e => e.value === examId)?.maxMarks || 0;
@@ -106,19 +105,35 @@
 //       return;
 //     }
 
+//     if (selectedSubjects.length === 0) {
+//       toast.error("Please select at least one subject");
+//       return;
+//     }
+
 //     setIsSaving(true);
 //     try {
-//       await Promise.all(students.map(student =>
-//         dispatch(registerTenSubjects({
-//           studentId: student.id,
-//           examId: parseInt(examId),
-//           academicYearId: parseInt(academicYearId),
-//           scores: selectedSubjects.map(subjectId => ({
-//             subjectId,
-//             marks: marksData[student.id]?.[subjectId] || 0,
-//           })),
-//         })).unwrap()
-//       ));
+//       await Promise.all(
+//         students.map(student => {
+//           const scores = selectedSubjects
+//             .map(subjectId => {
+//               const marks = marksData[student.id]?.[subjectId];
+//               return marks !== undefined ? { subjectId, marks } : null;
+//             })
+//             .filter(Boolean) as { subjectId: number; marks: number }[];
+
+//           if (scores.length === 0) return null;
+
+//           return dispatch(
+//             registerTenSubjects({
+//               studentId: student.id,
+//               examId: parseInt(examId),
+//               academicYearId: parseInt(academicYearId),
+//               scores,
+//             })
+//           ).unwrap();
+//         })
+//       );
+
 //       toast.success("All marks saved successfully");
 //     } catch (err) {
 //       toast.error("Failed to save some marks");
@@ -156,7 +171,7 @@
 //         {/* Filters */}
 //         <Grid container spacing={2} mb={3}>
 //           <Grid item xs={12} md={4}>
-//             <FormControl fullWidth size="medium">
+//             <FormControl fullWidth>
 //               <InputLabel>Select Class</InputLabel>
 //               <Select
 //                 value={selectedClassId}
@@ -170,7 +185,7 @@
 //             </FormControl>
 //           </Grid>
 //           <Grid item xs={12} md={4}>
-//             <FormControl fullWidth size="small">
+//             <FormControl fullWidth>
 //               <InputLabel>Exam Type</InputLabel>
 //               <Select
 //                 value={examId}
@@ -186,7 +201,7 @@
 //             </FormControl>
 //           </Grid>
 //           <Grid item xs={12} md={4}>
-//             <FormControl fullWidth size="small">
+//             <FormControl fullWidth>
 //               <InputLabel>Academic Year</InputLabel>
 //               <Select
 //                 value={academicYearId}
@@ -201,7 +216,7 @@
 //           </Grid>
 //         </Grid>
 
-//         {/* Subject Filter */}
+//         {/* Subject Selection */}
 //         <Box mb={3}>
 //           <Typography variant="subtitle2" gutterBottom>
 //             Select Subjects:
@@ -223,7 +238,7 @@
 //           </Box>
 //         </Box>
 
-//         {/* Marks Entry Table */}
+//         {/* Student Table */}
 //         {loading ? (
 //           <Box display="flex" justifyContent="center" py={4}>
 //             <CircularProgress />
@@ -241,7 +256,7 @@
 //               </Button>
 //             </Box>
 
-//             <TableContainer component={Paper} sx={{ maxHeight: '70vh', overflow: 'auto' }}>
+//             <TableContainer component={Paper} sx={{ maxHeight: '70vh' }}>
 //               <Table stickyHeader size="small">
 //                 <TableHead>
 //                   <TableRow>
@@ -266,45 +281,20 @@
 //                 </TableHead>
 //                 <TableBody>
 //                   {students.map((student, idx) => (
-//                     <TableRow key={student.id} hover>
+//                     <TableRow key={student.id}>
 //                       <TableCell>{idx + 1}</TableCell>
-//                       <TableCell sx={{ fontWeight: 'medium' }}>{student.fullname}</TableCell>
-//                       {subjectsList
-//                         .filter(subject => selectedSubjects.includes(subject.id))
-//                         .map(subject => (
-//                           <TableCell key={subject.id} align="center" sx={{ p: 0 }}>
-//                             <TextField
-//                               inputMode="numeric"
-//                               value={marksData[student.id]?.[subject.id] || ""}
-//                               onChange={(e) => handleMarksChange(student.id, subject.id, e.target.value)}
-//                               InputProps={{
-//                                 inputProps: {
-//                                   min: 0,
-//                                   max: maxMarks,
-//                                   style: {
-//                                     textAlign: 'center',
-//                                     MozAppearance: 'textfield',
-//                                   },
-//                                 },
-//                                 sx: {
-//                                   '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-//                                     display: 'none',
-//                                   },
-//                                   '& input': {
-//                                     padding: '6px 4px',
-//                                     fontSize: '14px',
-//                                     width: '100%',
-//                                     textAlign: 'center',
-//                                   },
-//                                 },
-//                               }}
-//                               sx={{
-//                                 width: '70px',
-//                                 m: 0,
-//                               }}
-//                             />
-//                           </TableCell>
-//                         ))}
+//                       <TableCell>{student.fullname}</TableCell>
+//                       {selectedSubjects.map(subjectId => (
+//                         <TableCell key={subjectId} align="center">
+//                           <TextField
+//                             type="number"
+//                             inputProps={{ min: 0, max: maxMarks, style: { textAlign: 'center' } }}
+//                             value={marksData[student.id]?.[subjectId] ?? ""}
+//                             onChange={(e) => handleMarksChange(student.id, subjectId, e.target.value)}
+//                             sx={{ width: 70 }}
+//                           />
+//                         </TableCell>
+//                       ))}
 //                     </TableRow>
 //                   ))}
 //                 </TableBody>
@@ -317,37 +307,20 @@
 //   );
 // };
 
-// export default RegisterExamFoTeacher
+// export default RegisterExamFoTeacher;
 import { useEffect, useState } from "react";
 import {
-  Container,
-  Paper,
-  Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Button,
-  Box,
-  Chip,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Grid,
+  Container, Paper, Typography, FormControl, InputLabel,
+  MenuItem, Select, SelectChangeEvent, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, TextField, Button, Box, Chip,
+  CircularProgress, IconButton, Tooltip, Grid,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../Redux/store";
 import { getStudentsByClass, selectStudents } from "../../Redux/Classes/ListStdInClassSlice";
 import { registerTenSubjects } from "../../Redux/Exam/TeacherRegisterExamSlice";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { Save, Refresh } from "@mui/icons-material";
 
 const classList = [
@@ -476,6 +449,7 @@ const RegisterExamFoTeacher = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h5" fontWeight={600}>
@@ -628,3 +602,4 @@ const RegisterExamFoTeacher = () => {
 };
 
 export default RegisterExamFoTeacher;
+

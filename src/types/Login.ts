@@ -23,6 +23,7 @@ export enum Role {
   USER = "USER",
   Teacher = "Teacher",
   PARENT = "PARENT",
+  ACADEMY = "ACADEMY",
 }
 
 export interface Advance {

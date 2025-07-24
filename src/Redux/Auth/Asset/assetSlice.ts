@@ -18,7 +18,27 @@
 //   serialNumber: string;
 //   remarks: string;
 //   createdAt: string;
-//   updatedAt?: string; // optional
+//   updatedAt?: string;
+// }
+
+// // ✅ Asset Report type
+// export interface AssetReport {
+//   generatedAt: string;
+//   totalAssets: number;
+//   totalPurchaseValue: number;
+//   totalCurrentValue: number;
+//   byCategory: Record<string, number>;
+//   byCondition: Record<string, number>;
+//   topValuable: {
+//     id: number;
+//     name: string;
+//     category: string;
+//     purchaseDate: string;
+//     purchasePrice: number;
+//     currentValue: number;
+//     condition: string;
+//     location: string;
+//   }[];
 // }
 
 // // ✅ Payload type
@@ -41,6 +61,7 @@
 // interface AssetState {
 //   assets: Asset[];
 //   singleAsset: Asset | null;
+//   report: AssetReport | null;
 //   loading: boolean;
 //   error: string | null;
 //   successMessage: string | null;
@@ -50,6 +71,7 @@
 // const initialState: AssetState = {
 //   assets: [],
 //   singleAsset: null,
+//   report: null,
 //   loading: false,
 //   error: null,
 //   successMessage: null,
@@ -133,6 +155,21 @@
 //   }
 // );
 
+// // ✅ Fetch Asset Report
+// export const fetchAssetReport = createAsyncThunk(
+//   "assets/fetchReport",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.get(`${BASE_API_URL}/Asset/assets/report`);
+//       return res.data as AssetReport;
+//     } catch (err: any) {
+//       return rejectWithValue(
+//         err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+//       );
+//     }
+//   }
+// );
+
 // // ✅ Slice
 // export const assetSlice = createSlice({
 //   name: "assets",
@@ -142,6 +179,7 @@
 //       state.error = null;
 //       state.successMessage = null;
 //       state.singleAsset = null;
+//       state.report = null;
 //     },
 //   },
 //   extraReducers: (builder) => {
@@ -220,6 +258,19 @@
 //       .addCase(deleteAsset.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload as string;
+//       })
+//       // Fetch Report
+//       .addCase(fetchAssetReport.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchAssetReport.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.report = action.payload;
+//       })
+//       .addCase(fetchAssetReport.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload as string;
 //       });
 //   },
 // });
@@ -227,13 +278,14 @@
 // export const { clearAssetState } = assetSlice.actions;
 
 // export default assetSlice.reducer;
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../../Constant";
 
-// ✅ Asset type
+// ✅ Asset model
 export interface Asset {
   id: number;
+  assetNumber: string;
   name: string;
   category: string;
   purchaseDate: string;
@@ -250,7 +302,7 @@ export interface Asset {
   updatedAt?: string;
 }
 
-// ✅ Asset Report type
+// ✅ Asset report type
 export interface AssetReport {
   generatedAt: string;
   totalAssets: number;
@@ -258,35 +310,26 @@ export interface AssetReport {
   totalCurrentValue: number;
   byCategory: Record<string, number>;
   byCondition: Record<string, number>;
-  topValuable: {
-    id: number;
-    name: string;
-    category: string;
-    purchaseDate: string;
-    purchasePrice: number;
-    currentValue: number;
-    condition: string;
-    location: string;
-  }[];
+  topValuable: Pick<
+    Asset,
+    | "id"
+    | "name"
+    | "category"
+    | "purchaseDate"
+    | "purchasePrice"
+    | "currentValue"
+    | "condition"
+    | "location"
+  >[];
 }
 
-// ✅ Payload type
-export type AssetPayload = {
-  name: string;
-  category: string;
-  purchaseDate: string;
-  purchasePrice: number;
-  depreciationRate: number;
-  currentValue: number;
-  purchaseCompany: string;
-  condition: string;
-  location: string;
-  assignedTo: string;
-  serialNumber: string;
-  remarks: string;
-};
+// ✅ Payload for creating or updating asset
+export type AssetPayload = Omit<
+  Asset,
+  "id" | "assetNumber" | "createdAt" | "updatedAt"
+>;
 
-// ✅ State
+// ✅ Slice state
 interface AssetState {
   assets: Asset[];
   singleAsset: Asset | null;
@@ -296,7 +339,7 @@ interface AssetState {
   successMessage: string | null;
 }
 
-// ✅ Initial State
+// ✅ Initial state
 const initialState: AssetState = {
   assets: [],
   singleAsset: null,
@@ -306,101 +349,129 @@ const initialState: AssetState = {
   successMessage: null,
 };
 
-// ✅ Create Asset
-export const createAsset = createAsyncThunk(
+// ✅ Async thunk config helper
+interface RejectValue {
+  rejectValue: string;
+}
+
+// -----------------------------
+// ✅ ASYNC THUNKS
+// -----------------------------
+
+export const createAsset = createAsyncThunk<Asset, AssetPayload, RejectValue>(
   "assets/create",
-  async (data: AssetPayload, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${BASE_API_URL}/Asset/assets`, data);
-      return res.data as Asset;
-    } catch (err: any) {
+      return res.data;
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// ✅ Get All Assets
-export const fetchAssets = createAsyncThunk(
+export const fetchAssets = createAsyncThunk<Asset[], void, RejectValue>(
   "assets/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(`${BASE_API_URL}/Asset/assets`);
-      return res.data as Asset[];
-    } catch (err: any) {
+      return res.data;
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// ✅ Get Single Asset
-export const fetchAssetById = createAsyncThunk(
+export const fetchAssetById = createAsyncThunk<Asset, number, RejectValue>(
   "assets/fetchById",
-  async (id: number, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       const res = await axios.get(`${BASE_API_URL}/Asset/assets/${id}`);
-      return res.data as Asset;
-    } catch (err: any) {
+      return res.data;
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// ✅ Update Asset
-export const updateAsset = createAsyncThunk(
-  "assets/update",
-  async (
-    { id, data }: { id: number; data: Partial<AssetPayload> },
-    { rejectWithValue }
-  ) => {
+export const fetchAssetByNumber = createAsyncThunk<Asset, string, RejectValue>(
+  "assets/fetchByNumber",
+  async (assetNumber, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${BASE_API_URL}/Asset/assets/${id}`, data);
-      return res.data as Asset;
-    } catch (err: any) {
+      const res = await axios.get(
+        `${BASE_API_URL}/Asset/number/${assetNumber}`
+      );
+      return res.data;
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// ✅ Delete Asset
-export const deleteAsset = createAsyncThunk(
+export const updateAsset = createAsyncThunk<
+  Asset,
+  { id: number; data: Partial<AssetPayload> },
+  RejectValue
+>("assets/update", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const res = await axios.put(`${BASE_API_URL}/Asset/assets/${id}`, data);
+    return res.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    return rejectWithValue(
+      error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+    );
+  }
+});
+
+export const deleteAsset = createAsyncThunk<number, number, RejectValue>(
   "assets/delete",
-  async (id: number, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       await axios.delete(`${BASE_API_URL}/Asset/assets/${id}`);
       return id;
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
       return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
+        error.response?.data?.message || DEFAULT_ERROR_MESSAGE
       );
     }
   }
 );
 
-// ✅ Fetch Asset Report
-export const fetchAssetReport = createAsyncThunk(
-  "assets/fetchReport",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get(`${BASE_API_URL}/Asset/assets/report`);
-      return res.data as AssetReport;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || DEFAULT_ERROR_MESSAGE
-      );
-    }
+export const fetchAssetReport = createAsyncThunk<
+  AssetReport,
+  void,
+  RejectValue
+>("assets/fetchReport", async (_, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(`${BASE_API_URL}/Asset/assets/report`);
+    return res.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    return rejectWithValue(
+      error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+    );
   }
-);
+});
 
-// ✅ Slice
-export const assetSlice = createSlice({
+// -----------------------------
+// ✅ SLICE
+// -----------------------------
+
+const assetSlice = createSlice({
   name: "assets",
   initialState,
   reducers: {
@@ -413,55 +484,77 @@ export const assetSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Create
       .addCase(createAsset.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.successMessage = null;
       })
-      .addCase(createAsset.fulfilled, (state, action) => {
+      .addCase(createAsset.fulfilled, (state, action: PayloadAction<Asset>) => {
         state.loading = false;
         state.assets.unshift(action.payload);
         state.successMessage = "Asset created successfully.";
       })
       .addCase(createAsset.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       })
-      // Fetch All
+
       .addCase(fetchAssets.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAssets.fulfilled, (state, action) => {
-        state.loading = false;
-        state.assets = action.payload;
-      })
+      .addCase(
+        fetchAssets.fulfilled,
+        (state, action: PayloadAction<Asset[]>) => {
+          state.loading = false;
+          state.assets = action.payload;
+        }
+      )
       .addCase(fetchAssets.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       })
-      // Fetch One
+
       .addCase(fetchAssetById.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.singleAsset = null;
       })
-      .addCase(fetchAssetById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.singleAsset = action.payload;
-      })
+      .addCase(
+        fetchAssetById.fulfilled,
+        (state, action: PayloadAction<Asset>) => {
+          state.loading = false;
+          state.singleAsset = action.payload;
+        }
+      )
       .addCase(fetchAssetById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       })
-      // Update
+
+      .addCase(fetchAssetByNumber.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.singleAsset = null;
+      })
+      .addCase(
+        fetchAssetByNumber.fulfilled,
+        (state, action: PayloadAction<Asset>) => {
+          state.loading = false;
+          state.singleAsset = action.payload;
+        }
+      )
+      .addCase(fetchAssetByNumber.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
+      })
+
       .addCase(updateAsset.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.successMessage = null;
       })
-      .addCase(updateAsset.fulfilled, (state, action) => {
+      .addCase(updateAsset.fulfilled, (state, action: PayloadAction<Asset>) => {
         state.loading = false;
         state.successMessage = "Asset updated successfully.";
         state.assets = state.assets.map((a) =>
@@ -471,35 +564,41 @@ export const assetSlice = createSlice({
       })
       .addCase(updateAsset.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       })
-      // Delete
+
       .addCase(deleteAsset.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.successMessage = null;
       })
-      .addCase(deleteAsset.fulfilled, (state, action) => {
-        state.loading = false;
-        state.successMessage = "Asset deleted successfully.";
-        state.assets = state.assets.filter((a) => a.id !== action.payload);
-      })
+      .addCase(
+        deleteAsset.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.loading = false;
+          state.successMessage = "Asset deleted successfully.";
+          state.assets = state.assets.filter((a) => a.id !== action.payload);
+        }
+      )
       .addCase(deleteAsset.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       })
-      // Fetch Report
+
       .addCase(fetchAssetReport.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAssetReport.fulfilled, (state, action) => {
-        state.loading = false;
-        state.report = action.payload;
-      })
+      .addCase(
+        fetchAssetReport.fulfilled,
+        (state, action: PayloadAction<AssetReport>) => {
+          state.loading = false;
+          state.report = action.payload;
+        }
+      )
       .addCase(fetchAssetReport.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload || DEFAULT_ERROR_MESSAGE;
       });
   },
 });

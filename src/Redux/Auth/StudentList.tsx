@@ -59,7 +59,7 @@ const StudentList = () => {
     { label: "Fullname", key: "fullname" },
     { label: "Class", key: "classes.name" },
     { label: "Gender", key: "gender" },
-    { label: "ge", key: "age" },
+    { label: "Age", key: "age" },
     { label: "Phone", key: "phone" },
   ];
 

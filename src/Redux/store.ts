@@ -56,9 +56,16 @@ import announcementReducer from "../pages/announcement/announcementSlice";
 import workPlanReducer from "../pages/WorkPlan/workPlanSlice";
 import assetReducer from "../Redux/Auth/Asset/assetSlice";
 import voucherReducer from "../pages/Financial Reports/VoucherSlice";
+import busFeeReducer from "../Redux/Auth/busFeeSlice";
+import studentSoftDeleteReducer from "../Redux/Student/studentSoftDeleteSlice";
+import discountLimitReducer from "../Redux/Payment/discountLimitSlice";
+import employeeAttendanceReducer from "../pages/Employee/EmployeeAttendanceSlice";
+import profitLogReducer from "../Redux/AccountingFiles/profitLogSlice";
 
 export const store = configureStore({
   reducer: {
+    employeeAttendance: employeeAttendanceReducer,
+    studentSoftDelete: studentSoftDeleteReducer,
     loginSlice: loginSlice.reducer,
     registerSlice: registerSlice,
     StdRegSlice: studentSlice,
@@ -117,6 +124,9 @@ export const store = configureStore({
     workPlan: workPlanReducer,
     assets: assetReducer,
     voucher: voucherReducer,
+    busFee: busFeeReducer,
+    discountLimit: discountLimitReducer,
+    profitLog: profitLogReducer,
   },
   devTools: true,
 });

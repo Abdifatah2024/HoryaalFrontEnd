@@ -94,11 +94,13 @@ const SidebarLayout = () => {
       ? [{ title: "Upload And Delete Files", icon: <AiOutlineSetting />, path: "/dashboard/UploadPdf" },
          { title: "Announcementst", icon: <AiOutlineSearch />, path: "/dashboard/Announcements" },
          { title: "Announcement List", icon: <AiOutlineSearch />, path: "/dashboard/AnnouncementsList" },
+            { title: "Work Plan", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlan" },
+    { title: "Work Plan And Comment", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlanAndComment" },
       ]
       : []),
     { title: "Rules", icon: <AiOutlineSetting />, path: "/dashboard/Rules" },
-    { title: "Work Plan", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlan" },
-    { title: "Work Plan And Comment", icon: <AiOutlineSetting />, path: "/dashboard/WorkPlanAndComment" },
+      { title: "Upload Scheme", icon: <AiOutlineUser />, path: "/dashboard/UploadScheme" },
+ 
   ];
 
   items.push({
@@ -113,7 +115,9 @@ const SidebarLayout = () => {
         title: "Students",
         icon: <AiOutlineUser className="text-lg" />,
         subItems: [
+        
           ...(isTeacher
+
             ? [
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
                 { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
@@ -121,17 +125,19 @@ const SidebarLayout = () => {
               ]
             : [
                 { title: "Register Student", icon: <AiOutlineSetting />, path: "/dashboard/regstd" },
+                  { title: "Student Search", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
                 { title: "Check Transfer", icon: <AiOutlineSetting />, path: "/dashboard/CheckTransfer" },
                 { title: "Register Multiple", icon: <AiOutlineSetting />, path: "/dashboard/RegisterMulti" },
                 { title: "Upload Excel", icon: <AiOutlineSetting />, path: "/dashboard/UploadStudents" },
-                { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
-                { title: "Findstudent Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
+                { title: "All Students", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
+              
                 { title: "Update Parent User", icon: <AiOutlineSearch />, path: "/dashboard/UpdateStudentParent" },
-                { title: "Student With Same Bus", icon: <AiOutlineSearch />, path: "/dashboard/StudentWithSameBus" },
-                { title: "Student With Bus", icon: <AiOutlineSearch />, path: "/dashboard/StudentBusses" },
+
                 ...(isAdmin
                   ? [
                       { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
+                      { title: "Dropout Students", icon: <AiOutlineUser />, path: "/dashboard/DropOut" },
+                      { title: "Restored Students", icon: <AiOutlineUser />, path: "/dashboard/Restored" },
                       { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
                     ]
                   : []),
@@ -140,7 +146,7 @@ const SidebarLayout = () => {
       });
     }
 
-    if (isAdmin || isTeacher) {
+    if (isAdmin ) {
       items.push({
         title: "Classes",
         icon: <AiOutlineTeam className="text-lg" />,
@@ -170,30 +176,65 @@ const SidebarLayout = () => {
   });
 }
 
-    if (isAdmin || isUser) {
-      items.push({
-        title: "Payments",
-        icon: <AiOutlineTeam className="text-lg" />,
-        subItems: [
-          { title: "Paid", icon: <AiOutlineTeam />, path: "/dashboard/Paypayment" },
-          { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
-          { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
-          { title: "Voucher Management", icon: <AiOutlineTeam />, path: "/dashboard/VoucherList" },
-          { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
-          { title: "Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAvanceRemainder" },
-          { title: "All Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeeAdvance" },
-          { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },
-          { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
-          { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
-          { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },
-          { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
-          { title: "Update Payment", icon: <AiOutlineTeam />, path: "/dashboard/UpdatedPayment" },
-          { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
-          { title: "Casheir Collection", icon: <AiOutlineTeam />, path: "/dashboard/UserCollection" },
+    // if (isAdmin || isUser) {
+    //   items.push({
+    //     title: "Payments",
+    //     icon: <AiOutlineTeam className="text-lg" />,
+    //     subItems: [
+    //       { title: "Paid", icon: <AiOutlineTeam />, path: "/dashboard/Paypayment" },
+    //       { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
+    //       { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+    //       { title: "Voucher Management", icon: <AiOutlineTeam />, path: "/dashboard/VoucherList" },
+    //       { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
+    //       { title: "Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAvanceRemainder" },
+    //       { title: "All Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeeAdvance" },
+    //       { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },
+    //       { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
+    //       { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
+    //       { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },
+    //       { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
+    //       { title: "Update Payment", icon: <AiOutlineTeam />, path: "/dashboard/UpdatedPayment" },
+    //       { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
+    //       { title: "Casheir Collection", icon: <AiOutlineTeam />, path: "/dashboard/UserCollection" },
 
-        ],
-      });
-    }
+    //     ],
+    //   });
+    // }
+    if (isAdmin || isUser) {
+  const subItems = [
+    { title: "Paid", icon: <AiOutlineTeam />, path: "/dashboard/Paypayment" },
+    { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
+    { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+    { title: "Voucher Management", icon: <AiOutlineTeam />, path: "/dashboard/VoucherList" },
+    { title: "Advance", icon: <AiOutlineTeam />, path: "/dashboard/EmolpoyeeAdvacne" },
+    { title: "Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAvanceRemainder" },
+    { title: "All Advance Remainder", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeeAdvance" },
+    { title: "Advance Management", icon: <AiOutlineTeam />, path: "/dashboard/AdvanceDetail" },
+    { title: "Expenses", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesManagement" },
+    { title: "Financial Report", icon: <AiOutlineTeam />, path: "/dashboard/FinancialReport" },
+    { title: "Expenses Summary", icon: <AiOutlineTeam />, path: "/dashboard/ExpensesSummary" },
+    { title: "Student With Balance", icon: <AiOutlineTeam />, path: "/dashboard/StudentWithBalance" },
+    { title: "Update Payment", icon: <AiOutlineTeam />, path: "/dashboard/UpdatedPayment" },
+    { title: "Discount List", icon: <AiOutlineTeam />, path: "/dashboard/DiscountList" },
+    { title: "Casheir Collection", icon: <AiOutlineTeam />, path: "/dashboard/UserCollection" },
+  ];
+
+  // ✅ Admin-only menu item
+  if (isAdmin) {
+    subItems.push({
+      title: "Discount Management",
+      icon: <AiOutlineTeam />,
+      path: "/dashboard/DiscountManagement",
+    });
+  }
+
+  items.push({
+    title: "Payments",
+    icon: <AiOutlineTeam className="text-lg" />,
+    subItems,
+  });
+}
+
 
     if (isAdmin) {
       items.push({
@@ -202,6 +243,8 @@ const SidebarLayout = () => {
         subItems: [
           { title: "Create Employee", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
           { title: "Register Teacher", icon: <AiOutlineTeam />, path: "/dashboard/RegisterTeacher" },
+          { title: "Attendence", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAttendance" },
+          { title: "Attendence Report By Month", icon: <AiOutlineTeam />, path: "/dashboard/EmployeAttReport" },
           { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
           { title: "Teacher Exam Management", icon: <AiOutlineTeam />, path: "/dashboard/TeacherManagement" },
         ],
@@ -264,6 +307,20 @@ const SidebarLayout = () => {
         ],
       });
     }
+       if (isAdmin || isUser) {
+      items.push({
+        title: "School Bus Reports",
+        icon: <AiOutlineUser className="text-lg" />,
+        subItems: [
+          { title: "Student With Bus zero Payment", icon: <AiOutlineSetting />, path: "/dashboard/busfeeWithNoPayment" },
+            { title: "Student With Same Bus", icon: <AiOutlineSearch />, path: "/dashboard/StudentWithSameBus" },
+            { title: "Student With Bus", icon: <AiOutlineSearch />, path: "/dashboard/StudentBusses" },
+            { title: "Bus income Summary", icon: <AiOutlineSearch />, path: "/dashboard/BusIncomeSummary" },
+            { title: "Bus Management", icon: <AiOutlineSearch />, path: "/dashboard/BusCrud" },
+            { title: "Assign Student Bus", icon: <AiOutlineSearch />, path: "/dashboard/AssignStudentBus" },
+        ],
+      });
+    }
       if (isAdmin || isUser) {
       items.push({
         title: "Asset Manager",
@@ -274,6 +331,34 @@ const SidebarLayout = () => {
                ],
       });
     }
+if (isAdmin) {
+  items.push({
+    title: "Financial Report",
+    icon: <AiOutlineBarChart className="text-lg" />,
+    subItems: [
+      {
+        title: "Monthyly Profit Manager",
+        icon: <AiOutlineFileText />,
+        path: "/dashboard/ProfitManager",
+      },
+      {
+        title: "Monthly Income statements",
+        icon: <AiOutlineFileText />,
+        path: "/dashboard/FinancialReport",
+      },
+      {
+        title: "Ledger",
+        icon: <AiOutlineFileText />,
+        path: "/dashboard/Ledger",
+      },
+      {
+        title: "Balance Sheet",
+        icon: <AiOutlineFileText />,
+        path: "/dashboard/balance-sheet",
+      },
+    ],
+  });
+}
 
     if (isAdmin) {
       items.push({

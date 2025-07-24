@@ -6,8 +6,11 @@ import type { RootState } from "../Redux/store";
 import { logout } from "../Redux/Auth/LoginSlice";
 import type { Role } from "../types/Login";
 
+// export interface ProtectedRouteProps {
+//   allowedRoles: ("ADMIN" | "USER" | "Teacher" | "PARENT")[];
+// }
 export interface ProtectedRouteProps {
-  allowedRoles: ("ADMIN" | "USER" | "Teacher" | "PARENT")[];
+  allowedRoles: Role[]; // ✅ now accepts "ACADEMY" and any future roles
 }
 
 interface JwtPayload {

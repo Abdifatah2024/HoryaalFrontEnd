@@ -118,6 +118,20 @@ import AssetManager from './Redux/Auth/Asset/AssetManager';
 import AssetReport from './Redux/Auth/Asset/AssetReport';
 import VoucherList from './pages/Financial Reports/VoucherList';
 import UserPaymentCollection from './pages/Financial Reports/UserPaymentCollection';
+import BusFeeExemptions from './pages/BusFeeExemptions';
+import BusFeeSummaryPage from './pages/Bus/BusIncomeSummary';
+import BusManagementPage from './pages/Bus/Busmanagement';
+import AssignStudentToBus from './pages/Bus/AssignStudentToBus';
+import Unauthorized from './Components/NonAuht';
+import TeacherSchemeUpload from './pages/WorkPlan/TeacherSchemeUpload';
+import SoftDeletedStudents from './Redux/Student/SoftDeletedStudents';
+import RestoredStudentsPage from './Redux/Student/RestoredStudentsPage';
+import DiscountLimitManager from './pages/Payment/DiscountLimitManager';
+import EmployeeAttendance from './pages/Employee/EmployeeAttendance';
+import EmployeeAttendanceReport from './pages/Employee/Employee Attendance Report';
+import EmployeeYearlyAttendanceOnly from './pages/Employee/EmployeeYearlyReportAtt';
+import ProfitLogManager from './Redux/AccountingFiles/ProfitAndLedger';
+import CashLedgerList from './Redux/AccountingFiles/CashLedgerList';
 
 export const router = createBrowserRouter([
   {
@@ -135,6 +149,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: 'logout', element: <Logout /> },
+      { path: 'unauthorized', element: <Unauthorized/> },
       {
         path: 'parent-dashboard',
         element: <ProtectedRoute allowedRoles={[Role.PARENT]} />,
@@ -171,6 +186,13 @@ export const router = createBrowserRouter([
                   { path: 'AssignTeacherClass', element: <TeacherAssignmentManager /> },
                   { path: 'RegisterTeacher', element: <RegisterTeacher /> },
                   { path: 'TeacherManagement', element: <TeacherManagementPanel/> },
+                  { path: 'DropOut', element: <SoftDeletedStudents/> },
+                  { path: 'Restored', element: <RestoredStudentsPage/> },
+                  { path: 'DiscountManagement', element: <DiscountLimitManager/> },
+                  { path: 'ProfitManager', element: <ProfitLogManager/> },
+                  { path: 'Ledger', element: <CashLedgerList/> },
+                  
+
                 ],
               },
               {
@@ -194,7 +216,9 @@ export const router = createBrowserRouter([
               {
                 element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER]} />,
                 children: [
+                 
                   { path: 'regstd', element: <StudentForm /> },
+                  { path: 'EmployeeAttendance', element: <EmployeeAttendance /> },
                   { path: 'UploadStudents', element: <UploadStudents /> },
                   { path: 'RegisterMulti', element: <RegisterMultipleStudents /> },
                   { path: 'GetOneStudent', element: <StudentDetail /> },
@@ -204,6 +228,8 @@ export const router = createBrowserRouter([
                   { path: 'Decipline', element: <DisciplinePage /> },
                   { path: 'GetOneStudentDecipline', element: <StudentDisciplinePage /> },
                   { path: 'MarkAtetendenceClass', element: <StudentClassListStd2 /> },
+                  { path: 'EmployeAttReport', element: <EmployeeAttendanceReport/> },
+                  { path: 'AttendeceYearlyReport', element: <EmployeeYearlyAttendanceOnly/> },
                   { path: 'AbsentReport', element: <AttendanceReport /> },
                   { path: 'PaidFee', element: <PaymentForm /> },
                   { path: 'AbsentByDate', element: <AbsentStudentsByDate /> },
@@ -234,6 +260,11 @@ export const router = createBrowserRouter([
                 { path: 'AssetReport', element: <AssetReport/> },
                 { path: 'VoucherList', element: <VoucherList/> },
                 { path: 'UserCollection', element: <UserPaymentCollection/> },
+                { path: 'busfeeWithNoPayment', element: <BusFeeExemptions/> },
+                { path: 'BusIncomeSummary', element: <BusFeeSummaryPage/> },
+                { path: 'BusCrud', element: <BusManagementPage/> },
+                { path: 'AssignStudentBus', element: <AssignStudentToBus/> },
+                
 
                
 
@@ -247,6 +278,7 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER]} />,
                 children: [
                   { path: 'systemInfo', element: <Dashboard /> },
+                   { path: 'UploadScheme', element: <TeacherSchemeUpload /> },
                   { path: 'userinfo', element: <UserSearch /> },
                   { path: 'ChangePassword', element: <ChangePassword /> },
                   { path: 'userPhoto', element: <UserProfile /> },
@@ -262,6 +294,7 @@ export const router = createBrowserRouter([
                   { path: 'RegiterExam', element: <RegisterExam /> },
                   { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
                      { path: 'Rules', element: <PdfDocumentsList/> },
+                     
                  
                 ],
               }
