@@ -58,14 +58,14 @@ const SameBusStudents: React.FC = () => {
             Search Students by Bus
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Enter a student ID to see others who share the same bus
+            Enter a Bus ID to see others who share the same bus
           </Typography>
         </Box>
       </Box>
 
       <Box mb={4} display="flex" gap={2}>
         <TextField
-          label="Enter Student ID"
+          label="Enter Bus ID"
           variant="outlined"
           size="small"
           value={studentId}

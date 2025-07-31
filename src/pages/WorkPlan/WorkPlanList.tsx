@@ -33,13 +33,21 @@ const WorkPlanListPage: React.FC = () => {
     };
   }, [dispatch]);
 
-  const handleFormChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "assignedToId" ? parseInt(value) : value,
-    }));
-  };
+  // const handleFormChange = (e: React.ChangeEvent<any>) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: name === "assignedToId" ? parseInt(value) : value,
+  //   }));
+  // };
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: name === "assignedToId" ? parseInt(value) : value,
+  }));
+};
+
 
   const handleSubmit = () => {
     if (editId) {
@@ -49,6 +57,7 @@ const WorkPlanListPage: React.FC = () => {
     }
     resetForm();
   };
+  
 
   const handleEdit = (plan: any) => {
     setEditId(plan.id);

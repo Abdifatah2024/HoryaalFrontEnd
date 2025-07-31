@@ -84,7 +84,7 @@ const mockSubjects = [
 const TeacherAssignmentManager = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { teachers, assignments, loading, error, success } = useSelector(
-    (state: RootState) => state.teacherAssignment
+    (state: RootState) => state.teacherManagement
   );
 
   const [teacherId, setTeacherId] = useState<number | "">("");
@@ -304,7 +304,7 @@ const TeacherAssignmentManager = () => {
             <Stack direction="row" alignItems="center" spacing={2} mb={3}>
               <Avatar 
                 alt={selectedTeacher?.fullName} 
-                src={selectedTeacher?.avatar} 
+                // src={selectedTeacher?.avatar} 
                 sx={{ width: 56, height: 56 }}
               >
                 {selectedTeacher?.fullName.charAt(0)}

@@ -19,6 +19,13 @@ interface WorkPlanComment {
   createdAt: string;
   workPlanId: number;
 }
+export interface WorkPlanInput {
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  assignedToId: number;
+}
 
 interface WorkPlan {
   id: number;
@@ -89,9 +96,24 @@ export const fetchAllUsers = createAsyncThunk(
   }
 );
 
+// export const createWorkPlan = createAsyncThunk(
+//   "workPlan/createWorkPlan",
+//   async (data: any, { rejectWithValue }) => {
+//     try {
+//       const token = localStorage.getItem("Access_token");
+//       const res = await axios.post(`${BASE_API_URL}/api/workplans`, data, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+//       return res.data.workPlan;
+//     } catch {
+//       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
+//     }
+//   }
+// );
+
 export const createWorkPlan = createAsyncThunk(
   "workPlan/createWorkPlan",
-  async (data: any, { rejectWithValue }) => {
+  async (data: WorkPlanInput, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("Access_token");
       const res = await axios.post(`${BASE_API_URL}/api/workplans`, data, {
@@ -106,7 +128,10 @@ export const createWorkPlan = createAsyncThunk(
 
 export const updateWorkPlan = createAsyncThunk(
   "workPlan/updateWorkPlan",
-  async ({ id, data }: { id: number; data: any }, { rejectWithValue }) => {
+  async (
+    { id, data }: { id: number; data: WorkPlanInput },
+    { rejectWithValue }
+  ) => {
     try {
       const token = localStorage.getItem("Access_token");
       const res = await axios.put(`${BASE_API_URL}/work-plans/${id}`, data, {

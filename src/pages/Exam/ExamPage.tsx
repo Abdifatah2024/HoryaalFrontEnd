@@ -34,7 +34,7 @@ interface AcademicYear {
 
 const ExamPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { exams, loading, error, success, subjects: reduxSubjects } = useSelector(
+  const { exams, loading, error, success, } = useSelector(
     (state: RootState) => state.exam
   );
 

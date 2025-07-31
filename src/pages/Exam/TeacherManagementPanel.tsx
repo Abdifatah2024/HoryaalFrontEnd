@@ -214,7 +214,7 @@ const TeacherManagementPanel = () => {
                     {selectedTeacher.fullName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {selectedTeacher.email}
+                    {selectedTeacher.id}
                   </Typography>
                 </Box>
               )}

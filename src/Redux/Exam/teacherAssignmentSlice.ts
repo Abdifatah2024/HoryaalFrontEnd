@@ -2,9 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
-interface Teacher {
+export interface Teacher {
   id: number;
   fullName: string;
+  avatar?: string;
 }
 
 interface Assignment {

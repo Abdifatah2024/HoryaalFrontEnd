@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/store";
+import { useSelector } from "react-redux";
+import { RootState } from "../../Redux/store"; // adjust if needed
+
 import {
   fetchProfitLogs,
   autoCreateProfitLog,
@@ -17,8 +20,13 @@ import {
 } from "@mui/material";
 import { toast } from "react-hot-toast";
 
+
+
 const ProfitLogManager: React.FC = () => {
   const dispatch = useAppDispatch();
+  const closedById = useSelector(
+  (state: RootState) => state.loginSlice.data?.user?.id
+);
 
   const { logs: profitLogs, loading, error } = useAppSelector(
     (state) => state.profitLog
@@ -32,15 +40,21 @@ const ProfitLogManager: React.FC = () => {
     dispatch(fetchProfitLogs());
   }, [dispatch]);
 
-  const handleAutoCreate = async () => {
-    const res = await dispatch(autoCreateProfitLog({ month, year }));
-    if (autoCreateProfitLog.fulfilled.match(res)) {
-      toast.success("ProfitLog created successfully");
-      dispatch(fetchProfitLogs());
-    } else {
-      toast.error(res.payload as string);
-    }
-  };
+const handleAutoCreate = async () => {
+  if (!closedById) {
+    toast.error("User ID not available");
+    return;
+  }
+
+  const res = await dispatch(autoCreateProfitLog({ month, year, closedById }));
+  if (autoCreateProfitLog.fulfilled.match(res)) {
+    toast.success("ProfitLog created successfully");
+    dispatch(fetchProfitLogs());
+  } else {
+    toast.error(res.payload as string);
+  }
+};
+
 
   const handleAutoUpdate = async () => {
     const res = await dispatch(autoUpdateProfitLog({ month, year, notes }));

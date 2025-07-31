@@ -211,7 +211,7 @@ import {
   fetchStudentExamScores,
   updateTenSubjectScores,
   verifyStudent,
-  clearMessages,
+  
 } from "../../Redux/Exam/studentScoreSlice";
 import { RootState, AppDispatch } from "../../Redux/store";
 import { toast } from "react-toastify";
@@ -255,9 +255,12 @@ const UpdateStudentScores = () => {
         })
       ).unwrap();
       toast.success("Student and scores loaded");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to fetch student data");
-    }
+    } catch (err: unknown) {
+  const errorMessage =
+    err instanceof Error ? err.message : "Failed to fetch student data";
+  toast.error(errorMessage);
+}
+
   };
 
   useEffect(() => {

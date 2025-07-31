@@ -14,6 +14,12 @@ import {
 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
+// ✅ Custom error type
+type EmployeeValidationErrors = {
+  [K in keyof Employee]?: string;
+};
+
+// ✅ Initial form values
 const initialForm: Employee = {
   fullName: '',
   dateOfBirth: '',
@@ -29,14 +35,14 @@ const initialForm: Employee = {
   salary: 0,
 };
 
-const EmployeeForm= () => {
+const EmployeeForm = () => {
   const dispatch = useAppDispatch();
   const { employee, loading, success, error } = useAppSelector((state) => state.employee);
 
   const [searchId, setSearchId] = useState('');
   const [formData, setFormData] = useState<Employee>(initialForm);
   const [editing, setEditing] = useState(false);
-  const [errors, setErrors] = useState<Partial<Employee>>({});
+  const [errors, setErrors] = useState<EmployeeValidationErrors>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
@@ -66,7 +72,7 @@ const EmployeeForm= () => {
   };
 
   const validate = (): boolean => {
-    const newErrors: Partial<Employee> = {};
+    const newErrors: EmployeeValidationErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name required';
     if (!formData.email.trim()) newErrors.email = 'Email required';
     if (!formData.jobTitle.trim()) newErrors.jobTitle = 'Job title required';
@@ -211,13 +217,13 @@ const EmployeeForm= () => {
   );
 };
 
-// Input component
+// ✅ Input component
 const Input: React.FC<{
   name: string;
   label: string;
   value: string | number;
   type?: string;
-  onChange: (e: React.ChangeEvent<any>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   icon?: React.ReactNode;
   min?: string | number;
@@ -243,7 +249,7 @@ const Input: React.FC<{
   </div>
 );
 
-// Select component
+// ✅ Select component
 const Select: React.FC<{
   name: string;
   label: string;

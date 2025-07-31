@@ -7,10 +7,9 @@ import {
   updateVoucher,
   selectVoucherState,
 } from "./VoucherSlice";
-import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
-
+import autoTable from "jspdf-autotable";
+import { Button } from "@/Components/ui/button"; // ✅ Adjust casing as needed
 
 const VoucherList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -52,7 +51,9 @@ const VoucherList: React.FC = () => {
     const amount = selectedVoucher?.amountPaid ?? 0;
     const discount = selectedVoucher?.discount ?? 0;
     const desc = selectedVoucher?.Description ?? "";
-    const date = new Date(selectedVoucher?.date).toLocaleDateString();
+    const date = selectedVoucher?.date
+      ? new Date(selectedVoucher.date).toLocaleDateString()
+      : "N/A";
     const user = selectedVoucher?.user?.fullName || "";
     const monthYear = getMonthYear();
 
@@ -120,7 +121,7 @@ const VoucherList: React.FC = () => {
       doc.text("AL-IRSHAAD SECONDARY SCHOOL", 70, yStart);
       doc.text("ZAAD NO: 515449 Tel: 4740303 / 4102666 / 638888815", 50, yStart + 6);
       doc.text(`CASH RECEIPT - ${copyType}`, 80, yStart + 12);
-      doc.text(`DATE: ${new Date(selectedVoucher.date).toLocaleDateString()}`, 150, yStart + 12);
+      doc.text(`DATE: ${selectedVoucher?.date ? new Date(selectedVoucher.date).toLocaleDateString() : "N/A"}`, 150, yStart + 12);
 
       autoTable(doc, {
         startY: yStart + 20,
@@ -137,12 +138,17 @@ const VoucherList: React.FC = () => {
         margin: { left: 15 },
       });
 
-      doc.text("CASHIER: " + (selectedVoucher.user?.fullName ?? ""), 15, doc.lastAutoTable.finalY + 15);
-      doc.text("Sign: ___________________", 15, doc.lastAutoTable.finalY + 25);
+      if (doc.lastAutoTable?.finalY) {
+        doc.text("CASHIER: " + (selectedVoucher.user?.fullName ?? ""), 15, doc.lastAutoTable.finalY + 15);
+        doc.text("Sign: ___________________", 15, doc.lastAutoTable.finalY + 25);
+      }
     };
 
     drawVoucher(10, "OFFICE COPY");
-    drawVoucher(doc.lastAutoTable.finalY + 40, "STUDENT COPY");
+
+    if (doc.lastAutoTable?.finalY) {
+      drawVoucher(doc.lastAutoTable.finalY + 40, "STUDENT COPY");
+    }
 
     doc.save(`Voucher-${selectedVoucher.id}.pdf`);
   };

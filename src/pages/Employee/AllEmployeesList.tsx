@@ -190,7 +190,8 @@ const AllEmployeesList: React.FC = () => {
                 <div className={`h-14 w-14 rounded-full flex items-center justify-center text-white text-xl font-bold ${
                   selectedEmployee.gender === 'male' ? 'bg-blue-500' : 'bg-pink-500'
                 }`}>
-                  {selectedEmployee.fullName.split(' ').map(n => n[0]).join('')}
+                  {selectedEmployee.fullName.split(' ').map((n: string) => n[0]).join('')}
+
                 </div>
                 <div className="flex gap-2">
                   <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">

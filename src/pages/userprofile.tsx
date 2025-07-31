@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../Redux/store";
 import { getUserById, deleteUser } from "../Redux/Auth/RegisterSlice";
+import { toast } from "react-toastify";
 import { 
   FiSearch, 
   FiTrash2, 
@@ -30,11 +31,17 @@ const UserSearch = () => {
         }
     }, [dispatch, userId]);
 
-    const handleDelete = () => {
-        dispatch(deleteUser());
-        setShowDeleteModal(false);
-        setUserId("");
-    };
+  const handleDelete = () => {
+  if (!userId) {
+    toast.error("No user selected to delete");
+    return;
+  }
+
+  dispatch(deleteUser(userId));
+  setShowDeleteModal(false);
+  setUserId("");
+};
+
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">

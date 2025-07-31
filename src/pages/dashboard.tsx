@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { BASE_API_URL } from "../Constant";
 
 
 
@@ -104,7 +105,7 @@ const StatCard = ({
 }: {
   title: string;
   value: string | number;
-  description?: string;
+ description?: string | React.ReactNode; // <- ✅ updated
   icon?: React.ReactNode;
   bgColor?: string;
   borderColor?: string;
@@ -192,8 +193,9 @@ const Dashboard = () => {
         </div>
       );
     }
+    const allowedRoles = ['ADMIN', 'USER'];
 
-    if (decoded.role !== 'ADMIN') {
+  if (!allowedRoles.includes(decoded.role)) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-400 via-blue-500 to-green-300 p-4 font-sans relative overflow-hidden text-center text-red-600 font-bold">
           <FiAlertCircle size={32} className="mx-auto mb-4" />
@@ -213,7 +215,9 @@ const Dashboard = () => {
   // --- End Authentication Check ---
 
   // --- Data Fetching Logic ---
+  
   useEffect(() => {
+
     const fetchDashboardData = async () => {
       try {
         setError(null);
@@ -237,31 +241,31 @@ const Dashboard = () => {
           monthlyIncomeRes,
           classPaymentRes,
         ] = await Promise.all([
-          axios.get('http://localhost:4000/student/studentList', {
+          axios.get(`${BASE_API_URL}/student/studentList`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/user/employees', {
+          axios.get(`${BASE_API_URL}/user/employees`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/student/attendance/absent-today', {
+          axios.get(`${BASE_API_URL}/student/attendance/absent-today`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/fee/income/today', {
+          axios.get(`${BASE_API_URL}/fee/income/today`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/student/students/with-bus', {
+          axios.get(`${BASE_API_URL}/student/students/with-bus`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/student/students/without-bus', {
+          axios.get(`${BASE_API_URL}/student/students/without-bus`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:4000/user/announcements/all', { // Ensure this endpoint returns the new format
+          axios.get(`${BASE_API_URL}/user/announcements/all`, { // Ensure this endpoint returns the new format
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`http://localhost:4000/fee/income-required?month=${month}&year=${year}`, {
+          axios.get(`${BASE_API_URL}/fee/income-required?month=${month}&year=${year}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`http://localhost:4000/fee/Classfee/status?month=${month}&year=${year}`, {
+          axios.get(`${BASE_API_URL}/fee/Classfee/status?month=${month}&year=${year}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -676,7 +680,7 @@ const Dashboard = () => {
                       {stat.details.map((d, j) => (
                         <div key={j} className="flex justify-between items-center text-sm mb-1">
                           <div className="flex items-center">
-                            {d.icon && <span className="mr-1">{d.icon}</span>}
+                          {"icon" in d && d.icon && <span className="mr-1">{d.icon}</span>}
                             <span>{d.label}:</span>
                           </div>
                           <span className={`font-semibold ${d.color}`}>{d.value}</span>

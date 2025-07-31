@@ -15,6 +15,8 @@ interface PaymentPayload {
   discount: number;
   discountReason: string;
   Description: string;
+  month: number;
+  year: number;
 }
 
 interface Payment {

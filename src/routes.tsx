@@ -100,12 +100,10 @@ import StudentBusList from './pages/Auth/StudentBusList';
 import PdfUpload from './pages/PdfFiles/PdfUpload';
 import PdfDocumentsList from './pages/PdfFiles/DocumentsPage';
 import EmployeeAdvanceComponent from './pages/Employee/EmployeeAdvanceComponent';
-import CreateStudentPaymentForm from './pages/Payment/CreateStudentPaymentForm';
 import FamilyPayment from './pages/Payment/FamilyPayment';
 import ManageAnnouncements from './pages/ManageAnnouncements';
 import AdminAnnouncements from './pages/announcement/AdminAnnouncements';
 import WorkPlanList from './pages/WorkPlan/WorkPlanList';
-import WorkPlanListPage from './pages/WorkPlan/WorkPlanList';
 import WorkPlanCommentsPage from './pages/WorkPlan/WorkPlanCommentsPage';
 import ManageTransfer from './pages/Auth/Students/ManageTransfer';
 import EmployeeAdvanceBalance from './pages/Employee/EmployeeAdvanceBalance';
@@ -132,6 +130,9 @@ import EmployeeAttendanceReport from './pages/Employee/Employee Attendance Repor
 import EmployeeYearlyAttendanceOnly from './pages/Employee/EmployeeYearlyReportAtt';
 import ProfitLogManager from './Redux/AccountingFiles/ProfitAndLedger';
 import CashLedgerList from './Redux/AccountingFiles/CashLedgerList';
+import StudentBalanceList from './pages/Payment/StudentBalanceList';
+import LastGlobalPayment from './Redux/Payment/LastGlobalPayment';
+import PayRemainingSalaries from './pages/Employee/PayRemainingSalaries';
 
 export const router = createBrowserRouter([
   {
@@ -158,7 +159,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER]} />,
+        element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER, Role.ACADEMY]} />,
         children: [
           {
             path: 'dashboard',
@@ -169,20 +170,19 @@ export const router = createBrowserRouter([
                 element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
                 children: [
                   { path: 'register', element: <Register /> },
-                                   { path: 'Announcements', element: <ManageAnnouncements/> },
-                  { path: 'AnnouncementsList', element: <AdminAnnouncements/> },
+                  { path: 'CreateEmployee', element: <EmployeeForm /> },
                   { path: 'user/list', element: <UsersList /> },
                   { path: 'DeleteStd', element: <DeleteStudent /> },
                   { path: 'CeateClass', element: <CreateClassForm /> },
                   { path: 'UpdateClass', element: <UpdateClassForm /> },
-                  { path: 'ExamPerformance', element: <ExamReport /> },
+                
                   { path: 'CustomReports', element: <UserSearch /> },
                   { path: 'CreateEmployee', element: <EmployeeForm /> },
-                  { path: 'AllEmployeesList', element: <AllEmployeesList /> },
+                 
                   { path: 'DeleteAttendace', element: <AttendanceForm /> },
                   { path: 'RegisterTenSubjects', element: <RegisterTenSubjects /> },
                   { path: 'ExamRoute', element: <ExamPage /> },
-                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+                 
                   { path: 'AssignTeacherClass', element: <TeacherAssignmentManager /> },
                   { path: 'RegisterTeacher', element: <RegisterTeacher /> },
                   { path: 'TeacherManagement', element: <TeacherManagementPanel/> },
@@ -196,29 +196,24 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                element: <ProtectedRoute allowedRoles={[Role.Teacher]} />,
-                children: [
-                  { path: 'RegiterExamForTeacher', element: <RegisterExamFoTeacher /> },
-                  { path: 'updateScore', element: <UpdateStudentScoreForm/>},
-                  { path: 'Permissions', element: <TeacherDashboard/>}
-                ],
-              },
-              {
-                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher]} />,
-                children: [
-                  { path: 'getExam', element: <StudentExams /> },
-                  { path: 'GetOneStudent', element: <StudentDetail /> },
-                  { path: 'ClassListStd', element: <ClassLists /> },
-                  { path: 'RegisterTenSubjects', element: <RegisterTenSubjects /> },
+  element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER, Role.ACADEMY]} />,
+  children: [
+     { path: 'Announcements', element: <ManageAnnouncements/> },
+      { path: 'AllEmployeesList', element: <AllEmployeesList /> },
+     { path: 'AnnouncementsList', element: <AdminAnnouncements/> },
+      { path: 'EmployeeAttendance', element: <EmployeeAttendance /> },
+          { path: 'getExam', element: <StudentExams /> },
+           { path: 'RegisterTenSubjects', element: <RegisterTenSubjects /> },
                   { path: 'ExamRoute', element: <ExamPage /> },
-                ],
-              },
-              {
-                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER]} />,
-                children: [
-                 
-                  { path: 'regstd', element: <StudentForm /> },
-                  { path: 'EmployeeAttendance', element: <EmployeeAttendance /> },
+                    { path: 'ListStd', element: <StudentList /> },
+                     { path: 'CheckTransfer', element: < ManageTransfer/> },
+                        { path: 'FinalReport', element: <ExamReportFinal /> },
+            { path: 'DisciplinaryReports', element: <DisciplinePage /> },
+              { path: 'AbsentByDate', element: <AbsentStudentsByDate /> },
+                { path: 'ExamPerformance', element: <ExamReport /> },
+                  { path: 'EmployeAttReport', element: <EmployeeAttendanceReport/> },       
+                  { path: 'AllEmployeesList', element: <AllEmployeesList /> },
+                   { path: 'EmployeeAttendance', element: <EmployeeAttendance /> },
                   { path: 'UploadStudents', element: <UploadStudents /> },
                   { path: 'RegisterMulti', element: <RegisterMultipleStudents /> },
                   { path: 'GetOneStudent', element: <StudentDetail /> },
@@ -228,43 +223,92 @@ export const router = createBrowserRouter([
                   { path: 'Decipline', element: <DisciplinePage /> },
                   { path: 'GetOneStudentDecipline', element: <StudentDisciplinePage /> },
                   { path: 'MarkAtetendenceClass', element: <StudentClassListStd2 /> },
-                  { path: 'EmployeAttReport', element: <EmployeeAttendanceReport/> },
-                  { path: 'AttendeceYearlyReport', element: <EmployeeYearlyAttendanceOnly/> },
-                  { path: 'AbsentReport', element: <AttendanceReport /> },
-                  { path: 'PaidFee', element: <PaymentForm /> },
-                  { path: 'AbsentByDate', element: <AbsentStudentsByDate /> },
-                  { path: 'DailyAttendceReport', element: <DailyAttendanceOverview /> },
-                  { path: 'MonthAttendceReport', element: <ClassAbsentDashboard /> },
-                  { path: 'ClassAttendenceReport', element: <ClassMonthlyAttendanceSummary/> },
+                    { path: 'AbsentReport', element: <AttendanceReport /> },
+                      { path: 'MonthAttendceReport', element: <ClassAbsentDashboard /> },
+                       { path: 'ClassAttendenceReport', element: <ClassMonthlyAttendanceSummary/> },
                   { path: 'UpdateExam', element: <UpdateStudentScores /> },
+                   { path: 'GetTobAbsent', element: <AbsenceList /> },
+                    { path: 'StudentWithSameBus', element: <SameBusStudents/> },
+                        { path: 'StudentBusses', element: <StudentBusList/> },
+                          { path: 'BusIncomeSummary', element: <BusFeeSummaryPage/> },
+                            { path: 'BusCrud', element: <BusManagementPage/> },
+                              { path: 'AssignStudentBus', element: <AssignStudentToBus/> },
+                                 { path: 'busfeeWithNoPayment', element: <BusFeeExemptions/> },
+                
+    // ⬇️ Add shared routes here
+  ],
+},
+{
+  element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.ACADEMY]} />,
+  children: [
+    // ⬇️ Add admin + academy only routes here
+      { path: 'RegiterExam', element: <RegisterExam /> },
+       { path: 'GetReportMidterm', element: <ExamMidtermReport /> },
+  ],
+},
+
+
+              {
+                element: <ProtectedRoute allowedRoles={[Role.Teacher]} />,
+                children: [
+                  { path: 'RegiterExamForTeacher', element: <RegisterExamFoTeacher /> },
+                  { path: 'updateScore', element: <UpdateStudentScoreForm/>},
+                  { path: 'Permissions', element: <TeacherDashboard/>}
+                ],
+              },
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.ACADEMY]} />,
+                children: [
+                   { path: 'GetStudentInclass', element: <StudentClassListStd/> },
+              
+                  { path: 'GetOneStudent', element: <StudentDetail /> },
+                  { path: 'ClassListStd', element: <ClassLists /> },
+                 
+                ],
+              },
+              {
+                element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER]} />,
+                children: [
+                 
+                  { path: 'regstd', element: <StudentForm /> },
+                  { path: 'LastPayment', element: <LastGlobalPayment/> },
+                  { path: 'BalancePerMonth', element: <StudentBalanceList /> },
+                  { path: 'PayRemainSalary', element: <PayRemainingSalaries /> },
+                 
+                
+                  { path: 'AttendeceYearlyReport', element: <EmployeeYearlyAttendanceOnly/> },
+                
+                  { path: 'PaidFee', element: <PaymentForm /> },
+                
+                  { path: 'DailyAttendceReport', element: <DailyAttendanceOverview /> },
+                
+                 
                   { path: 'UpdateStudentParent', element: <UpdateParentForm /> },
                   { path: 'EmolpoyeeAdvacne', element: <EmployeeAdvancePage/> },
                   { path: 'AllEmployeeAdvance', element: <AllEmployeeAdvances/> },
                   { path: 'ExpensesManagement', element: <ExpensesPage/> },
                   { path: 'StudentWithBalance', element: <UnpaidStudentsList/> },
-                  { path: 'StudentWithSameBus', element: <SameBusStudents/> },
+                 
                   { path: 'ExpensesSummary', element: <ExpenseSummaryPage/> },
                   { path: 'FamilyPayment', element: <FamilyFeePayment/> },
                   { path: 'DiscountList', element: <DiscountList/> },
                   { path: 'UpdatedPayment', element: <PaymentAllocationList/> },
-                  { path: 'StudentBusses', element: <StudentBusList/> },
+              
                   { path: 'UploadPdf', element: <PdfUpload/> },
                   { path: 'AdvanceDetail', element: <EmployeeAdvanceComponent/> },
-                  { path: 'Paypayment', element: <CreateStudentPaymentForm/> },
                   { path: 'FamilyPaypayment', element: <FamilyPayment/> },
                   { path: 'WorkPlan', element: <WorkPlanList/> },
                 { path: 'WorkPlanAndComment', element: < WorkPlanCommentsPage/> },
-                { path: 'CheckTransfer', element: < ManageTransfer/> },
+               
                 { path: 'EmployeeAvanceRemainder', element: < EmployeeAdvanceBalance/> },
                 { path: 'AssetManager', element: < AssetManager/> },
                 { path: 'AssetReport', element: <AssetReport/> },
                 { path: 'VoucherList', element: <VoucherList/> },
                 { path: 'UserCollection', element: <UserPaymentCollection/> },
-                { path: 'busfeeWithNoPayment', element: <BusFeeExemptions/> },
-                { path: 'BusIncomeSummary', element: <BusFeeSummaryPage/> },
-                { path: 'BusCrud', element: <BusManagementPage/> },
-                { path: 'AssignStudentBus', element: <AssignStudentToBus/> },
-                
+             
+              
+              
+              
 
                
 
@@ -285,13 +329,13 @@ export const router = createBrowserRouter([
                   { path: 'upload/photo', element: <PhotoUpload /> },
                   { path: 'Final Student', element: <YearlyProgressReport/> },
                   { path: 'GetReportMidterm', element: <ExamMidtermReport /> },
-                  { path: 'FinalReport', element: <ExamReportFinal /> },
-                  { path: 'ListStd', element: <StudentList /> },
-                  { path: 'GetStudentInclass', element: <StudentClassListStd/> },
+               
+                
+                 
                   { path: 'ClassListStd', element: <ClassList /> },
                   { path: 'ClassReports', element: <ClassLists /> },
-                  { path: 'DisciplinaryReports', element: <DisciplinePage /> },
-                  { path: 'RegiterExam', element: <RegisterExam /> },
+                
+                
                   { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
                      { path: 'Rules', element: <PdfDocumentsList/> },
                      

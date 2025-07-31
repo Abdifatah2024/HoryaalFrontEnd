@@ -19,21 +19,21 @@ import { useAppDispatch, useAppSelector } from "../../Redux/store";
 import {
   fetchMonthlyEmployeeReport,
   fetchYearlyEmployeeReport,
-} from "./EmployeeAttendanceSlice";
+} from "./EmployeeAttendanceSlice"; // Adjust path as needed
 
 const EmployeeAttendanceReport: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
     loading,
     monthlyReport = [],
-    yearlyReport = { summary: [] },
+    yearlyReport = [],
     error = "",
   } = useAppSelector((state) => state.employeeAttendance);
 
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
   useEffect(() => {
     dispatch(fetchMonthlyEmployeeReport({ month: selectedMonth, year: selectedYear }));
@@ -115,7 +115,9 @@ const EmployeeAttendanceReport: React.FC = () => {
                     <TableCell>{emp.totalAbsences}</TableCell>
                     <TableCell>{emp.presentDays}</TableCell>
                     <TableCell>
-                      {emp.records?.map((r) => new Date(r.date).toLocaleDateString()).join(", ")}
+                      {emp.records?.map((r) =>
+                        new Date(r.date).toLocaleDateString()
+                      ).join(", ")}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -130,7 +132,7 @@ const EmployeeAttendanceReport: React.FC = () => {
           Yearly Attendance Summary
         </Typography>
 
-        {!loading && yearlyReport && yearlyReport.summary && yearlyReport.summary.length > 0 && (
+        {!loading && yearlyReport && yearlyReport.length > 0 && (
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -143,11 +145,11 @@ const EmployeeAttendanceReport: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {yearlyReport.summary.map((emp) => (
+              {yearlyReport.map((emp) => (
                 <TableRow key={emp.employeeId}>
                   <TableCell>{emp.fullName}</TableCell>
                   {[...Array(12)].map((_, i) => {
-                    const monthData = emp.yearlySummary.find((m) => m.month === i + 1) || {
+                    const monthData = emp.monthlySummary.find((m) => m.month === i + 1) || {
                       absent: 0,
                       present: 0,
                     };
@@ -170,4 +172,3 @@ const EmployeeAttendanceReport: React.FC = () => {
 };
 
 export default EmployeeAttendanceReport;
-

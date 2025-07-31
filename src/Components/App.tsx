@@ -8,6 +8,8 @@ import Login from './../pages/Auth/Login';
 import Dashboard from './../pages/dashboard';
 import { RootState } from '@/Redux/store';
 import { initializeAuth } from './authSlice';
+import { Role } from '../../src/types/Login'; // adjust path accordingly
+
 
 function App() {
   const dispatch = useDispatch();
@@ -24,7 +26,7 @@ function App() {
       <Routes>
         <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
         {/* <Route element={<ProtectedRoute />}> */}
-        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'USER', 'Teacher']} />}>
+        <Route element={<ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER, Role.Teacher]} />}>
 
           <Route path="/" element={<Dashboard />} />
           {/* Add other protected routes here */}

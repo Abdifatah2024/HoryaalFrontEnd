@@ -61,6 +61,9 @@ import studentSoftDeleteReducer from "../Redux/Student/studentSoftDeleteSlice";
 import discountLimitReducer from "../Redux/Payment/discountLimitSlice";
 import employeeAttendanceReducer from "../pages/Employee/EmployeeAttendanceSlice";
 import profitLogReducer from "../Redux/AccountingFiles/profitLogSlice";
+import studentBalanceReducer from "../Redux/Payment/studentBalanceSlice";
+import lastPaymentReducer from "../Redux/Payment/lastPaymentSlice";
+import profitLogSlice from "../Redux/Epmloyee/payRemainSalarySlice";
 
 export const store = configureStore({
   reducer: {
@@ -127,6 +130,9 @@ export const store = configureStore({
     busFee: busFeeReducer,
     discountLimit: discountLimitReducer,
     profitLog: profitLogReducer,
+    studentBalance: studentBalanceReducer,
+    lastPayment: lastPaymentReducer,
+    salaryManagement: profitLogSlice,
   },
   devTools: true,
 });

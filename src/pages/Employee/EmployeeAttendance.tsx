@@ -160,9 +160,9 @@ const EmployeeAttendance = () => {
               ) : (
                 records.map((rec) => (
                   <TableRow key={rec.id}>
-                    <TableCell>{rec.employee?.fullName || rec.employeeId}</TableCell>
+                    <TableCell>{rec.employee?.fullname || rec.employeeId}</TableCell>
                     <TableCell>{rec.present ? "Present" : "Absent"}</TableCell>
-                    <TableCell>{rec.markedBy?.fullName || rec.markedById}</TableCell>
+                    <TableCell>{rec.markedBy?.fullname || rec.markedById}</TableCell>
                     <TableCell>{new Date(rec.date).toLocaleDateString()}</TableCell>
                     <TableCell>{rec.remark}</TableCell>
                     <TableCell align="right">

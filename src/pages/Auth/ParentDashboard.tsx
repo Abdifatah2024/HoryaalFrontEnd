@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"; // useRef for PDF export
+import React, { useEffect, useRef } from "react";
 import {
   FiBell,
   FiUser,
@@ -11,8 +11,8 @@ import {
   FiMinusCircle,
   FiBarChart2,
   FiBook,
-  FiPrinter, // New icon for print
-  FiDownload, // New icon for download/PDF
+  FiPrinter,
+  FiDownload,
 } from "react-icons/fi";
 import { useAppDispatch, useAppSelector } from "../../Redux/store";
 import {
@@ -22,13 +22,78 @@ import {
   fetchStudentBalance,
   fetchStudentExamResults,
 } from "../../Redux/Parent/ParentstudentSlice";
-import html2canvas from 'html2canvas'; // For capturing HTML as an image
-import jsPDF from 'jspdf'; // For generating PDF
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+
+// --- Type Definitions (You should ideally move these to a separate types file) ---
+
+interface ExamResult {
+  id: number;
+  subject: string;
+  monthly?: number;
+  midterm?: number;
+  final?: number;
+  totalMarks?: number; // Ensure this is part of your ExamResult if you calculate it server-side or add it during processing
+}
+
+interface AttendanceRecord {
+  id: number;
+  date: string;
+  present: boolean;
+  remark?: string;
+}
+
+interface DisciplineRecord {
+  id: number;
+  recordedAt: string;
+  type: string;
+  actionTaken: string;
+}
+
+// Base Student interface as it comes from the Redux state
+interface Student {
+  id: number;
+  fullname: string;
+  gender: string;
+  Age: number;
+  balance?: number;
+  monthlyFee?: number;
+  totalMonths?: number;
+  totalPaid?: number;
+  totalFees?: number;
+  classes?: { name: string };
+  attendance?: AttendanceRecord[];
+  discipline?: DisciplineRecord[];
+  examResults?: ExamResult[]; // This is correctly marked as optional
+  totalAbsent?: number;
+}
+
+// New interface for Student after exam calculations
+
+
+ interface StudentWithExamSummary extends Student {
+  examAverage: string | null;
+  examTotals: {
+    achievedMonthly: number;
+    possibleMonthly: number;
+    achievedMidterm: number;
+    possibleMidterm: number;
+    achievedFinal: number;
+    possibleFinal: number;
+    achievedOverall: number;
+    possibleOverall: number;
+  } | undefined; // Can be undefined if no exam results exist
+}
+
+
+// --- End Type Definitions ---
+
 
 const ParentDashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const {
-    students,
+    students, // This will be of type Student[]
     loading,
     error,
     attendanceLoading,
@@ -88,19 +153,28 @@ const ParentDashboard: React.FC = () => {
   };
 
   // Calculate exam totals for each student
-  const studentsWithExamTotals = students.map(student => {
-    if (!student.examResults) return student;
+  // Explicitly type the mapped array as StudentWithExamSummary[]
+  const studentsWithExamTotals: StudentWithExamSummary[] = students.map(student => {
+    // If no exam results, return the student with default/null values for the new properties
+    if (!student.examResults || student.examResults.length === 0) {
+      return {
+        ...student,
+        examAverage: null,
+        examTotals: undefined, // Explicitly undefined
+      };
+    }
 
     const examSummary = student.examResults.reduce((acc, exam) => {
       // Ensure exam totalMarks are correctly calculated based on components, if not already
-      const currentTotalMarks = (exam.monthly || 0) + (exam.midterm || 0) + (exam.final || 0);
+      // Added nullish coalescing for exam.monthly, midterm, final to treat undefined as 0
+      const currentTotalMarks = (exam.monthly ?? 0) + (exam.midterm ?? 0) + (exam.final ?? 0);
 
       return {
         totalMarks: acc.totalMarks + currentTotalMarks,
         count: acc.count + 1,
-        totalMonthly: acc.totalMonthly + (exam.monthly || 0),
-        totalMidterm: acc.totalMidterm + (exam.midterm || 0),
-        totalFinal: acc.totalFinal + (exam.final || 0),
+        totalMonthly: acc.totalMonthly + (exam.monthly ?? 0),
+        totalMidterm: acc.totalMidterm + (exam.midterm ?? 0),
+        totalFinal: acc.totalFinal + (exam.final ?? 0),
       };
     }, { totalMarks: 0, count: 0, totalMonthly: 0, totalMidterm: 0, totalFinal: 0 });
 
@@ -130,12 +204,12 @@ const ParentDashboard: React.FC = () => {
 
   // Calculate OVERALL average performance across ALL students
   // This average is based on the average of each student's exam average
-  const overallExamAverage = studentsWithExamTotals.length > 0 && studentsWithExamTotals.some(s => s.examAverage)
+  const overallExamAverage = studentsWithExamTotals.length > 0 && studentsWithExamTotals.some(s => s.examAverage !== null)
     ? (
         studentsWithExamTotals
-          .filter(s => s.examAverage)
+          .filter(s => s.examAverage !== null) // Filter out students with no examAverage
           .reduce((sum, s) => sum + parseFloat(s.examAverage!), 0) /
-        studentsWithExamTotals.filter(s => s.examAverage).length
+        studentsWithExamTotals.filter(s => s.examAverage !== null).length
       ).toFixed(2)
     : null;
 
@@ -164,11 +238,11 @@ const ParentDashboard: React.FC = () => {
           .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
         `);
         printWindow.document.write('</style></head><body>');
-       printWindow.document.write(
-  '<h1>Exam Summary for ' +
-    (students.find(s => s.id === Number(studentId))?.fullname || 'Unknown Student') +
-  '</h1>'
-);
+        printWindow.document.write(
+          '<h1>Exam Summary for ' +
+          (students.find(s => s.id === Number(studentId))?.fullname || 'Unknown Student') +
+          '</h1>'
+        );
 
         printWindow.document.write(content.innerHTML);
         printWindow.document.write('</body></html>');
@@ -209,8 +283,6 @@ const ParentDashboard: React.FC = () => {
       pdf.save(`${studentName}_Exam_Summary.pdf`);
     }
   };
-
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col font-sans">
@@ -489,7 +561,7 @@ const ParentDashboard: React.FC = () => {
                 </h3>
                 <div className="flex gap-2">
                   <button
-                onClick={() => handlePrint(student.id.toString())}
+                    onClick={() => handlePrint(student.id.toString())}
                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
                   >
                     <FiPrinter /> Print
@@ -503,9 +575,16 @@ const ParentDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {student.examResults?.length ? (
+              {/* Conditional rendering based on examResults and examTotals */}
+              {student.examResults && student.examResults.length > 0 && student.examTotals ? (
                 // Wrap the content to be printed/exported in a ref
-                <div ref={(el) => (examSummaryRefs.current[student.id] = el)} className="exam-summary-printable">
+             <div
+  ref={(el) => {
+    examSummaryRefs.current[student.id] = el;
+  }}
+  className="exam-summary-printable"
+>
+
                   <div className="overflow-x-auto rounded-lg border border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200 text-sm">
                       <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
@@ -524,7 +603,7 @@ const ParentDashboard: React.FC = () => {
                         <tr className="hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-800 font-medium">Monthly</td>
                           {[...new Set(student.examResults.map(e => e.subject))].map((subject, sIdx) => {
-                            const exam = student.examResults.find(e => e.subject === subject);
+                            const exam = student.examResults!.find(e => e.subject === subject); // Non-null assertion after check
                             return (
                               <td key={sIdx} className="px-4 py-3 text-center">
                                 {exam?.monthly ?? "-"}
@@ -532,17 +611,17 @@ const ParentDashboard: React.FC = () => {
                             );
                           })}
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.achievedMonthly ?? "-"}
+                            {student.examTotals.achievedMonthly ?? "-"} {/* Access directly now as it's guaranteed to exist */}
                           </td>
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.possibleMonthly ?? "-"}
+                            {student.examTotals.possibleMonthly ?? "-"}
                           </td>
                         </tr>
                         {/* Midterm Scores Row */}
                         <tr className="hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-800 font-medium">Midterm</td>
                           {[...new Set(student.examResults.map(e => e.subject))].map((subject, sIdx) => {
-                            const exam = student.examResults.find(e => e.subject === subject);
+                            const exam = student.examResults!.find(e => e.subject === subject);
                             return (
                               <td key={sIdx} className="px-4 py-3 text-center">
                                 {exam?.midterm ?? "-"}
@@ -550,17 +629,17 @@ const ParentDashboard: React.FC = () => {
                             );
                           })}
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.achievedMidterm ?? "-"}
+                            {student.examTotals.achievedMidterm ?? "-"}
                           </td>
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.possibleMidterm ?? "-"}
+                            {student.examTotals.possibleMidterm ?? "-"}
                           </td>
                         </tr>
                         {/* Final Scores Row */}
                         <tr className="hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-800 font-medium">Final</td>
                           {[...new Set(student.examResults.map(e => e.subject))].map((subject, sIdx) => {
-                            const exam = student.examResults.find(e => e.subject === subject);
+                            const exam = student.examResults!.find(e => e.subject === subject);
                             return (
                               <td key={sIdx} className="px-4 py-3 text-center">
                                 {exam?.final ?? "-"}
@@ -568,40 +647,44 @@ const ParentDashboard: React.FC = () => {
                             );
                           })}
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.achievedFinal ?? "-"}
+                            {student.examTotals.achievedFinal ?? "-"}
                           </td>
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {student.examTotals?.possibleFinal ?? "-"}
+                            {student.examTotals.possibleFinal ?? "-"}
                           </td>
                         </tr>
                         {/* Total Marks Row (per subject) */}
                         <tr className="hover:bg-gray-50 font-bold bg-indigo-50 text-indigo-800">
                           <td className="px-4 py-3">Total Marks</td>
                           {[...new Set(student.examResults.map(e => e.subject))].map((subject, sIdx) => {
-                            const exam = student.examResults.find(e => e.subject === subject);
+                            const exam = student.examResults!.find(e => e.subject === subject);
+                            // Assuming totalMarks are calculated and present on the ExamResult object
+                            const calculatedTotal = (exam?.monthly ?? 0) + (exam?.midterm ?? 0) + (exam?.final ?? 0);
                             return (
                               <td key={sIdx} className="px-4 py-3 text-center">
-                                {exam?.totalMarks ?? "-"}
+                                {calculatedTotal > 0 ? calculatedTotal : "-"}
                               </td>
                             );
                           })}
                           <td className="px-4 py-3 text-center font-bold bg-indigo-100">
-                            {student.examTotals?.achievedOverall ?? "-"}
+                            {student.examTotals.achievedOverall ?? "-"}
                           </td>
                           <td className="px-4 py-3 text-center font-bold bg-indigo-100">
-                            {student.examTotals?.possibleOverall ?? "-"}
+                            {student.examTotals.possibleOverall ?? "-"}
                           </td>
                         </tr>
                         {/* Grade Row */}
                         <tr className="hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-800 font-medium">Grade</td>
                           {[...new Set(student.examResults.map(e => e.subject))].map((subject, sIdx) => {
-                            const exam = student.examResults.find(e => e.subject === subject);
-                            const grade = exam?.totalMarks !== undefined ?
-                                        (exam.totalMarks >= 90 ? 'A' :
-                                        exam.totalMarks >= 80 ? 'B' :
-                                        exam.totalMarks >= 70 ? 'C' :
-                                        exam.totalMarks >= 60 ? 'D' : 'F') : 'N/A'; // Changed to 'N/A'
+                            const exam = student.examResults!.find(e => e.subject === subject);
+                            const calculatedTotal = (exam?.monthly ?? 0) + (exam?.midterm ?? 0) + (exam?.final ?? 0);
+
+                            const grade = calculatedTotal !== undefined && calculatedTotal > 0 ?
+                                          (calculatedTotal >= 90 ? 'A' :
+                                          calculatedTotal >= 80 ? 'B' :
+                                          calculatedTotal >= 70 ? 'C' :
+                                          calculatedTotal >= 60 ? 'D' : 'F') : 'N/A';
                             return (
                               <td key={sIdx} className="px-4 py-3 text-center">
                                 <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-md font-semibold
@@ -623,24 +706,12 @@ const ParentDashboard: React.FC = () => {
                             {student.examAverage ? `${student.examAverage}%` : 'N/A'}
                           </td>
                           <td className="px-4 py-3 text-center font-bold bg-gray-100 text-gray-700">
-                            {/* Overall letter grade based on examAverage */}
-                            <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-md font-semibold
-                              ${
-                                student.examAverage && parseFloat(student.examAverage) >= 90 ? 'bg-green-100 text-green-800' :
-                                student.examAverage && parseFloat(student.examAverage) >= 80 ? 'bg-blue-100 text-blue-800' :
-                                student.examAverage && parseFloat(student.examAverage) >= 70 ? 'bg-yellow-100 text-yellow-800' :
-                                student.examAverage && parseFloat(student.examAverage) >= 60 ? 'bg-orange-100 text-orange-800' :
-                                student.examAverage ? 'bg-red-100 text-red-800' :
-                                'bg-gray-100 text-gray-600' // Style for N/A
-                              }`}
-                            >
-                              {student.examAverage ? (
-                                parseFloat(student.examAverage) >= 90 ? 'A' :
-                                parseFloat(student.examAverage) >= 80 ? 'B' :
-                                parseFloat(student.examAverage) >= 70 ? 'C' :
-                                parseFloat(student.examAverage) >= 60 ? 'D' : 'F'
-                              ) : 'N/A'}
-                            </span>
+                            {/* This cell doesn't seem to have a specific overall grade, so keeping it consistent or 'N/A' */}
+                            {student.examAverage ?
+                              (parseFloat(student.examAverage) >= 90 ? 'A' :
+                              parseFloat(student.examAverage) >= 80 ? 'B' :
+                              parseFloat(student.examAverage) >= 70 ? 'C' :
+                              parseFloat(student.examAverage) >= 60 ? 'D' : 'F') : 'N/A'}
                           </td>
                         </tr>
                       </tbody>

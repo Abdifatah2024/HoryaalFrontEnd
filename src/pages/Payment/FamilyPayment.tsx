@@ -11,6 +11,7 @@ import {
   clearLastPaymentInfo,
 } from "../../Redux/Payment/familyPaymentSlice";
 import { toast } from "react-hot-toast";
+import { UsedNumberResponse } from "@/types/Login";
 
 // ReceiptVoucher Component for reusability and cleaner code
 // This component will render a single voucher copy (either Office or Student)
@@ -139,30 +140,48 @@ const FamilyPayment: React.FC = () => {
 
     setUsedNumberInfo(null);
 
-    dispatch(
-      checkPaymentNumberUsed({ number, month, year, method: paymentMethod })
-    ).then((res) => {
-      const success = res.meta.requestStatus === "fulfilled";
-      setNumberChecked(success);
+    // dispatch(
+    //   checkPaymentNumberUsed({ number, month, year, method: paymentMethod })
+    // ).then((res) => {
+    //   const success = res.meta.requestStatus === "fulfilled";
+    //   setNumberChecked(success);
 
-      if (
-        success &&
-        res.payload &&
-        typeof res.payload === "object" &&
-        "alreadyUsed" in res.payload &&
-        res.payload.alreadyUsed === true
-      ) {
-        setUsedNumberInfo(res.payload);
-        toast.error(res.payload.message);
-      } else if (
-        success &&
-        res.payload &&
-        typeof res.payload === "object" &&
-        "message" in res.payload
-      ) {
-        toast.success(res.payload.message);
-      }
-    });
+    //   if (
+    //     success &&
+    //     res.payload &&
+    //     typeof res.payload === "object" &&
+    //     "alreadyUsed" in res.payload &&
+    //     res.payload.alreadyUsed === true
+    //   ) {
+    //     setUsedNumberInfo(res.payload);
+    //     toast.error(res.payload.message);
+    //   } else if (
+    //     success &&
+    //     res.payload &&
+    //     typeof res.payload === "object" &&
+    //     "message" in res.payload
+    //   ) {
+    //     toast.success(res.payload.message);
+    //   }
+    // });
+
+    dispatch(
+  checkPaymentNumberUsed({ number, month, year, method: paymentMethod })
+).then((res) => {
+  const success = res.meta.requestStatus === "fulfilled";
+  setNumberChecked(success);
+
+  if (success && res.payload && typeof res.payload === "object") {
+    const data = res.payload as UsedNumberResponse;
+
+    if (data.alreadyUsed) {
+      setUsedNumberInfo(data);
+      toast.error(data.message);
+    } else {
+      toast.success(data.message);
+    }
+  }
+});
 
     dispatch(checkLastPaymentByNumber({ number, method: paymentMethod }));
   };

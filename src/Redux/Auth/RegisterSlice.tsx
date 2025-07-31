@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 import { IRegisterBody, IRegisterResponse } from "../../types/Register";
-import { updateUserRole } from "../../pages/Employee/registerRoleThunk"; // 👈 Import from external file
+import { updateUserRole } from "../../pages/Employee/registerRoleThunk";
+
+// ====== TYPES ======
+export type Role = "ADMIN" | "TEACHER" | "PARENT" | "STUDENT" | "USER";
 
 export interface User {
   id: string;
@@ -10,25 +13,34 @@ export interface User {
   email: string;
   phoneNumber: string;
   photo: string;
-  Role: "ADMIN" | "TEACHER" | "PARENT" | "STUDENT" | "USER";
-   createdAt?:  Date;
-  createdBy?: string; // ✅ Add this
+  Role: Role;
+  createdAt?: string; // ✅ Must be string to work with Redux Draft state
+  createdBy?: string;
 }
 
-const initialState = {
+interface RegisterState {
+  loading: boolean;
+  data: IRegisterResponse;
+  error: string;
+  users: User[];
+  user: User | null;
+}
+
+const initialState: RegisterState = {
   loading: false,
   data: {} as IRegisterResponse,
   error: "",
-  users: [] as User[],
-  user: null as User | null,
+  users: [],
+  user: null,
 };
 
-// Register New User
-export const Registerfn = createAsyncThunk(
-  "register",
-  async (data: IRegisterBody, { rejectWithValue, getState }) => {
-    const token = (getState() as any)?.loginSlice?.data?.Access_token;
+// ========== THUNKS ==========
 
+// Register New User
+export const Registerfn = createAsyncThunk<IRegisterResponse, IRegisterBody>(
+  "register",
+  async (data, { rejectWithValue, getState }) => {
+    const token = (getState() as any)?.loginSlice?.data?.Access_token;
     try {
       const res = await axios.post(`${BASE_API_URL}/user/register`, data, {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,11 +56,10 @@ export const Registerfn = createAsyncThunk(
 );
 
 // List Users
-export const listUser = createAsyncThunk(
+export const listUser = createAsyncThunk<User[]>(
   "register/fetchUsers",
   async (_, { rejectWithValue, getState }) => {
     const token = (getState() as any)?.loginSlice?.data?.Access_token;
-
     try {
       const res = await axios.get(`${BASE_API_URL}/user/list`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -64,16 +75,15 @@ export const listUser = createAsyncThunk(
 );
 
 // Get User by ID
-export const getUserById = createAsyncThunk(
+export const getUserById = createAsyncThunk<User, string>(
   "users/getUserById",
-  async (userId: string, { rejectWithValue, getState }) => {
+  async (userId, { rejectWithValue, getState }) => {
     const token = (getState() as any)?.loginSlice?.data?.Access_token;
-
     try {
       const res = await axios.get(`${BASE_API_URL}/user/userinfo/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return res.data;
+      return res.data.user;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data?.message || "User not found");
@@ -84,14 +94,10 @@ export const getUserById = createAsyncThunk(
 );
 
 // Update User
-export const updateUser = createAsyncThunk(
+export const updateUser = createAsyncThunk<User, { userId: string; userData: Partial<User> }>(
   "users/updateUser",
-  async (
-    { userId, userData }: { userId: string; userData: Partial<any> },
-    { rejectWithValue, getState }
-  ) => {
+  async ({ userId, userData }, { rejectWithValue, getState }) => {
     const token = (getState() as any)?.loginSlice?.data?.Access_token;
-
     try {
       const res = await axios.put(`${BASE_API_URL}/user/${userId}`, userData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -107,11 +113,10 @@ export const updateUser = createAsyncThunk(
 );
 
 // Delete User
-export const deleteUser = createAsyncThunk(
+export const deleteUser = createAsyncThunk<string, string>(
   "users/deleteUser",
-  async (userId: string, { rejectWithValue, getState }) => {
+  async (userId, { rejectWithValue, getState }) => {
     const token = (getState() as any)?.loginSlice?.data?.Access_token;
-
     try {
       await axios.delete(`${BASE_API_URL}/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -126,7 +131,7 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-// 🔥 Redux Slice
+// ========== SLICE ==========
 const registerSlice = createSlice({
   name: "register",
   initialState,
@@ -172,7 +177,7 @@ const registerSlice = createSlice({
       })
       .addCase(getUserById.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(getUserById.rejected, (state, action) => {
         state.loading = false;
@@ -211,7 +216,7 @@ const registerSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // 👇 Update Role
+      // Update Role
       .addCase(updateUserRole.pending, (state) => {
         state.loading = true;
         state.error = "";

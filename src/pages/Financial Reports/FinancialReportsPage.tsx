@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../Redux/store";
 import {
   getIncomeStatement,
-  getBalanceSheet,
   getCashFlow,
 } from "../Financial Reports/financialSlice";
 import {
@@ -14,7 +13,6 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
-  Landmark,
   Banknote,
 } from "lucide-react";
 
@@ -36,15 +34,15 @@ const months = [
 const FinancialReportsPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { incomeStatement, balanceSheet, cashFlow, loading, error } =
-    useAppSelector((state) => state.financial);
+  const { incomeStatement, cashFlow, loading, error } = useAppSelector(
+    (state) => state.financial
+  );
 
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   useEffect(() => {
     dispatch(getIncomeStatement({ month, year }));
-    dispatch(getBalanceSheet());
     dispatch(getCashFlow({ month, year }));
   }, [dispatch, month, year]);
 
@@ -154,10 +152,7 @@ const FinancialReportsPage = () => {
           {loading ? (
             <div className="space-y-5 py-2">
               {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between items-center"
-                >
+                <div key={i} className="flex justify-between items-center">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5 animate-pulse"></div>
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 animate-pulse"></div>
                 </div>
@@ -189,7 +184,6 @@ const FinancialReportsPage = () => {
                   {formatCurrency(incomeStatement.advanceIncome)}
                 </span>
               </div>
-
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-gray-300">
                   Total Revenue
@@ -198,7 +192,6 @@ const FinancialReportsPage = () => {
                   {formatCurrency(incomeStatement.totalRevenue)}
                 </span>
               </div>
-
               <div
                 className="flex justify-between items-center cursor-pointer group"
                 onClick={() => navigate("/dashboard/DiscountList")}
@@ -213,17 +206,14 @@ const FinancialReportsPage = () => {
                   {formatCurrency(incomeStatement.totalDiscounts)}
                 </span>
               </div>
-
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-gray-600 dark:text-gray-300">
                   Net Revenue
                 </span>
                 <span className="font-medium">
-                  {/* {formatCurrency(incomeStatement.netRevenue)} */}
                   {formatCurrency(incomeStatement.netRevenue)}
                 </span>
               </div>
-
               <div
                 className="flex justify-between items-center cursor-pointer group"
                 onClick={() => navigate("/dashboard/ExpensesSummary")}
@@ -241,7 +231,6 @@ const FinancialReportsPage = () => {
                   )}
                 </span>
               </div>
-
               <div className="flex justify-between items-center pt-4 mt-3 border-t border-gray-100 dark:border-gray-700">
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">
                   Net Income
@@ -271,163 +260,91 @@ const FinancialReportsPage = () => {
           )}
         </div>
 
-        {/* Balance Sheet Card */}
-        {/* Balance Sheet Card */}
-<div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl">
-  <div className="flex items-start justify-between mb-5">
-    <div>
-      <div className="flex items-center gap-3 mb-2">
-        <div className="bg-teal-100 dark:bg-teal-900/30 p-2 rounded-lg">
-          <Landmark className="h-6 w-6 text-teal-600 dark:text-teal-400" />
-        </div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Balance Sheet
-        </h2>
-      </div>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        As of {months[month - 1]} {year}
-      </p>
-    </div>
-    <div className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full text-sm">
-      Snapshot
-    </div>
-  </div>
-
-  {loading ? (
-    <div className="space-y-5 py-2">
-      {[...Array(3)].map((_, i) => (
-        <div
-          key={i}
-          className="flex justify-between items-center"
-        >
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 animate-pulse"></div>
-        </div>
-      ))}
-    </div>
-  ) : balanceSheet ? (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700">
-        <span className="text-gray-600 dark:text-gray-300">Total Assets</span>
-        <span className="font-medium text-blue-600">
-          {formatCurrency(balanceSheet.totalAssets)}
-        </span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 dark:text-gray-300">Total Liabilities</span>
-        <span className="font-medium text-red-500">
-          {formatCurrency(balanceSheet.totalLiabilities)}
-        </span>
-      </div>
-      <div className="flex justify-between items-center pt-4 mt-3 border-t border-gray-100 dark:border-gray-700">
-        <span className="text-lg font-semibold text-gray-900 dark:text-white">
-          Equity
-        </span>
-        <span
-          className={`text-xl font-bold flex items-center ${
-            balanceSheet.equity >= 0 ? "text-green-600" : "text-red-500"
-          }`}
-        >
-          {balanceSheet.equity >= 0 ? (
-            <TrendingUp className="mr-1" />
-          ) : (
-            <TrendingDown className="mr-1" />
-          )}
-          {formatCurrency(balanceSheet.equity)}
-        </span>
-      </div>
-    </div>
-  ) : (
-    <div className="text-center py-8">
-      <p className="text-gray-500 dark:text-gray-400">
-        No balance sheet data available
-      </p>
-    </div>
-  )}
-</div>
-{/* Cash Flow Card */}
-<div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl">
-  <div className="flex items-start justify-between mb-5">
-    <div>
-      <div className="flex items-center gap-3 mb-2">
-        <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
-          <Banknote className="h-6 w-6 text-green-600 dark:text-green-400" />
-        </div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Cash Flow
-        </h2>
-      </div>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {months[month - 1]} {year}
-      </p>
-    </div>
-    <div className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full text-sm">
-      Monthly
-    </div>
-  </div>
-
-  {loading ? (
-    <div className="space-y-5 py-2">
-      {[...Array(3)].map((_, i) => (
-        <div
-          key={i}
-          className="flex justify-between items-center"
-        >
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 animate-pulse"></div>
-        </div>
-      ))}
-    </div>
-  ) : cashFlow ? (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700">
-        <span className="text-gray-600 dark:text-gray-300">Cash Inflow</span>
-        <span className="font-medium text-green-500 flex items-center">
-          <ArrowUp className="mr-1 h-4 w-4" />
-          {formatCurrency(cashFlow.cashInflow)}
-        </span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 dark:text-gray-300">Cash Outflow</span>
-        <span className="font-medium text-red-500 flex items-center">
-          <ArrowDown className="mr-1 h-4 w-4" />
-          {formatCurrency(cashFlow.advanceOutflow + cashFlow.expenseOutflow)}
-        </span>
-      </div>
-      <div className="flex justify-between items-center pt-4 mt-3 border-t border-gray-100 dark:border-gray-700">
-        <span className="text-lg font-semibold text-gray-900 dark:text-white">
-          Net Cash Flow
-        </span>
-        <span
-          className={`text-xl font-bold flex items-center ${
-            cashFlow.netCashFlow >= 0 ? "text-green-600" : "text-red-500"
-          }`}
-        >
-          {cashFlow.netCashFlow >= 0 ? (
-            <TrendingUp className="mr-1" />
-          ) : (
-            <TrendingDown className="mr-1" />
-          )}
-          {formatCurrency(cashFlow.netCashFlow)}
-        </span>
-      </div>
-    </div>
-  ) : (
-    <div className="text-center py-8">
-      <p className="text-gray-500 dark:text-gray-400">
-        No cash flow data available
-      </p>
-    </div>
-  )}
-</div>
-
-        {/* Keep your Balance Sheet Card as you had before */}
-
         {/* Cash Flow Card */}
-        {/* Keep your Cash Flow Card as you had before */}
+        <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl">
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+                  <Banknote className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Cash Flow
+                </h2>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {months[month - 1]} {year}
+              </p>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full text-sm">
+              Monthly
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="space-y-5 py-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 animate-pulse"></div>
+                </div>
+              ))}
+            </div>
+          ) : cashFlow ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-700">
+                <span className="text-gray-600 dark:text-gray-300">
+                  Cash Inflow
+                </span>
+                <span className="font-medium text-green-500 flex items-center">
+                  <ArrowUp className="mr-1 h-4 w-4" />
+                  {formatCurrency(cashFlow.cashInflow)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-300">
+                  Cash Outflow
+                </span>
+                <span className="font-medium text-red-500 flex items-center">
+                  <ArrowDown className="mr-1 h-4 w-4" />
+                  {formatCurrency(
+                    cashFlow.advanceOutflow + cashFlow.expenseOutflow
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center pt-4 mt-3 border-t border-gray-100 dark:border-gray-700">
+                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Net Cash Flow
+                </span>
+                <span
+                  className={`text-xl font-bold flex items-center ${
+                    cashFlow.netCashFlow >= 0
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  {cashFlow.netCashFlow >= 0 ? (
+                    <TrendingUp className="mr-1" />
+                  ) : (
+                    <TrendingDown className="mr-1" />
+                  )}
+                  {formatCurrency(cashFlow.netCashFlow)}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 dark:text-gray-400">
+                No cash flow data available
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default FinancialReportsPage;
+
+

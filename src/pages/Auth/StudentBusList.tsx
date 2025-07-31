@@ -79,46 +79,81 @@ const StudentBusList: React.FC = () => {
     dispatch(fetchStudentsWithoutBus());
   }, [dispatch]);
 
-  const [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis] =
-    useMemo(() => {
-      const calculateTotals = (students: Student[]) => ({
-        totalFee: students.reduce((sum, student) => sum + student.totalFee, 0),
-        schoolFee: students.reduce(
-          (sum, student) => sum + student.schoolFee,
-          0
-        ),
-        busFee: students.reduce((sum, student) => sum + student.busFee, 0),
-        count: students.length,
-      });
+  // const [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis] =
+  //   useMemo(() => {
+  //     const calculateTotals = (students: Student[]) => ({
+  //       totalFee: students.reduce((sum, student) => sum + student.totalFee, 0),
+  //       schoolFee: students.reduce(
+  //         (sum, student) => sum + student.schoolFee,
+  //         0
+  //       ),
+  //       busFee: students.reduce((sum, student) => sum + student.busFee, 0),
+  //       count: students.length,
+  //     });
 
-      const withBusTotals = calculateTotals(withBus);
-      const withoutBusTotals = calculateTotals(withoutBus);
+  //     const withBusTotals = calculateTotals(withBus);
+  //     const withoutBusTotals = calculateTotals(withoutBus);
 
-      const grandTotals = {
-        totalFee: withBusTotals.totalFee + withoutBusTotals.totalFee,
-        schoolFee: withBusTotals.schoolFee + withoutBusTotals.schoolFee,
-        busFee: withBusTotals.busFee + withoutBusTotals.busFee,
-        count: withBusTotals.count + withoutBusTotals.count,
-      };
+  //     const grandTotals = {
+  //       totalFee: withBusTotals.totalFee + withoutBusTotals.totalFee,
+  //       schoolFee: withBusTotals.schoolFee + withoutBusTotals.schoolFee,
+  //       busFee: withBusTotals.busFee + withoutBusTotals.busFee,
+  //       count: withBusTotals.count + withoutBusTotals.count,
+  //     };
 
-      // Ensure 'withBus' array is not null/undefined before accessing length
-      const safeWithBusLength = withBus ? withBus.length : 0;
-      const expectedBusFee = safeWithBusLength * EXPECTED_BUS_FEE;
-      const actualBusFee = withBusTotals.busFee;
-      const busFeeDifference = expectedBusFee - actualBusFee;
-      const busFeeCompliance =
-        expectedBusFee > 0 ? (actualBusFee / expectedBusFee) * 100 : 100;
+  //     // Ensure 'withBus' array is not null/undefined before accessing length
+  //     const safeWithBusLength = withBus ? withBus.length : 0;
+  //     const expectedBusFee = safeWithBusLength * EXPECTED_BUS_FEE;
+  //     const actualBusFee = withBusTotals.busFee;
+  //     const busFeeDifference = expectedBusFee - actualBusFee;
+  //     const busFeeCompliance =
+  //       expectedBusFee > 0 ? (actualBusFee / expectedBusFee) * 100 : 100;
 
-      const busFeeAnalysis = {
-        expected: expectedBusFee,
-        actual: actualBusFee,
-        difference: busFeeDifference,
-        compliance: busFeeCompliance,
-        expectedPerStudent: EXPECTED_BUS_FEE,
-      };
+  //     const busFeeAnalysis = {
+  //       expected: expectedBusFee,
+  //       actual: actualBusFee,
+  //       difference: busFeeDifference,
+  //       compliance: busFeeCompliance,
+  //       expectedPerStudent: EXPECTED_BUS_FEE,
+  //     };
 
-      return [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis];
-    }, [withBus, withoutBus]);
+  //     return [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis];
+  //   }, [withBus, withoutBus]);
+  const [grandTotals, busFeeAnalysis] = useMemo(() => {
+  const calculateTotals = (students: Student[]) => ({
+    totalFee: students.reduce((sum, student) => sum + student.totalFee, 0),
+    schoolFee: students.reduce((sum, student) => sum + student.schoolFee, 0),
+    busFee: students.reduce((sum, student) => sum + student.busFee, 0),
+    count: students.length,
+  });
+
+  const withTotals = calculateTotals(withBus);
+  const withoutTotals = calculateTotals(withoutBus);
+
+  const grandTotals = {
+    totalFee: withTotals.totalFee + withoutTotals.totalFee,
+    schoolFee: withTotals.schoolFee + withoutTotals.schoolFee,
+    busFee: withTotals.busFee + withoutTotals.busFee,
+    count: withTotals.count + withoutTotals.count,
+  };
+
+  const expectedBusFee = withBus.length * EXPECTED_BUS_FEE;
+  const actualBusFee = withTotals.busFee;
+  const busFeeDifference = expectedBusFee - actualBusFee;
+  const busFeeCompliance =
+    expectedBusFee > 0 ? (actualBusFee / expectedBusFee) * 100 : 100;
+
+  const busFeeAnalysis = {
+    expected: expectedBusFee,
+    actual: actualBusFee,
+    difference: busFeeDifference,
+    compliance: busFeeCompliance,
+    expectedPerStudent: EXPECTED_BUS_FEE,
+  };
+
+  return [grandTotals, busFeeAnalysis];
+}, [withBus, withoutBus]);
+
 
   const filteredWithBus = useMemo(() => {
     return withBus.filter(
@@ -203,11 +238,11 @@ const StudentBusList: React.FC = () => {
           4: { halign: 'right' },
           5: isBusServiceTable ? { halign: 'center' } : {},
         },
-        didDrawPage: (data) => {
-          let pageNumber = doc.internal.getNumberOfPages();
-          doc.setFontSize(8);
-          doc.text(`Page ${pageNumber}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
-        }
+     didDrawPage: (data) => {
+  const pageNumber = doc.getNumberOfPages(); // correct & type-safe
+  doc.setFontSize(8);
+  doc.text(`Page ${pageNumber}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
+}
       });
 
       if (action === "download") {
@@ -218,9 +253,14 @@ const StudentBusList: React.FC = () => {
         console.log("[List PDF] PDF sent to new window for printing.");
       }
     } catch (e) {
-      console.error("[List PDF] Error generating list PDF:", e);
-      alert(`Failed to generate list PDF: ${e.message}. Check console for details.`);
-    }
+  console.error("[List PDF] Error generating list PDF:", e);
+  if (e instanceof Error) {
+    alert(`Failed to generate list PDF: ${e.message}. Check console for details.`);
+  } else {
+    alert("Failed to generate list PDF. Unknown error.");
+  }
+}
+
   };
 
   const handleDownloadWithBusPdf = () => {
@@ -298,7 +338,11 @@ const StudentBusList: React.FC = () => {
         columnStyles: { 1: { halign: 'right' } },
         margin: { left: 14, right: 14 }
       });
-      yPos = (autoTable as any).previous.finalY + 15;
+     if (doc.lastAutoTable?.finalY) {
+  yPos = doc.lastAutoTable.finalY + 15;
+} else {
+  yPos += 15; // fallback in case it's undefined
+}
       console.log("[Summary PDF] After Overall Metrics Table, yPos:", yPos);
 
 
@@ -329,7 +373,11 @@ const StudentBusList: React.FC = () => {
         columnStyles: { 1: { halign: 'right' } },
         margin: { left: 14, right: 14 }
       });
-      yPos = (autoTable as any).previous.finalY + 15;
+    if (doc.lastAutoTable?.finalY) {
+  yPos = doc.lastAutoTable.finalY + 15;
+} else {
+  yPos += 15; // fallback in case it's undefined
+}
       console.log("[Summary PDF] After Revenue Analysis Table, yPos:", yPos);
 
       // Payment Status Breakdown Table
@@ -371,9 +419,11 @@ const StudentBusList: React.FC = () => {
         console.log("[Summary PDF] Summary PDF sent to new window for printing.");
       }
     } catch (e) {
-      console.error("[Summary PDF] Error generating summary PDF:", e);
-      alert(`Failed to generate summary PDF: ${e.message}. Check console for details.`);
-    }
+  const error = e as Error;
+  console.error("[Summary PDF] Error generating summary PDF:", error);
+  alert(`Failed to generate summary PDF: ${error.message}. Check console for details.`);
+}
+
   };
 
   const handleDownloadSummaryPdf = () => {

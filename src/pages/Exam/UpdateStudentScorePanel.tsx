@@ -16,11 +16,21 @@
 //   Paper,
 //   Box,
 //   Divider,
+//   Avatar,
+//   LinearProgress,
+//   useTheme,
 // } from "@mui/material";
 // import { useEffect, useState } from "react";
 // import { jwtDecode } from "jwt-decode";
 // import { useDispatch, useSelector } from "react-redux";
 // import { toast } from "react-toastify";
+// import {
+//   Update as UpdateIcon,
+//   School as SchoolIcon,
+//   Subject as SubjectIcon,
+//   Assignment as AssignmentIcon,
+//   Score as ScoreIcon,
+// } from "@mui/icons-material";
 
 // import {
 //   updateStudentScore,
@@ -28,6 +38,11 @@
 // } from "../../Redux/Exam/studentScoreUpdateSlice";
 // import { fetchTeacherCorrectionStatus } from "../../Redux/Exam/teacherManagementSlice";
 // import { AppDispatch, RootState } from "../../Redux/store";
+
+// interface DecodedToken {
+//   userId: number;
+//   [key: string]: unknown;
+// }
 
 // // Mock data
 // const mockSubjects = [
@@ -53,22 +68,21 @@
 
 // const UpdateStudentScoreForm = () => {
 //   const dispatch = useDispatch<AppDispatch>();
+//   const theme = useTheme();
 
 //   const token = useSelector((state: RootState) => state.loginSlice.data.Access_token);
-//   const [teacherId, setTeacherId] = useState<number | null>(null);
+//   // FIX 1: Correctly destructure useState, `teacherId` is the state, `_setTeacherId` is the setter.
+//   // We use `_setTeacherId` to avoid the ESLint warning if `setTeacherId` is not used in the dependency array
+//   // because the state value `teacherId` itself is not used directly as a dependency for `fetchTeacherCorrectionStatus`.
+//   const [teacherId, _setTeacherId] = useState<number | null>(null);
 
-//   const {
-//     correctionLimit,
-//     correctionsUsed,
-//     remaining,
-//   } = useSelector((state: RootState) => state.teacherManagement);
+//   const { correctionLimit, correctionsUsed, remaining } = useSelector(
+//     (state: RootState) => state.teacherManagement
+//   );
 
-//   const {
-//     loading,
-//     error,
-//     success,
-//     updatedScore,
-//   } = useSelector((state: RootState) => state.studentScore);
+//   const { loading, error, success, updatedScore } = useSelector(
+//     (state: RootState) => state.studentScore
+//   );
 
 //   const [studentId, setStudentId] = useState<number | "">("");
 //   const [subjectId, setSubjectId] = useState<number | "">("");
@@ -77,15 +91,21 @@
 
 //   useEffect(() => {
 //     try {
-//       const decoded: any = jwtDecode(token);
+//       // const decoded: any = jwtDecode(token);
+//       const decoded = jwtDecode<DecodedToken>(token);
+
 //       if (decoded?.userId) {
-//         setTeacherId(decoded.userId);
+//         // FIX 2: Call the correct setter function `_setTeacherId`
+//         _setTeacherId(decoded.userId);
 //         dispatch(fetchTeacherCorrectionStatus(decoded.userId));
 //       }
 //     } catch (e) {
-//       console.error("Invalid token");
+//       console.error("Invalid token", e); // Log the error for better debugging
 //     }
-//   }, [dispatch, token]);
+//     // FIX 3: Add `_setTeacherId` to the dependency array to satisfy ESLint,
+//     // although for `useState` setters, it's generally safe to omit as they are stable.
+//     // Given ESLint's strictness, including it explicitly resolves the warning.
+//   }, [dispatch, token, _setTeacherId]);
 
 //   useEffect(() => {
 //     return () => {
@@ -96,9 +116,10 @@
 //   useEffect(() => {
 //     if (success) toast.success(success);
 //     if (error) toast.error(error);
-//   }, [success, error]);
+//   }, [success, error]); // Add error to dependencies
 
 //   const handleSubmit = () => {
+//     // Check if marks can be 0, if not, adjust condition
 //     if (!studentId || !subjectId || !examId || marks === 0) {
 //       toast.error("All fields are required, and marks must be > 0");
 //       return;
@@ -115,20 +136,61 @@
 //     );
 //   };
 
+//   // const correctionPercentage = (correctionsUsed / correctionLimit) * 100;
+//   // Handle cases where correctionLimit might be 0 to prevent division by zero
+//   const safeCorrectionPercentage = correctionLimit > 0 ? (correctionsUsed / correctionLimit) * 100 : 0;
+
+
 //   return (
-//     <Box sx={{ p: 3 }}>
-//       <Typography variant="h4" fontWeight={700} mb={2}>
-//         Update Student Score
-//       </Typography>
+//     <Box sx={{ p: 3, maxWidth: 1400, margin: "0 auto" }}>
+//       <Stack direction="row" alignItems="center" spacing={2} mb={4}>
+//         <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}>
+//           <UpdateIcon fontSize="large" />
+//         </Avatar>
+//         <div>
+//           <Typography variant="h4" fontWeight={700}>
+//             Update Student Score
+//           </Typography>
+//           <Typography variant="body1" color="text.secondary">
+//             Enter and update student examination scores
+//           </Typography>
+//         </div>
+//       </Stack>
 
 //       <Grid container spacing={3}>
 //         {/* Left Column: Correction Status */}
 //         <Grid item xs={12} md={4}>
-//           <Card elevation={3} sx={{ borderRadius: 3 }}>
+//           <Card elevation={3} sx={{ borderRadius: 3, height: "100%" }}>
 //             <CardContent>
-//               <Typography variant="h6" gutterBottom>
-//                 Correction Status
-//               </Typography>
+//               <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+//                 <SchoolIcon color="primary" />
+//                 <Typography variant="h6" fontWeight={600}>
+//                   Correction Status
+//                 </Typography>
+//               </Stack>
+
+//               <Box mb={3}>
+//                 <Stack direction="row" justifyContent="space-between" mb={1}>
+//                   <Typography variant="body2" color="text.secondary">
+//                     Corrections Used: {correctionsUsed}/{correctionLimit}
+//                   </Typography>
+//                   <Typography variant="body2" fontWeight={600}>
+//                     {Math.round(safeCorrectionPercentage)}%
+//                   </Typography>
+//                 </Stack>
+//                 <LinearProgress
+//                   variant="determinate"
+//                   value={safeCorrectionPercentage}
+//                   color={
+//                     safeCorrectionPercentage > 80
+//                       ? "error"
+//                       : safeCorrectionPercentage > 50
+//                       ? "warning"
+//                       : "primary"
+//                   }
+//                   sx={{ height: 8, borderRadius: 4 }}
+//                 />
+//               </Box>
 
 //               <Grid container spacing={2}>
 //                 <Grid item xs={4}>
@@ -139,6 +201,7 @@
 //                       textAlign: "center",
 //                       bgcolor: "primary.light",
 //                       borderRadius: 2,
+//                       borderLeft: `4px solid ${theme.palette.primary.main}`,
 //                     }}
 //                   >
 //                     <Typography variant="subtitle2" color="text.secondary">
@@ -157,6 +220,7 @@
 //                       textAlign: "center",
 //                       bgcolor: "warning.light",
 //                       borderRadius: 2,
+//                       borderLeft: `4px solid ${theme.palette.warning.main}`,
 //                     }}
 //                   >
 //                     <Typography variant="subtitle2" color="text.secondary">
@@ -175,6 +239,7 @@
 //                       textAlign: "center",
 //                       bgcolor: "success.light",
 //                       borderRadius: 2,
+//                       borderLeft: `4px solid ${theme.palette.success.main}`,
 //                     }}
 //                   >
 //                     <Typography variant="subtitle2" color="text.secondary">
@@ -194,9 +259,12 @@
 //         <Grid item xs={12} md={8}>
 //           <Card elevation={3} sx={{ borderRadius: 3 }}>
 //             <CardContent>
-//               <Typography variant="h6" gutterBottom>
-//                 Enter Score Details
-//               </Typography>
+//               <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+//                 <AssignmentIcon color="primary" />
+//                 <Typography variant="h6" fontWeight={600}>
+//                   Score Details
+//                 </Typography>
+//               </Stack>
 
 //               <Grid container spacing={2}>
 //                 <Grid item xs={12} md={3}>
@@ -206,6 +274,9 @@
 //                     type="number"
 //                     value={studentId}
 //                     onChange={(e) => setStudentId(Number(e.target.value))}
+//                     InputProps={{
+//                       startAdornment: <SchoolIcon color="action" sx={{ mr: 1 }} />,
+//                     }}
 //                   />
 //                 </Grid>
 
@@ -216,6 +287,7 @@
 //                       value={subjectId}
 //                       label="Subject"
 //                       onChange={(e) => setSubjectId(Number(e.target.value))}
+//                       startAdornment={<SubjectIcon color="action" sx={{ mr: 1 }} />}
 //                     >
 //                       {mockSubjects.map((s) => (
 //                         <MenuItem key={s.id} value={s.id}>
@@ -236,7 +308,7 @@
 //                     >
 //                       {mockExams.map((e) => (
 //                         <MenuItem key={e.id} value={e.id}>
-//                           {e.name}
+//                           {e.name} (Max: {e.maxMarks})
 //                         </MenuItem>
 //                       ))}
 //                     </Select>
@@ -250,6 +322,10 @@
 //                     type="number"
 //                     value={marks}
 //                     onChange={(e) => setMarks(Number(e.target.value))}
+//                     InputProps={{
+//                       startAdornment: <ScoreIcon color="action" sx={{ mr: 1 }} />,
+//                       inputProps: { min: 0 },
+//                     }}
 //                   />
 //                 </Grid>
 //               </Grid>
@@ -257,32 +333,33 @@
 //               <Button
 //                 variant="contained"
 //                 fullWidth
-//                 sx={{ mt: 3 }}
+//                 sx={{ mt: 3, py: 1.5 }}
 //                 onClick={handleSubmit}
 //                 disabled={loading}
+//                 startIcon={loading ? <CircularProgress size={20} /> : <UpdateIcon />}
 //               >
-//                 {loading ? <CircularProgress size={22} /> : "Update Score"}
+//                 {loading ? "Updating..." : "Update Score"}
 //               </Button>
 
 //               {updatedScore && (
 //                 <Box mt={3}>
 //                   <Divider sx={{ mb: 2 }} />
-//                   <Typography variant="subtitle1" fontWeight={600}>
-//                     ✅ Updated Score:
-//                   </Typography>
-//                   <Stack direction="row" spacing={1} flexWrap="wrap" mt={1}>
-//                     <Chip label={`Student ID: ${updatedScore.studentId}`} />
-//                     <Chip label={`Subject ID: ${updatedScore.subjectId}`} />
-//                     <Chip label={`Exam ID: ${updatedScore.examId}`} />
+//                   <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+//                     <Avatar sx={{ bgcolor: "success.main", width: 32, height: 32 }}>
+//                       <UpdateIcon fontSize="small" />
+//                     </Avatar>
+//                     <Typography variant="subtitle1" fontWeight={600}>
+//                       Score Updated Successfully
+//                     </Typography>
+//                   </Stack>
+//                   <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} mt={1}>
+//                     <Chip label={`Student ID: ${updatedScore.studentId}`} variant="outlined" color="primary" />
+//                     <Chip label={`Subject ID: ${updatedScore.subjectId}`} variant="outlined" color="secondary" />
+//                     <Chip label={`Exam ID: ${updatedScore.examId}`} variant="outlined" />
+//                     <Chip label={`Marks: ${updatedScore.marks}`} color="success" />
+//                     <Chip label={`Updated By: ${updatedScore.lastUpdatedBy}`} variant="outlined" />
 //                     <Chip
-//                       label={`Marks: ${updatedScore.marks}`}
-//                       color="success"
-//                     />
-//                     <Chip label={`Updated By: ${updatedScore.lastUpdatedBy}`} />
-//                     <Chip
-//                       label={`At: ${new Date(
-//                         updatedScore.lastUpdatedAt
-//                       ).toLocaleString()}`}
+//                       label={`At: ${new Date(updatedScore.lastUpdatedAt).toLocaleString()}`}
 //                       variant="outlined"
 //                     />
 //                   </Stack>
@@ -344,7 +421,13 @@ import {
 import { fetchTeacherCorrectionStatus } from "../../Redux/Exam/teacherManagementSlice";
 import { AppDispatch, RootState } from "../../Redux/store";
 
-// Mock data
+// ✅ Interface for decoding token safely
+interface DecodedToken {
+  userId: number;
+  [key: string]: unknown;
+}
+
+// ✅ Mock data
 const mockSubjects = [
   { id: 1, name: "Chemistry" },
   { id: 2, name: "Biology" },
@@ -371,20 +454,27 @@ const UpdateStudentScoreForm = () => {
   const theme = useTheme();
 
   const token = useSelector((state: RootState) => state.loginSlice.data.Access_token);
-  const [teacherId, setTeacherId] = useState<number | null>(null);
 
-  const {
-    correctionLimit,
-    correctionsUsed,
-    remaining,
-  } = useSelector((state: RootState) => state.teacherManagement);
+  // ✅ useState with intentionally unused value
+useEffect(() => {
+  try {
+    const decoded = jwtDecode<DecodedToken>(token);
+    if (decoded?.userId) {
+      dispatch(fetchTeacherCorrectionStatus(decoded.userId));
+    }
+  } catch (e) {
+    console.error("Invalid token", e);
+  }
+}, [dispatch, token]);
 
-  const {
-    loading,
-    error,
-    success,
-    updatedScore,
-  } = useSelector((state: RootState) => state.studentScore);
+
+  const { correctionLimit, correctionsUsed, remaining } = useSelector(
+    (state: RootState) => state.teacherManagement
+  );
+
+  const { loading, error, success, updatedScore } = useSelector(
+    (state: RootState) => state.studentScore
+  );
 
   const [studentId, setStudentId] = useState<number | "">("");
   const [subjectId, setSubjectId] = useState<number | "">("");
@@ -393,13 +483,12 @@ const UpdateStudentScoreForm = () => {
 
   useEffect(() => {
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode<DecodedToken>(token);
       if (decoded?.userId) {
-        setTeacherId(decoded.userId);
         dispatch(fetchTeacherCorrectionStatus(decoded.userId));
       }
     } catch (e) {
-      console.error("Invalid token");
+      console.error("Invalid token", e);
     }
   }, [dispatch, token]);
 
@@ -431,10 +520,11 @@ const UpdateStudentScoreForm = () => {
     );
   };
 
-  const correctionPercentage = (correctionsUsed / correctionLimit) * 100;
+  const safeCorrectionPercentage =
+    correctionLimit > 0 ? (correctionsUsed / correctionLimit) * 100 : 0;
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1400, margin: '0 auto' }}>
+    <Box sx={{ p: 3, maxWidth: 1400, margin: "0 auto" }}>
       <Stack direction="row" alignItems="center" spacing={2} mb={4}>
         <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 56, height: 56 }}>
           <UpdateIcon fontSize="large" />
@@ -452,7 +542,7 @@ const UpdateStudentScoreForm = () => {
       <Grid container spacing={3}>
         {/* Left Column: Correction Status */}
         <Grid item xs={12} md={4}>
-          <Card elevation={3} sx={{ borderRadius: 3, height: '100%' }}>
+          <Card elevation={3} sx={{ borderRadius: 3, height: "100%" }}>
             <CardContent>
               <Stack direction="row" alignItems="center" spacing={1} mb={3}>
                 <SchoolIcon color="primary" />
@@ -467,13 +557,19 @@ const UpdateStudentScoreForm = () => {
                     Corrections Used: {correctionsUsed}/{correctionLimit}
                   </Typography>
                   <Typography variant="body2" fontWeight={600}>
-                    {Math.round(correctionPercentage)}%
+                    {Math.round(safeCorrectionPercentage)}%
                   </Typography>
                 </Stack>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={correctionPercentage}
-                  color={correctionPercentage > 80 ? 'error' : correctionPercentage > 50 ? 'warning' : 'primary'}
+                <LinearProgress
+                  variant="determinate"
+                  value={safeCorrectionPercentage}
+                  color={
+                    safeCorrectionPercentage > 80
+                      ? "error"
+                      : safeCorrectionPercentage > 50
+                      ? "warning"
+                      : "primary"
+                  }
                   sx={{ height: 8, borderRadius: 4 }}
                 />
               </Box>
@@ -487,7 +583,7 @@ const UpdateStudentScoreForm = () => {
                       textAlign: "center",
                       bgcolor: "primary.light",
                       borderRadius: 2,
-                      borderLeft: `4px solid ${theme.palette.primary.main}`
+                      borderLeft: `4px solid ${theme.palette.primary.main}`,
                     }}
                   >
                     <Typography variant="subtitle2" color="text.secondary">
@@ -506,7 +602,7 @@ const UpdateStudentScoreForm = () => {
                       textAlign: "center",
                       bgcolor: "warning.light",
                       borderRadius: 2,
-                      borderLeft: `4px solid ${theme.palette.warning.main}`
+                      borderLeft: `4px solid ${theme.palette.warning.main}`,
                     }}
                   >
                     <Typography variant="subtitle2" color="text.secondary">
@@ -525,7 +621,7 @@ const UpdateStudentScoreForm = () => {
                       textAlign: "center",
                       bgcolor: "success.light",
                       borderRadius: 2,
-                      borderLeft: `4px solid ${theme.palette.success.main}`
+                      borderLeft: `4px solid ${theme.palette.success.main}`,
                     }}
                   >
                     <Typography variant="subtitle2" color="text.secondary">
@@ -561,9 +657,7 @@ const UpdateStudentScoreForm = () => {
                     value={studentId}
                     onChange={(e) => setStudentId(Number(e.target.value))}
                     InputProps={{
-                      startAdornment: (
-                        <SchoolIcon color="action" sx={{ mr: 1 }} />
-                      ),
+                      startAdornment: <SchoolIcon color="action" sx={{ mr: 1 }} />,
                     }}
                   />
                 </Grid>
@@ -575,9 +669,7 @@ const UpdateStudentScoreForm = () => {
                       value={subjectId}
                       label="Subject"
                       onChange={(e) => setSubjectId(Number(e.target.value))}
-                      startAdornment={
-                        <SubjectIcon color="action" sx={{ mr: 1 }} />
-                      }
+                      startAdornment={<SubjectIcon color="action" sx={{ mr: 1 }} />}
                     >
                       {mockSubjects.map((s) => (
                         <MenuItem key={s.id} value={s.id}>
@@ -613,10 +705,8 @@ const UpdateStudentScoreForm = () => {
                     value={marks}
                     onChange={(e) => setMarks(Number(e.target.value))}
                     InputProps={{
-                      startAdornment: (
-                        <ScoreIcon color="action" sx={{ mr: 1 }} />
-                      ),
-                      inputProps: { min: 0 }
+                      startAdornment: <ScoreIcon color="action" sx={{ mr: 1 }} />,
+                      inputProps: { min: 0 },
                     }}
                   />
                 </Grid>
@@ -637,7 +727,7 @@ const UpdateStudentScoreForm = () => {
                 <Box mt={3}>
                   <Divider sx={{ mb: 2 }} />
                   <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                    <Avatar sx={{ bgcolor: 'success.main', width: 32, height: 32 }}>
+                    <Avatar sx={{ bgcolor: "success.main", width: 32, height: 32 }}>
                       <UpdateIcon fontSize="small" />
                     </Avatar>
                     <Typography variant="subtitle1" fontWeight={600}>
@@ -645,34 +735,12 @@ const UpdateStudentScoreForm = () => {
                     </Typography>
                   </Stack>
                   <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} mt={1}>
-                    <Chip 
-                      label={`Student ID: ${updatedScore.studentId}`} 
-                      variant="outlined"
-                      color="primary"
-                    />
-                    <Chip 
-                      label={`Subject ID: ${updatedScore.subjectId}`} 
-                      variant="outlined"
-                      color="secondary"
-                    />
-                    <Chip 
-                      label={`Exam ID: ${updatedScore.examId}`} 
-                      variant="outlined"
-                    />
-                    <Chip
-                      label={`Marks: ${updatedScore.marks}`}
-                      color="success"
-                    />
-                    <Chip 
-                      label={`Updated By: ${updatedScore.lastUpdatedBy}`} 
-                      variant="outlined"
-                    />
-                    <Chip
-                      label={`At: ${new Date(
-                        updatedScore.lastUpdatedAt
-                      ).toLocaleString()}`}
-                      variant="outlined"
-                    />
+                    <Chip label={`Student ID: ${updatedScore.studentId}`} variant="outlined" color="primary" />
+                    <Chip label={`Subject ID: ${updatedScore.subjectId}`} variant="outlined" color="secondary" />
+                    <Chip label={`Exam ID: ${updatedScore.examId}`} variant="outlined" />
+                    <Chip label={`Marks: ${updatedScore.marks}`} color="success" />
+                    <Chip label={`Updated By: ${updatedScore.lastUpdatedBy}`} variant="outlined" />
+                    <Chip label={`At: ${new Date(updatedScore.lastUpdatedAt).toLocaleString()}`} variant="outlined" />
                   </Stack>
                 </Box>
               )}

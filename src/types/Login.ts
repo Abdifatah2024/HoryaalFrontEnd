@@ -43,3 +43,16 @@ export interface Advance {
     fullName: string;
   };
 }
+
+export interface UsedNumberResponse {
+  message: string;
+  description?: string;
+  createdAt?: string;
+  alreadyUsed: boolean;
+  paidFor?: {
+    student: string;
+    month: number;
+    year: number;
+    amount: string;
+  }[];
+}

@@ -40,10 +40,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
     }
 
     // ✅ Role check
-    const userRole = decoded.role as Role;
-    if (!allowedRoles.includes(userRole)) {
-      return <Navigate to="/unauthorized" replace />;
-    }
+
+const isRole = (value: unknown): value is Role =>
+  typeof value === "string" &&
+  ["ADMIN", "TEACHER", "PARENT", "STUDENT", "USER", "ACADEMY"].includes(value);
+
+
+const userRole = decoded.role;
+
+if (!isRole(userRole) || !allowedRoles.includes(userRole)) {
+  return <Navigate to="/unauthorized" replace />;
+}
+
 
     return <Outlet />; // ✅ access granted
   } catch (error) {

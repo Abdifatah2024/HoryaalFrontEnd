@@ -98,28 +98,35 @@ const StudentForm = () => {
       };
 
       try {
-        if (editing) {
-          const res = await dispatch(
-            updateStudent({
-              studentId: studentState.student?.id,
-              studentData: payload,
-            })
-          );
-          if (updateStudent.fulfilled.match(res)) {
-            toast.success("Student updated!");
-            resetForm();
-            setEditing(false);
-            dispatch(clearStudent());
-          }
-        } else {
-          const res = await dispatch(createStudent(payload));
-          if (createStudent.fulfilled.match(res)) {
-            toast.success("Student registered!");
-            resetForm();
-            dispatch(clearSibling());
-            setPrefilled(false);
-          }
-        }
+       if (editing) {
+  const studentId = studentState.student?.id;
+
+  if (typeof studentId === "number") {
+    const res = await dispatch(
+      updateStudent({
+        studentId,
+        studentData: payload,
+      })
+    );
+    if (updateStudent.fulfilled.match(res)) {
+      toast.success("Student updated!");
+      resetForm();
+      setEditing(false);
+      dispatch(clearStudent());
+    }
+  } else {
+    toast.error("Student ID is missing!");
+  }
+} else {
+  const res = await dispatch(createStudent(payload));
+  if (createStudent.fulfilled.match(res)) {
+    toast.success("Student registered!");
+    resetForm();
+    dispatch(clearSibling());
+    setPrefilled(false);
+  }
+}
+
       } catch {
         toast.error("Something went wrong!");
       } finally {
@@ -248,33 +255,35 @@ const StudentForm = () => {
               <label className="block text-sm font-medium capitalize mb-1">{key}</label>
 
               {key === "classId" ? (
-                <select
-                  name={key}
-                  value={value}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="w-full border px-3 py-2 rounded text-sm"
-                >
-                  <option value="">Select class</option>
-                  {classList.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+              <select
+  name={key}
+  value={typeof value === "boolean" ? "" : value}
+  onChange={formik.handleChange}
+  onBlur={formik.handleBlur}
+  className="w-full border px-3 py-2 rounded text-sm"
+>
+  <option value="">Select class</option>
+  {classList.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name}
+    </option>
+  ))}
+</select>
+
               ) : key === "previousSchoolType" ? (
-                <select
-                  name={key}
-                  value={value}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="w-full border px-3 py-2 rounded text-sm"
-                >
-                  <option value="">Select school type</option>
-                  <option value="PRIVATE">Private</option>
-                  <option value="PUBLIC">Public</option>
-                  <option value="NOT_SPECIFIC">Not Specific</option>
-                </select>
+              <select
+  name={key}
+  value={typeof value === "boolean" ? "" : value}
+  onChange={formik.handleChange}
+  onBlur={formik.handleBlur}
+  className="w-full border px-3 py-2 rounded text-sm"
+>
+  <option value="">Select school type</option>
+  <option value="PRIVATE">Private</option>
+  <option value="PUBLIC">Public</option>
+  <option value="NOT_SPECIFIC">Not Specific</option>
+</select>
+
               ) : typeof value === "boolean" ? (
                 <input
                   type="checkbox"

@@ -8,6 +8,7 @@ export interface BusDriver {
   id: number;
   fullName: string;
   salary: number;
+  jobTitle: string; // 👈 Add this
 }
 
 export interface StudentInBus {

@@ -19,7 +19,7 @@ interface User {
 
 const RegisterList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { users, loading, error } = useSelector(
+  const { users, loading} = useSelector(
     (state: RootState) => state.registerSlice
   );
 
@@ -41,7 +41,8 @@ const RegisterList = () => {
   useEffect(() => {
     if (isModalOpen && currentUserId) {
       dispatch(getUserById(currentUserId)).then((action) => {
-        const userData = action.payload?.user || action.payload;
+      const userData = action.payload as User;
+
         setEditFormData({
           email: userData.email || "",
           fullName: userData.fullName || "",

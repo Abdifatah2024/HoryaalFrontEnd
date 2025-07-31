@@ -13,12 +13,6 @@ import {
   BusFeeState 
 } from "../../Redux/Auth/busFeeSlice";
 
-// --- Type Definitions (Interfaces) ---
-// IMPORTANT: The BusDriver and Bus interfaces defined here PREVIOUSLY
-// have been removed to avoid conflict. We are now importing them
-// directly from "../../Redux/Auth/busFeeSlice".
-
-// This interface remains local as it's specific to the form's state
 interface BusFormData {
   name: string;
   route: string;
