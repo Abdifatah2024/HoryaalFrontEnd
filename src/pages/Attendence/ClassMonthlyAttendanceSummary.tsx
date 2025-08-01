@@ -257,11 +257,9 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
+  } from "@react-pdf/renderer";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import logo from "../../../public/assets/logo.png";
 
 const classOptions = [
   { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
@@ -423,7 +421,7 @@ export const ClassMonthlyAttendanceSummary: React.FC = () => {
               document={
                 <Document>
                   <Page size="A4" style={styles.page}>
-                    <Image src={logo} style={styles.logo} />
+                 
                     <Text style={styles.heading}>
                       Class Monthly Attendance Summary ({year})
                     </Text>
