@@ -64,6 +64,7 @@ import profitLogReducer from "../Redux/AccountingFiles/profitLogSlice";
 import studentBalanceReducer from "../Redux/Payment/studentBalanceSlice";
 import lastPaymentReducer from "../Redux/Payment/lastPaymentSlice";
 import profitLogSlice from "../Redux/Epmloyee/payRemainSalarySlice";
+import examUploadReducer from "../Redux/Exam/examUploadSlice";
 
 export const store = configureStore({
   reducer: {
@@ -133,6 +134,7 @@ export const store = configureStore({
     studentBalance: studentBalanceReducer,
     lastPayment: lastPaymentReducer,
     salaryManagement: profitLogSlice,
+    examUpload: examUploadReducer,
   },
   devTools: true,
 });

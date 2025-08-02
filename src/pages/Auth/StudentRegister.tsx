@@ -18,26 +18,23 @@ import { AppDispatch, RootState } from "../../Redux/store";
 interface ClassItem {
   id: number;
   name: string;
-  grade: number;
+  
 }
 
 const classList: ClassItem[] = [
-  { id: 1, name: "1A", grade: 1 },
-  { id: 2, name: "1B", grade: 1 },
-  { id: 3, name: "1C", grade: 1 },
-  { id: 4, name: "1D", grade: 1 },
-  { id: 5, name: "1E", grade: 1 },
-  { id: 6, name: "1G", grade: 1 },
-  { id: 7, name: "2A", grade: 2 },
-  { id: 8, name: "2B", grade: 2 },
-  { id: 9, name: "2C", grade: 2 },
-  { id: 10, name: "2D", grade: 2 },
-  { id: 11, name: "2E", grade: 2 },
-  { id: 12, name: "2F", grade: 2 },
-  { id: 13, name: "3A", grade: 3 },
-  { id: 14, name: "3B", grade: 3 },
-  { id: 15, name: "3C", grade: 3 },
-  { id: 16, name: "3D", grade: 3 },
+ { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
+  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1F" },
+  { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
+  { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
+  { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
+  { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
+  { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
+  { id: 19, name: "5A" }, { id: 20, name: "5B" }, { id: 21, name: "5C" },
+  { id: 19, name: "5D" }, { id: 20, name: "6A" }, { id: 21, name: "6B" },
+  { id: 19, name: "6C" }, { id: 20, name: "6D" }, { id: 21, name: "7A" },
+  { id: 19, name: "7B" }, { id: 20, name: "7C" }, { id: 21, name: "7D" },
+  { id: 19, name: "8A" }, { id: 20, name: "8B" }, { id: 21, name: "8C" },
+  { id: 19, name: "8D" }
 ];
 
 const StudentForm = () => {

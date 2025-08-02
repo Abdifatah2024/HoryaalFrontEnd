@@ -283,6 +283,7 @@ if (isAdmin || isAcademy || isUser) {
         title: "Exams",
         icon: <AiOutlineFileText className="text-lg" />,
         subItems: [
+          { title: "Register Subjects", icon: <AiOutlineMail />, path: "/dashboard/RegiterExam" },
           { title: "Register Ten Subjects", icon: <AiOutlineMail />, path: "/dashboard/RegisterTenSubjects" },
           { title: "Register Exam per Subject", icon: <AiOutlineMail />, path: "/dashboard/ExamRoute" },
           { title: "Get Student Result", icon: <AiOutlineMail />, path: "/dashboard/getExam" },

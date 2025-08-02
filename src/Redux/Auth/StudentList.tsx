@@ -31,14 +31,16 @@ interface Student {
 }
 
 const classList = [
-  { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
-  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
-  { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
-  { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
-  { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
-  { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
-  { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
+  { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" }, { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1F" },
+  { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" }, { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
+  { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" }, { id: 16, name: "3D" }, { id: 17, name: "3E" },
+  { id: 18, name: "4A" }, { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
+  { id: 22, name: "5A" }, { id: 23, name: "5B" }, { id: 24, name: "5C" }, { id: 25, name: "5D" },
+  { id: 26, name: "6A" }, { id: 27, name: "6B" }, { id: 28, name: "6C" }, { id: 29, name: "6D" },
+  { id: 30, name: "7A" }, { id: 31, name: "7B" }, { id: 32, name: "7C" }, { id: 33, name: "7D" },
+  { id: 34, name: "8A" }, { id: 35, name: "8B" }, { id: 36, name: "8C" }, { id: 37, name: "8D" }
 ];
+
 
 const COLORS = ["#0088FE", "#FFBB28", "#00C49F", "#FF8042", "#8884D8", "#82CA9D"];
 
@@ -125,13 +127,17 @@ const StudentList = () => {
     other: genderData.find(g => g.name !== "Male" && g.name !== "Female")?.value || 0,
   };
 
-  const classStats = {
-    totalClasses: new Set(students.map(s => s.classes.name)).size,
-    year1: classLevelData.find(c => c.name === "Year 1")?.value || 0,
-    year2: classLevelData.find(c => c.name === "Year 2")?.value || 0,
-    year3: classLevelData.find(c => c.name === "Year 3")?.value || 0,
-    year4: classLevelData.find(c => c.name === "Year 4")?.value || 0,
-  };
+const classStats = {
+  totalClasses: new Set(students.map(s => s.classes.name)).size,
+  year1: classLevelData.filter(c => c.name === "Year 1").reduce((acc, c) => acc + c.value, 0),
+  year2: classLevelData.filter(c => c.name === "Year 2").reduce((acc, c) => acc + c.value, 0),
+  year3: classLevelData.filter(c => c.name === "Year 3").reduce((acc, c) => acc + c.value, 0),
+  year4: classLevelData.filter(c => c.name === "Year 4").reduce((acc, c) => acc + c.value, 0),
+  year5: classLevelData.filter(c => c.name === "Year 5").reduce((acc, c) => acc + c.value, 0),
+  year6: classLevelData.filter(c => c.name === "Year 6").reduce((acc, c) => acc + c.value, 0),
+  year7: classLevelData.filter(c => c.name === "Year 7").reduce((acc, c) => acc + c.value, 0),
+  year8: classLevelData.filter(c => c.name === "Year 8").reduce((acc, c) => acc + c.value, 0),
+};
 
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : undefined), obj);

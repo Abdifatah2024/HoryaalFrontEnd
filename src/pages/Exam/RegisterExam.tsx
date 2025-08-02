@@ -33,12 +33,18 @@ import { Save, Refresh } from "@mui/icons-material";
 // Constants
 const classList = [
   { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
-  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
+  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1F" },
   { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
   { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
   { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
   { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
   { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
+  { id: 19, name: "5A" }, { id: 20, name: "5B" }, { id: 21, name: "5C" },
+  { id: 19, name: "5D" }, { id: 20, name: "6A" }, { id: 21, name: "6B" },
+  { id: 19, name: "6C" }, { id: 20, name: "6D" }, { id: 21, name: "7A" },
+  { id: 19, name: "7B" }, { id: 20, name: "7C" }, { id: 21, name: "7D" },
+  { id: 19, name: "8A" }, { id: 20, name: "8B" }, { id: 21, name: "8C" },
+  { id: 19, name: "8D" }
 ];
 
 const examTypes = [
@@ -50,19 +56,21 @@ const examTypes = [
 const academicYears = [
   { id: 1, year: "2024-2025" },
   { id: 2, year: "2025-2026" },
+  { id: 2, year: "2026-2027" },
+  { id: 2, year: "2027-2028" },
+  { id: 2, year: "2028-2029" },
 ];
 
 const subjectsList = [
-  { id: 1, name: "Chemistry", color: "#4caf50" },
-  { id: 2, name: "Biology", color: "#8bc34a" },
-  { id: 3, name: "Physics", color: "#2196f3" },
-  { id: 4, name: "Math", color: "#673ab7" },
-  { id: 5, name: "English", color: "#f44336" },
-  { id: 6, name: "Arabic", color: "#ff9800" },
-  { id: 7, name: "Islamic", color: "#009688" },
-  { id: 8, name: "Geography", color: "#795548" },
-  { id: 9, name: "History", color: "#607d8b" },
-  { id: 10, name: "Somali", color: "#e91e63" },
+  { id: 1, name: "English", color: "#4caf50" },
+  { id: 2, name: "Arabic", color: "#8bc34a" },
+  { id: 3, name: "Somali", color: "#2196f3" },
+  { id: 4, name: "Mathematics", color: "#673ab7" },
+  { id: 5, name: "Science", color: "#f44336" },
+  { id: 6, name: "Islamic", color: "#ff9800" },
+  { id: 7, name: "Social", color: "#009688" },
+ 
+
 ];
 
 interface MarksData {

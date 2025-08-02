@@ -123,8 +123,8 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 gap-4">
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
-              AL-IRSHAAD
-              <span className="font-normal text-gray-500 dark:text-gray-400 ml-1.5">SECONDARY</span>
+             HORYAAL
+              <span className="font-normal text-gray-500 dark:text-gray-400 ml-1.5">SCHOOLS</span>
             </h1>
           </Link>
 

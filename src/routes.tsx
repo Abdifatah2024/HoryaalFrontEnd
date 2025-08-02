@@ -133,6 +133,7 @@ import CashLedgerList from './Redux/AccountingFiles/CashLedgerList';
 import StudentBalanceList from './pages/Payment/StudentBalanceList';
 import LastGlobalPayment from './Redux/Payment/LastGlobalPayment';
 import PayRemainingSalaries from './pages/Employee/PayRemainingSalaries';
+import UploadExamScoresShort from './pages/Exam/UploadExamScoresShort';
 
 export const router = createBrowserRouter([
   {
@@ -274,7 +275,7 @@ export const router = createBrowserRouter([
                   { path: 'LastPayment', element: <LastGlobalPayment/> },
                   { path: 'BalancePerMonth', element: <StudentBalanceList /> },
                   { path: 'PayRemainSalary', element: <PayRemainingSalaries /> },
-                 
+                     { path: 'UploadExam', element: <UploadExamScoresShort/> },
                 
                   { path: 'AttendeceYearlyReport', element: <EmployeeYearlyAttendanceOnly/> },
                 
