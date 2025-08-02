@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { AiOutlineSearch, AiOutlinePieChart, AiOutlineBarChart } from "react-icons/ai";
 import axios from "axios";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { BASE_API_URL } from "../../Constant";
 
 interface Student {
   id: number;
@@ -68,7 +69,7 @@ const StudentList = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/student/studentList");
+        const response = await axios.get(`${BASE_API_URL}/student/studentList`);
         setStudents(response.data);
       } catch (err) {
         setError("Failed to load students");
