@@ -1,4 +1,5 @@
 // src/Redux/Exam/ExamMidtermReportSlice.ts
+import { BASE_API_URL } from "@/Constant";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -33,7 +34,7 @@ export const fetchMidtermReport = createAsyncThunk(
   async ({ classId }: { classId: number }, thunkAPI) => {
     try {
       const res = await axios.post(
-        "http://localhost:4000/exam/report/midterm-monthly",
+        `${BASE_API_URL}/exam/report/midterm-monthly`,
         { classId }
       );
       return res.data.report;

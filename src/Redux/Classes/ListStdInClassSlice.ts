@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RootState } from "../../Redux/store";
+import { BASE_API_URL } from "@/Constant";
 
 // Types
 export interface Student {
@@ -32,7 +33,7 @@ export const getStudentsByClass = createAsyncThunk(
   async (classId: number, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `http://localhost:4000/student/ClassList/${classId}`
+        `'${BASE_API_URL}/student/ClassList/${classId}`
       );
       return res.data.students;
     } catch (err: any) {

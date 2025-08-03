@@ -2,10 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { Employee } from "../../pages/Employee/types";
-
-const BASE_API_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
-const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again.";
+import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "@/Constant";
 
 // 🔁 Submit (Create) Employee
 export const submitEmployee = createAsyncThunk(

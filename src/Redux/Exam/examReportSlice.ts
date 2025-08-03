@@ -1,4 +1,5 @@
 // src/store/slices/examReportSlice.ts
+import { BASE_API_URL } from "@/Constant";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -30,10 +31,10 @@ const initialState: ExamReportState = {
 export const fetchExamReport = createAsyncThunk(
   "examReport/fetchExamReport",
   async ({ classId, examId }: { classId: number; examId: number }) => {
-    const response = await axios.post(
-      "http://localhost:4000/exam/exam-report",
-      { classId, examId }
-    );
+    const response = await axios.post(`${BASE_API_URL}/exam/exam-report`, {
+      classId,
+      examId,
+    });
     return response.data.report;
   }
 );
