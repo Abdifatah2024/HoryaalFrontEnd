@@ -33,7 +33,7 @@ export const getStudentsByClass = createAsyncThunk(
   async (classId: number, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `'${BASE_API_URL}/student/ClassList/${classId}`
+        `${BASE_API_URL}/student/ClassList/${classId}`
       );
       return res.data.students;
     } catch (err: any) {

@@ -33,7 +33,7 @@ const absentReasons = [
 
 const StudentClassListStd2: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { students} = useSelector(selectStudents);
+  const { students = [] } = useSelector(selectStudents);
   const [selectedClassId, setSelectedClassId] = useState<number>(classList[0].id);
   const [attendanceData, setAttendanceData] = useState<Record<number, { present: boolean; remark?: string; reason?: string }>>({});
   const theme = useTheme();
@@ -103,120 +103,78 @@ const StudentClassListStd2: React.FC = () => {
     }
   };
 
-  // const handleDownloadPDF = () => {
-  //   const doc = new jsPDF();
-  //   const today = new Date().toLocaleDateString("en-GB", {
-  //     day: "2-digit", month: "short", year: "numeric"
-  //   });
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("landscape");
+    const today = new Date().toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+    const month = new Date().toLocaleString("en-GB", {
+      month: "long"
+    });
 
-  //   doc.setFontSize(16);
-  //   doc.text("HORYAAL SECONDARY SCHOOL", 105, 20, { align: "center" });
-  //   doc.setFontSize(12);
-  //   doc.text(`Class: ${classList.find(c => c.id === selectedClassId)?.name || ""}`, 14, 30);
-  //   doc.text(`Date: ${today}`, 160, 30);
+    const className = classList.find((c) => c.id === selectedClassId)?.name || "";
+    const headers = [
+      "NO", "ID-NO", "Student’s Full Name",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We"
+    ];
 
-  //   const rows = students.map((student, index) => ([
-  //     index + 1,
-  //     student.fullname,
-  //     student.gender,
-  //     student.phone || "-",
-  //     "", "", "", "", "", "", "", "" // 8 blank slots for attendance
-  //   ]));
+    const body = students.map((student, index) => [
+      index + 1,
+      student.id,
+      student.fullname,
+      ...Array(25).fill(""),
+    ]);
 
-  //   autoTable(doc, {
-  //     startY: 40,
-  //     head: [[
-  //       "#", "Full Name", "Gender", "Phone",
-  //       "1", "2", "3", "4", "5", "6", "7", "8"
-  //     ]],
-  //     body: rows,
-  //   });
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 128);
+    doc.text("AL-IRSHAD SECONDARY SCHOOL", 148, 12, { align: "center" });
 
-  //   doc.save("Attendance_Sheet.pdf");
-  // };
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text("Attendance Sheet", 148, 20, { align: "center" });
 
+    doc.setTextColor(255, 0, 0);
+    doc.setFontSize(11);
+    doc.text(`FORM: ${className}`, 148, 27, { align: "center" });
 
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Print : ${today}`, 250, 10);
+    doc.text(`Month : ${month}`, 250, 16);
 
-const handleDownloadPDF = () => {
-  const doc = new jsPDF("landscape");
-  const today = new Date().toLocaleDateString("en-GB", {
-    day: "2-digit", month: "short", year: "numeric"
-  });
-  const month = new Date().toLocaleString("en-GB", {
-  month: "long" // returns "July", "August", etc.
-});
+    autoTable(doc, {
+      head: [headers],
+      body: body,
+      startY: 35,
+      theme: "grid",
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        halign: "center",
+        valign: "middle",
+      },
+      headStyles: {
+        fillColor: [240, 240, 240],
+        textColor: 0,
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 18 },
+        2: { cellWidth: 60 },
+      },
+      margin: { top: 10, left: 10, right: 10 },
+    });
 
-
-
-
-  const className = classList.find((c) => c.id === selectedClassId)?.name || "";
-  const headers = [
-    "NO", "ID-NO", "Student’s Full Name",
-    "Sa", "Su", "Mo", "Tu", "We",
-    "Sa", "Su", "Mo", "Tu", "We",
-    "Sa", "Su", "Mo", "Tu", "We",
-    "Sa", "Su", "Mo", "Tu", "We",
-    "Sa", "Su", "Mo", "Tu", "We"
-  ]; // total = 28 columns
-
-  const body = students.map((student, index) => [
-    index + 1,
-    student.id,
-    student.fullname,
-    ...Array(25).fill(""), // empty slots for attendance
-  ]);
-
-  // Header
-  doc.setFontSize(14);
-  doc.setTextColor(0, 0, 128);
-  doc.text("AL-IRSHAD SECONDARY SCHOOL", 148, 12, { align: "center" });
-
-  doc.setFontSize(12);
-  doc.setTextColor(0);
-  doc.text("Attendance Sheet", 148, 20, { align: "center" });
-
-  doc.setTextColor(255, 0, 0);
-  doc.setFontSize(11);
-  doc.text(`FORM: ${className}`, 148, 27, { align: "center" });
-
-  // Print date and month
-  doc.setFontSize(10);
-  doc.setTextColor(0);
-  doc.text(`Print : ${today}`, 250, 10);
-  doc.text(`Month : ${month}`, 250, 16);
-
-
-  // Table
-  autoTable(doc, {
-    head: [headers],
-    body: body,
-    startY: 35,
-    theme: "grid",
-    styles: {
-      fontSize: 8,
-      cellPadding: 2,
-      halign: "center",
-      valign: "middle",
-    },
-    headStyles: {
-      fillColor: [240, 240, 240],
-      textColor: 0,
-      fontStyle: "bold",
-    },
-    columnStyles: {
-      0: { cellWidth: 10 }, // NO
-      1: { cellWidth: 18 }, // ID-NO
-      2: { cellWidth: 60 }, // Name
-    },
-    margin: { top: 10, left: 10, right: 10 },
-  });
-
-  doc.save(`Attendance_Sheet_${className}.pdf`);
-};
+    doc.save(`Attendance_Sheet_${className}.pdf`);
+  };
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
-      {/* TOP HEADER + CLASS SELECT */}
       <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 4, background: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b', borderLeft: `4px solid ${theme.palette.primary.main}` }}>
         <Grid container justifyContent="space-between" alignItems="center" spacing={2}>
           <Grid item xs={12} md={6}>
@@ -238,150 +196,116 @@ const handleDownloadPDF = () => {
           </Grid>
         </Grid>
       </Paper>
-      {/* EXISTING STUDENT TABLE & ATTENDANCE BUTTONS */}
-<TableContainer 
-  component={Paper} 
-  elevation={0}
-  sx={{ 
-    borderRadius: 4,
-    border: `1px solid ${theme.palette.divider}`,
-    overflow: 'hidden',
-  }}
->
-  <Table>
-    <TableHead>
-      <TableRow sx={{ backgroundColor: theme.palette.mode === 'light' ? '#f1f5f9' : '#334155' }}>
-        <TableCell sx={{ fontWeight: 700 }}>#</TableCell>
-        <TableCell sx={{ fontWeight: 700 }}>Student</TableCell>
-        <TableCell sx={{ fontWeight: 700 }}>Gender</TableCell>
-        <TableCell sx={{ fontWeight: 700 }}>Contact</TableCell>
-        <TableCell sx={{ fontWeight: 700 }}>Fee</TableCell>
-        <TableCell sx={{ fontWeight: 700, textAlign: 'center' }}>Status</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {students.map((student, index) => (
-        <TableRow 
-          key={student.id} 
-          hover 
-          sx={{ '&:nth-of-type(even)': { backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b' } }}
-        >
-          <TableCell>{index + 1}</TableCell>
-          <TableCell>
-            <Box display="flex" alignItems="center" gap={2}>
-              <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 36, height: 36, fontSize: 14 }}>
-                {student.fullname.split(' ').map(n => n[0]).join('')}
-              </Avatar>
-              <Typography fontWeight={500}>{student.fullname}</Typography>
-            </Box>
-          </TableCell>
-          <TableCell>
-            <Chip 
-              label={student.gender} 
-              size="small"
-              color={student.gender.toLowerCase() === 'male' ? 'primary' : 'secondary'}
-              variant="outlined"
-            />
-          </TableCell>
-          <TableCell>{student.phone}</TableCell>
-          <TableCell>
-            <Chip 
-              label={`$${student.fee}`} 
-              color="success"
-              size="small"
-              variant="outlined"
-            />
-          </TableCell>
-          <TableCell>
-            <Box display="flex" flexDirection="column" gap={1}>
-              <Button
-                size="small"
-                variant={attendanceData[student.id]?.present ? "contained" : "outlined"}
-                color={attendanceData[student.id]?.present ? "success" : "error"}
-                startIcon={attendanceData[student.id]?.present ? 
-                  <CheckCircleOutline /> : <CancelOutlined />}
-                onClick={() => handleAttendanceToggle(student.id)}
-                sx={{ 
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                }}
-              >
-                {attendanceData[student.id]?.present ? "Present" : "Absent"}
-              </Button>
-              
-              {!attendanceData[student.id]?.present && (
-                <Box mt={1} display="flex" flexDirection="column" gap={1}>
-                  <FormControl fullWidth size="small">
-                    <InputLabel>Reason</InputLabel>
-                    <Select
-                      value={attendanceData[student.id]?.reason || ""}
-                      onChange={(e) => handleReasonChange(student.id, e.target.value)}
-                      label="Reason"
-                      sx={{ borderRadius: 3 }}
-                    >
-                      {absentReasons.map((reason) => (
-                        <MenuItem key={reason.value} value={reason.value}>
-                          {reason.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  
-                  {attendanceData[student.id]?.reason === 'other' && (
-                    <TextField
+
+      <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 4, border: `1px solid ${theme.palette.divider}`, overflow: 'hidden' }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.mode === 'light' ? '#f1f5f9' : '#334155' }}>
+              <TableCell sx={{ fontWeight: 700 }}>#</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Student</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Gender</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Contact</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Fee</TableCell>
+              <TableCell sx={{ fontWeight: 700, textAlign: 'center' }}>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {students.map((student, index) => (
+              <TableRow key={student.id} hover sx={{ '&:nth-of-type(even)': { backgroundColor: theme.palette.mode === 'light' ? '#f8fafc' : '#1e293b' } }}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Avatar sx={{ bgcolor: theme.palette.primary.main, width: 36, height: 36, fontSize: 14 }}>
+                      {student.fullname.split(' ').map(n => n[0]).join('')}
+                    </Avatar>
+                    <Typography fontWeight={500}>{student.fullname}</Typography>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Chip label={student.gender} size="small" color={student.gender.toLowerCase() === 'male' ? 'primary' : 'secondary'} variant="outlined" />
+                </TableCell>
+                <TableCell>{student.phone}</TableCell>
+                <TableCell>
+                  <Chip label={`$${student.fee}`} color="success" size="small" variant="outlined" />
+                </TableCell>
+                <TableCell>
+                  <Box display="flex" flexDirection="column" gap={1}>
+                    <Button
                       size="small"
-                      placeholder="Please specify"
-                      variant="outlined"
-                      fullWidth
-                      value={attendanceData[student.id]?.remark || ""}
-                      onChange={(e) => {
-                        const remark = e.target.value;
-                        setAttendanceData((prev) => ({
-                          ...prev,
-                          [student.id]: {
-                            ...prev[student.id],
-                            remark,
-                          },
-                        }));
-                      }}
-                      sx={{ borderRadius: 3 }}
-                    />
-                  )}
-                </Box>
-              )}
-            </Box>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
+                      variant={attendanceData[student.id]?.present ? "contained" : "outlined"}
+                      color={attendanceData[student.id]?.present ? "success" : "error"}
+                      startIcon={attendanceData[student.id]?.present ? <CheckCircleOutline /> : <CancelOutlined />}
+                      onClick={() => handleAttendanceToggle(student.id)}
+                      sx={{ borderRadius: 3, textTransform: 'none', fontWeight: 600 }}
+                    >
+                      {attendanceData[student.id]?.present ? "Present" : "Absent"}
+                    </Button>
 
-<Box sx={{ mt: 4, display: "flex", justifyContent: "center", position: 'sticky', bottom: 20, zIndex: 1 }}>
-  <Button 
-    variant="contained" 
-    color="primary" 
-    onClick={saveAttendance}
-    size="large"
-    sx={{
-      borderRadius: 3,
-      px: 6,
-      py: 1.5,
-      fontWeight: 700,
-      boxShadow: theme.shadows[4],
-      '&:hover': {
-        boxShadow: theme.shadows[8],
-      }
-    }}
-  >
-    Save Attendance
-  </Button>
-</Box>
+                    {!attendanceData[student.id]?.present && (
+                      <Box mt={1} display="flex" flexDirection="column" gap={1}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Reason</InputLabel>
+                          <Select
+                            value={attendanceData[student.id]?.reason || ""}
+                            onChange={(e) => handleReasonChange(student.id, e.target.value)}
+                            label="Reason"
+                            sx={{ borderRadius: 3 }}
+                          >
+                            {absentReasons.map((reason) => (
+                              <MenuItem key={reason.value} value={reason.value}>{reason.label}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
 
+                        {attendanceData[student.id]?.reason === 'other' && (
+                          <TextField
+                            size="small"
+                            placeholder="Please specify"
+                            variant="outlined"
+                            fullWidth
+                            value={attendanceData[student.id]?.remark || ""}
+                            onChange={(e) => {
+                              const remark = e.target.value;
+                              setAttendanceData((prev) => ({
+                                ...prev,
+                                [student.id]: {
+                                  ...prev[student.id],
+                                  remark,
+                                },
+                              }));
+                            }}
+                            sx={{ borderRadius: 3 }}
+                          />
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-        
-    
+      <Box sx={{ mt: 4, display: "flex", justifyContent: "center", position: 'sticky', bottom: 20, zIndex: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={saveAttendance}
+          size="large"
+          sx={{
+            borderRadius: 3,
+            px: 6,
+            py: 1.5,
+            fontWeight: 700,
+            boxShadow: theme.shadows[4],
+            '&:hover': { boxShadow: theme.shadows[8] }
+          }}
+        >
+          Save Attendance
+        </Button>
+      </Box>
+
       <ToastContainer />
     </Container>
   );
