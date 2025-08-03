@@ -1,4 +1,5 @@
 // features/absence/absenceSlice.ts
+import { BASE_API_URL } from '@/Constant';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -30,7 +31,7 @@ export const fetchAbsences = createAsyncThunk(
   'absence/fetchAbsences',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('http://localhost:4000/student/attendance/top-absent');
+      const response = await axios.get(`${BASE_API_URL}/student/attendance/top-absent`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch absence data');

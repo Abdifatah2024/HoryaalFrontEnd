@@ -1,14 +1,12 @@
+import { BASE_API_URL } from "@/Constant";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const triggerGenerateFees = createAsyncThunk(
   "fees/generate",
   async () => {
-    const response = await fetch(
-      "http://localhost:4000/fee/generate-monthly-fees",
-      {
-        method: "POST",
-      }
-    );
+    const response = await fetch(`${BASE_API_URL}/fee/generate-monthly-fees`, {
+      method: "POST",
+    });
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message || "Error generating fees");
