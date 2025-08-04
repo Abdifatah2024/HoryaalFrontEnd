@@ -40,7 +40,7 @@ import {
 } from "@mui/icons-material";
 
 // Expected bus fee per student
-const EXPECTED_BUS_FEE = 15;
+const EXPECTED_BUS_FEE = 10;
 
 // Helper function for currency formatting
 const formatCurrency = (amount: number): string => {
@@ -79,46 +79,6 @@ const StudentBusList: React.FC = () => {
     dispatch(fetchStudentsWithoutBus());
   }, [dispatch]);
 
-  // const [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis] =
-  //   useMemo(() => {
-  //     const calculateTotals = (students: Student[]) => ({
-  //       totalFee: students.reduce((sum, student) => sum + student.totalFee, 0),
-  //       schoolFee: students.reduce(
-  //         (sum, student) => sum + student.schoolFee,
-  //         0
-  //       ),
-  //       busFee: students.reduce((sum, student) => sum + student.busFee, 0),
-  //       count: students.length,
-  //     });
-
-  //     const withBusTotals = calculateTotals(withBus);
-  //     const withoutBusTotals = calculateTotals(withoutBus);
-
-  //     const grandTotals = {
-  //       totalFee: withBusTotals.totalFee + withoutBusTotals.totalFee,
-  //       schoolFee: withBusTotals.schoolFee + withoutBusTotals.schoolFee,
-  //       busFee: withBusTotals.busFee + withoutBusTotals.busFee,
-  //       count: withBusTotals.count + withoutBusTotals.count,
-  //     };
-
-  //     // Ensure 'withBus' array is not null/undefined before accessing length
-  //     const safeWithBusLength = withBus ? withBus.length : 0;
-  //     const expectedBusFee = safeWithBusLength * EXPECTED_BUS_FEE;
-  //     const actualBusFee = withBusTotals.busFee;
-  //     const busFeeDifference = expectedBusFee - actualBusFee;
-  //     const busFeeCompliance =
-  //       expectedBusFee > 0 ? (actualBusFee / expectedBusFee) * 100 : 100;
-
-  //     const busFeeAnalysis = {
-  //       expected: expectedBusFee,
-  //       actual: actualBusFee,
-  //       difference: busFeeDifference,
-  //       compliance: busFeeCompliance,
-  //       expectedPerStudent: EXPECTED_BUS_FEE,
-  //     };
-
-  //     return [withBusTotals, withoutBusTotals, grandTotals, busFeeAnalysis];
-  //   }, [withBus, withoutBus]);
   const [grandTotals, busFeeAnalysis] = useMemo(() => {
   const calculateTotals = (students: Student[]) => ({
     totalFee: students.reduce((sum, student) => sum + student.totalFee, 0),
