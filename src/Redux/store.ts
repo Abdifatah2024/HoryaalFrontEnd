@@ -10,7 +10,7 @@ import attendanceReducer from "./Auth/AttedenceSlice";
 import UpdateClass from "./Auth/updateClassSlice";
 import studentClassReducer from "../Redux/Auth/GetOneStudentsSlice";
 import deleteStudentReducer from "../Redux/Auth/SofteDeleteSlice";
-import studentUodateDelete from "../Redux/Auth/StudentSlice";
+import studentUodateDelete from "../Redux/Auth/studentSlice";
 import AbsentList from "../Redux/Auth/absentListSlice";
 import attendReducer from "../Redux/Auth/DeleteAndUpdateSlice";
 import userReducer from "../Redux/Auth/userPhotoSlice"; // ✅ this is your user photo slice
@@ -65,6 +65,7 @@ import studentBalanceReducer from "../Redux/Payment/studentBalanceSlice";
 import lastPaymentReducer from "../Redux/Payment/lastPaymentSlice";
 import profitLogSlice from "../Redux/Epmloyee/payRemainSalarySlice";
 import examUploadReducer from "../Redux/Exam/examUploadSlice";
+import classListReducer from "../Redux/Auth/studentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -135,6 +136,7 @@ export const store = configureStore({
     lastPayment: lastPaymentReducer,
     salaryManagement: profitLogSlice,
     examUpload: examUploadReducer,
+    classList: classListReducer,
   },
   devTools: true,
 });
