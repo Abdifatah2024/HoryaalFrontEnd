@@ -134,6 +134,7 @@ import StudentBalanceList from './pages/Payment/StudentBalanceList';
 import LastGlobalPayment from './Redux/Payment/LastGlobalPayment';
 import PayRemainingSalaries from './pages/Employee/PayRemainingSalaries';
 import UploadExamScoresShort from './pages/Exam/UploadExamScoresShort';
+import FreeStudentManager from './pages/FreeStudentManager';
 
 export const router = createBrowserRouter([
   {
@@ -272,6 +273,7 @@ export const router = createBrowserRouter([
                 children: [
                  
                   { path: 'regstd', element: <StudentForm /> },
+                  { path: 'free', element: <FreeStudentManager/> },
                   { path: 'LastPayment', element: <LastGlobalPayment/> },
                   { path: 'BalancePerMonth', element: <StudentBalanceList /> },
                   { path: 'PayRemainSalary', element: <PayRemainingSalaries /> },

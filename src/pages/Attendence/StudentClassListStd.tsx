@@ -131,7 +131,7 @@ const StudentClassListStd2: React.FC = () => {
 
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 128);
-    doc.text("AL-IRSHAD SECONDARY SCHOOL", 148, 12, { align: "center" });
+    doc.text("HORYAAL PRIMARY SCHOOL", 148, 12, { align: "center" });
 
     doc.setFontSize(12);
     doc.setTextColor(0);
@@ -139,7 +139,7 @@ const StudentClassListStd2: React.FC = () => {
 
     doc.setTextColor(255, 0, 0);
     doc.setFontSize(11);
-    doc.text(`FORM: ${className}`, 148, 27, { align: "center" });
+    doc.text(`Class: ${className}`, 148, 27, { align: "center" });
 
     doc.setFontSize(10);
     doc.setTextColor(0);
