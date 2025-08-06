@@ -244,7 +244,7 @@ const handleExportPDF = () => {
   // ✅ School name at the very top
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("AL-IRSHAAD SECONDARY SCHOOL", 14, 15);
+  doc.text("HORYAAL PRIMARY", 14, 15);
 
   // ✅ Report title below it
   doc.setFontSize(16);

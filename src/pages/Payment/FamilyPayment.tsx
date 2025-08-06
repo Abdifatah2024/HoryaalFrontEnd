@@ -19,8 +19,8 @@ const ReceiptVoucher: React.FC<{ data: any; copyType: "OFFICE COPY" | "STUDENT C
   // Removed print:w-[48%] from here, as printing width will be controlled by handlePrint CSS
   <div className="receipt-voucher p-6 border border-gray-300 rounded-lg bg-white shadow-sm mb-6 w-full max-w-md mx-auto print:border-none print:shadow-none print:mb-0 print:break-inside-avoid">
     <div className="school-header text-center mb-4">
-      <h3 className="text-xl font-bold text-gray-800">AL-IRSHAAD SECONDARY SCHOOL</h3>
-      <p className="text-sm text-gray-600">ZAAD NO: 515449 Tel: 4740303/4422850/6388881</p>
+      <h3 className="text-xl font-bold text-gray-800">HORYAAL PRIMARY SCHOOL </h3>
+      <p className="text-sm text-gray-600">ZAAD NO: 500536 Morning Tel: 063-4818888</p>
       <p className="text-md font-semibold text-gray-700 mt-2">
         CASH RECEIPT - {copyType} - DATE: {data.date}
       </p>

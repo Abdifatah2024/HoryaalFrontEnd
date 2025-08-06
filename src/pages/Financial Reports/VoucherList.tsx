@@ -78,8 +78,8 @@ const VoucherList: React.FC = () => {
           ${["OFFICE COPY", "STUDENT COPY"].map(copy => `
             <div>
               <div class="header">
-                AL-IRSHAAD SECONDARY SCHOOL<br/>
-                ZAAD NO: 515449 Tel: 4740303 / 4422850 / 6388881<br/>
+                HORYAAL PRIMARY <br/>
+                  ZAAD NO: 500536 Morning, ZAAD NO: 500929 Afternoon Tel: 063-4818888 / 063-6294444<br/>
                 <u>CASH RECEIPT - ${copy}</u> - DATE: ${date}
               </div>
               <table class="info-table">
@@ -118,8 +118,8 @@ const VoucherList: React.FC = () => {
 
     const drawVoucher = (yStart: number, copyType: string) => {
       doc.setFontSize(12);
-      doc.text("AL-IRSHAAD SECONDARY SCHOOL", 70, yStart);
-      doc.text("ZAAD NO: 515449 Tel: 4740303 / 4102666 / 638888815", 50, yStart + 6);
+      doc.text("HORYAAL PRIMARY SCHOOL", 70, yStart);
+      doc.text("ZAAD NO:500536 Morning, ZAAD NO:500928 Afternoon,Tel:063-4818888 / 063-6294444", 50, yStart + 6);
       doc.text(`CASH RECEIPT - ${copyType}`, 80, yStart + 12);
       doc.text(`DATE: ${selectedVoucher?.date ? new Date(selectedVoucher.date).toLocaleDateString() : "N/A"}`, 150, yStart + 12);
 

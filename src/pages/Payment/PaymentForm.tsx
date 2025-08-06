@@ -233,7 +233,7 @@ const StudentPaymentPage: React.FC = () => {
           {paymentResponse?.payment && (
             <Paper ref={receiptRef} sx={{ p: 3, border: '1px dashed #ddd' }}>
               <Box textAlign="center" mb={2}>
-                <Typography variant="h6" fontWeight="bold">AL-IRSHAAD SECONDARY SCHOOL</Typography>
+                <Typography variant="h6" fontWeight="bold">HORYAAL SCHOOL</Typography>
                 <Typography variant="body2" color="text.secondary">
                   {new Date().toLocaleDateString('en-US', {
                     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
