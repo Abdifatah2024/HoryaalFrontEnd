@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../../Redux/store";
-
-const API_BASE = "http://localhost:4000";
+import { BASE_API_URL } from "@/Constant";
 
 export interface Voucher {
   id: number;
@@ -49,7 +48,7 @@ export const fetchVouchers = createAsyncThunk(
   "voucher/fetchVouchers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_BASE}/Voucher/vouchers`);
+      const res = await axios.get(`${BASE_API_URL}/Voucher/vouchers`);
       return res.data as Voucher[];
     } catch (err: any) {
       return rejectWithValue(
@@ -63,7 +62,7 @@ export const fetchVoucherById = createAsyncThunk(
   "voucher/fetchVoucherById",
   async (id: number, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_BASE}/Voucher/vouchers/${id}`);
+      const res = await axios.get(`${BASE_API_URL}/Voucher/vouchers/${id}`);
       return res.data as Voucher;
     } catch (err: any) {
       return rejectWithValue(
@@ -90,7 +89,7 @@ export const updateVoucher = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.put(`${API_BASE}/Voucher/payments/${id}`, {
+      const res = await axios.put(`${BASE_API_URL}/Voucher/payments/${id}`, {
         amountPaid,
         discount,
         Description,
