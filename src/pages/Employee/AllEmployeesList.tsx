@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../Redux/store';
 import { fetchEmployees } from '../../Redux/Epmloyee/employeeListSlice';
 import {
   FiUser,
-
   FiSearch,
   FiEdit2,
   FiMoreVertical,
   FiPlus,
   FiAlertCircle,
+  FiDollarSign,
+  FiUsers,
 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
@@ -22,6 +23,27 @@ const AllEmployeesList: React.FC = () => {
   useEffect(() => {
     dispatch(fetchEmployees());
   }, [dispatch]);
+
+  // Use useMemo to avoid re-calculating the summary on every re-render unless employees changes
+  const summaryStats = useMemo(() => {
+    const totalEmployees = employees.length;
+    const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
+
+    const maleEmployees = employees.filter(emp => emp.gender.toLowerCase() === 'male');
+    const maleSalary = maleEmployees.reduce((sum, emp) => sum + emp.salary, 0);
+
+    const femaleEmployees = employees.filter(emp => emp.gender.toLowerCase() === 'female');
+    const femaleSalary = femaleEmployees.reduce((sum, emp) => sum + emp.salary, 0);
+
+    return {
+      totalEmployees,
+      totalSalary,
+      maleSalary,
+      femaleSalary,
+      maleCount: maleEmployees.length,
+      femaleCount: femaleEmployees.length,
+    };
+  }, [employees]);
 
   // ✅ FIXED FILTER LOGIC
   const filteredEmployees = employees.filter(emp =>
@@ -80,6 +102,64 @@ const AllEmployeesList: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* --- NEW SUMMARY SECTION --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Employees */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-500">Total Employees</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              {summaryStats.totalEmployees}
+            </p>
+          </div>
+          <div className="p-3 bg-indigo-100 rounded-full text-indigo-600">
+            <FiUsers size={24} />
+          </div>
+        </div>
+
+        {/* Total Salary */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-500">Total Salary</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              ${summaryStats.totalSalary.toLocaleString()}
+            </p>
+          </div>
+          <div className="p-3 bg-green-100 rounded-full text-green-600">
+            <FiDollarSign size={24} />
+          </div>
+        </div>
+
+        {/* Male Salary */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-500">Male Salary</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              ${summaryStats.maleSalary.toLocaleString()}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">{summaryStats.maleCount} employees</p>
+          </div>
+          <div className="p-3 bg-blue-100 rounded-full text-blue-600">
+            <FiUser size={24} />
+          </div>
+        </div>
+
+        {/* Female Salary */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-500">Female Salary</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              ${summaryStats.femaleSalary.toLocaleString()}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">{summaryStats.femaleCount} employees</p>
+          </div>
+          <div className="p-3 bg-pink-100 rounded-full text-pink-600">
+            <FiUser size={24} />
+          </div>
+        </div>
+      </div>
+      {/* --- END SUMMARY SECTION --- */}
 
       {/* TABS */}
       <div className="flex border-b border-gray-200 mb-6">
