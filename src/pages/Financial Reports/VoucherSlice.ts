@@ -108,7 +108,7 @@ export const fetchVoucherGroups = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `${API_BASE}/Voucher/vouchers/monthly/grouped`
+        `${BASE_API_URL}/Voucher/vouchers/monthly/grouped`
       );
       return res.data as MonthlyVoucherGroup[];
     } catch (err: any) {
