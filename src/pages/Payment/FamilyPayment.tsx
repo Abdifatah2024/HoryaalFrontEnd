@@ -15,21 +15,39 @@ import { UsedNumberResponse } from "@/types/Login";
 
 // ReceiptVoucher Component for reusability and cleaner code
 // This component will render a single voucher copy (either Office or Student)
-const ReceiptVoucher: React.FC<{ data: any; copyType: "OFFICE COPY" | "STUDENT COPY" }> = ({ data, copyType }) => (
-  // Removed print:w-[48%] from here, as printing width will be controlled by handlePrint CSS
+const ReceiptVoucher: React.FC<{
+  data: {
+    students: { name: string; amount: number }[];
+    total: number;
+    discount: number;
+    description: string;
+    receivedBy: string;
+    date: string;
+    monthYear: string;
+  };
+  copyType: "OFFICE COPY" | "STUDENT COPY";
+}> = ({ data, copyType }) => (
   <div className="receipt-voucher p-6 border border-gray-300 rounded-lg bg-white shadow-sm mb-6 w-full max-w-md mx-auto print:border-none print:shadow-none print:mb-0 print:break-inside-avoid">
     <div className="school-header text-center mb-4">
-      <h3 className="text-xl font-bold text-gray-800">HORYAAL PRIMARY SCHOOL </h3>
+      <h3 className="text-xl font-bold text-gray-800">HORYAAL PRIMARY SCHOOL</h3>
       <p className="text-sm text-gray-600">ZAAD NO: 500536 Morning Tel: 063-4818888</p>
       <p className="text-md font-semibold text-gray-700 mt-2">
         CASH RECEIPT - {copyType} - DATE: {data.date}
       </p>
     </div>
-    <div className="receipt-details text-gray-700 text-base space-y-2">
-      <p><strong>Student:</strong> {data.student}</p>
+    <div className="receipt-details text-gray-700 text-base space-y-3">
       <p><strong>Month/Year:</strong> {data.monthYear}</p>
-      <p><strong>Amount Paid:</strong> ${data.amountPaid?.toFixed(2)}</p>
-      <p><strong>Discount:</strong> ${data.discount?.toFixed(2)}</p>
+      <p><strong>Paid For Students:</strong></p>
+      <ul className="pl-5 list-disc">
+        {Array.isArray(data.students) &&
+          data.students.map((s, idx) => (
+            <li key={idx}>
+              {s.name} — ${s.amount.toFixed(2)}
+            </li>
+          ))}
+      </ul>
+      <p><strong>Total Paid:</strong> ${data.total.toFixed(2)}</p>
+      <p><strong>Discount:</strong> ${data.discount.toFixed(2)}</p>
       <p><strong>Description:</strong> {data.description}</p>
       <p><strong>Received By:</strong> {data.receivedBy}</p>
     </div>
@@ -49,6 +67,7 @@ const ReceiptVoucher: React.FC<{ data: any; copyType: "OFFICE COPY" | "STUDENT C
     )}
   </div>
 );
+
 
 const FamilyPayment: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -323,46 +342,67 @@ const FamilyPayment: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (paymentSuccess) {
-      toast.success(paymentSuccess.message || "Payment successful!");
+useEffect(() => {
+  if (paymentSuccess) {
+    toast.success(paymentSuccess.message || "Payment successful!");
 
-      // Prepare receipt data
-      const studentName = currentStudent?.fullname || (family && family.students?.length === 1 ? family.students[0].fullname : 'N/A');
-      const amountPaid = searchSingleStudent ? displayBalance : totalBalance;
-      const receivedBy = "Abdifatah Ismail Abdi"; // This should come from user context or backend
+   const receivedBy = "Mr. Abdirisak Omer"; // Avoid re-declare
+
+    if (searchSingleStudent && currentStudent) {
+      setReceiptData({
+        students: [
+          {
+            name: currentStudent.fullname,
+            amount: displayBalance,
+          },
+        ],
+        total: displayBalance,
+        discount,
+        description: pendingPayment?.payload.description || paymentMethod,
+        receivedBy,
+        date: new Date().toLocaleDateString(),
+        monthYear: `${month}/${year}`,
+      });
+    } else if (family?.students) {
+      const studentList = family.students.map((s) => ({
+        name: s.fullname,
+        amount: s.balance || 0,
+      }));
+      const total = studentList.reduce((sum, s) => sum + s.amount, 0);
 
       setReceiptData({
-        student: studentName,
-        monthYear: `${month}/${year}`,
-        amountPaid: amountPaid,
-        discount: discount,
+        students: studentList,
+        total,
+        discount,
         description: pendingPayment?.payload.description || paymentMethod,
-        receivedBy: receivedBy,
+        receivedBy,
         date: new Date().toLocaleDateString(),
+        monthYear: `${month}/${year}`,
       });
-      setShowPrintButton(true); // Show print button after successful payment
+    }
 
-      dispatch(clearFamilyPaymentStatus());
-      setDiscount(0);
-      setDiscountReason("");
-      setZaadNumber("");
-      setEdahabNumber("");
-      setNumberChecked(false);
-      setIsDiscountVisible(false);
-      setSelectedStudentId(null);
-      setSearchQuery("");
-      dispatch(clearLastPaymentInfo());
-      setShowStudentModal(false);
-      setUsedNumberInfo(null);
-    }
-    if (paymentError) {
-      toast.error(paymentError);
-      dispatch(clearFamilyPaymentStatus());
-      setShowPrintButton(false); // Hide print button on error
-      setReceiptData(null);
-    }
-  }, [paymentSuccess, paymentError, dispatch, currentStudent, family, month, year, discount, paymentMethod, displayBalance, totalBalance, pendingPayment]);
+    setShowPrintButton(true);
+    dispatch(clearFamilyPaymentStatus());
+    setDiscount(0);
+    setDiscountReason("");
+    setZaadNumber("");
+    setEdahabNumber("");
+    setNumberChecked(false);
+    setIsDiscountVisible(false);
+    setSelectedStudentId(null);
+    setSearchQuery("");
+    dispatch(clearLastPaymentInfo());
+    setShowStudentModal(false);
+    setUsedNumberInfo(null);
+  }
+
+  if (paymentError) {
+    toast.error(paymentError);
+    dispatch(clearFamilyPaymentStatus());
+    setShowPrintButton(false);
+    setReceiptData(null);
+  }
+}, [paymentSuccess, paymentError, dispatch, currentStudent, family, month, year, discount, paymentMethod, displayBalance, totalBalance, pendingPayment]);
 
   return (
     <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-2xl max-w-4xl my-8">
