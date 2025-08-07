@@ -66,6 +66,7 @@ import lastPaymentReducer from "../Redux/Payment/lastPaymentSlice";
 import profitLogSlice from "../Redux/Epmloyee/payRemainSalarySlice";
 import examUploadReducer from "../Redux/Exam/examUploadSlice";
 import classListReducer from "../Redux/Auth/studentSlice";
+import unpaidFamilyReducer from "../pages/Payment/unpaidFamilySlice";
 
 export const store = configureStore({
   reducer: {
@@ -137,6 +138,7 @@ export const store = configureStore({
     salaryManagement: profitLogSlice,
     examUpload: examUploadReducer,
     classList: classListReducer,
+    unpaidFamily: unpaidFamilyReducer,
   },
   devTools: true,
 });

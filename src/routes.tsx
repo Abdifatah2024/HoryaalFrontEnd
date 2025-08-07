@@ -135,6 +135,8 @@ import LastGlobalPayment from './Redux/Payment/LastGlobalPayment';
 import PayRemainingSalaries from './pages/Employee/PayRemainingSalaries';
 import UploadExamScoresShort from './pages/Exam/UploadExamScoresShort';
 import FreeStudentManager from './pages/FreeStudentManager';
+import UnpaidFamilyReport from './pages/Payment/UnpaidFamilyReport';
+import NewStudentList from './pages/Payment/NewStudentList';
 
 export const router = createBrowserRouter([
   {
@@ -201,6 +203,8 @@ export const router = createBrowserRouter([
   element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER, Role.ACADEMY]} />,
   children: [
      { path: 'Announcements', element: <ManageAnnouncements/> },
+     { path: 'Newstudent', element: <NewStudentList/> },
+     
       { path: 'AllEmployeesList', element: <AllEmployeesList /> },
      { path: 'AnnouncementsList', element: <AdminAnnouncements/> },
       { path: 'EmployeeAttendance', element: <EmployeeAttendance /> },
@@ -273,6 +277,7 @@ export const router = createBrowserRouter([
                 children: [
                  
                   { path: 'regstd', element: <StudentForm /> },
+                  { path: 'UnpaidFamily', element: <UnpaidFamilyReport/> },
                   { path: 'free', element: <FreeStudentManager/> },
                   { path: 'LastPayment', element: <LastGlobalPayment/> },
                   { path: 'BalancePerMonth', element: <StudentBalanceList /> },
