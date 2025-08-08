@@ -317,21 +317,38 @@ const classStats = {
                   <p className="text-2xl font-bold">{classStats.totalClasses}</p>
                 </div>
                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                  <h3 className="font-medium">Form One</h3>
+                  <h3 className="font-medium">Grade One</h3>
                   <p className="text-2xl font-bold text-purple-500">{classStats.year1}</p>
                 </div>
                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                  <h3 className="font-medium">Form Two</h3>
+                  <h3 className="font-medium">Grade Two</h3>
                   <p className="text-2xl font-bold text-blue-500">{classStats.year2}</p>
                 </div>
                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                  <h3 className="font-medium">Form Three</h3>
+                  <h3 className="font-medium">Grade Three</h3>
                   <p className="text-2xl font-bold text-green-500">{classStats.year3}</p>
                 </div>
                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                  <h3 className="font-medium">Form Four</h3>
+                  <h3 className="font-medium">Grade Four</h3>
                   <p className="text-2xl font-bold text-orange-500">{classStats.year4}</p>
                 </div>
+                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Grade Five</h3>
+                  <p className="text-2xl font-bold text-orange-500">{classStats.year5}</p>
+                   <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Grade Six</h3>
+                  <p className="text-2xl font-bold text-orange-500">{classStats.year6}</p>
+                </div>
+                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Grade Seven</h3>
+                  <p className="text-2xl font-bold text-orange-500">{classStats.year7}</p>
+                </div>
+                 <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <h3 className="font-medium">Grade Eight</h3>
+                  <p className="text-2xl font-bold text-orange-500">{classStats.year8}</p>
+                </div>
+              
+                                </div>
               </div>
             </motion.div>
           )}
