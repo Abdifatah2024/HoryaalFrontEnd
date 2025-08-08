@@ -332,6 +332,7 @@ const classStats = {
                   <h3 className="font-medium">Grade Four</h3>
                   <p className="text-2xl font-bold text-orange-500">{classStats.year4}</p>
                 </div>
+                </div>
                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
                   <h3 className="font-medium">Grade Five</h3>
                   <p className="text-2xl font-bold text-orange-500">{classStats.year5}</p>
@@ -349,7 +350,7 @@ const classStats = {
                 </div>
               
                                 </div>
-              </div>
+              
             </motion.div>
           )}
         </div>
