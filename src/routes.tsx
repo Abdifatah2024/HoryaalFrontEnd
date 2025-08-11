@@ -137,6 +137,7 @@ import UploadExamScoresShort from './pages/Exam/UploadExamScoresShort';
 import FreeStudentManager from './pages/FreeStudentManager';
 import UnpaidFamilyReport from './pages/Payment/UnpaidFamilyReport';
 import NewStudentList from './pages/Payment/NewStudentList';
+import UnpaidFamilySummary from './pages/Payment/BalanceFamilySummary';
 
 export const router = createBrowserRouter([
   {
@@ -278,6 +279,7 @@ export const router = createBrowserRouter([
                  
                   { path: 'regstd', element: <StudentForm /> },
                   { path: 'UnpaidFamily', element: <UnpaidFamilyReport/> },
+                  { path: 'UnpaidFamilySummary', element: <UnpaidFamilySummary/> },
                   { path: 'free', element: <FreeStudentManager/> },
                   { path: 'LastPayment', element: <LastGlobalPayment/> },
                   { path: 'BalancePerMonth', element: <StudentBalanceList /> },

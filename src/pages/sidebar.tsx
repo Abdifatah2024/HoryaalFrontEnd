@@ -157,6 +157,7 @@ const SidebarLayout = () => {
         subItems: [
               { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
     { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
+    { title: "Unpaid-family-summary", icon: <AiOutlineTeam />, path: "/dashboard/UnpaidFamilySummary" },
     { title: "Unpaid Family Report", icon: <AiOutlineTeam />, path: "/dashboard/UnpaidFamily" },
 
     { title: "Free Students", icon: <AiOutlineTeam />, path: "/dashboard/free" },
