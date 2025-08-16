@@ -191,7 +191,7 @@ export const router = createBrowserRouter([
                   { path: 'AssignTeacherClass', element: <TeacherAssignmentManager /> },
                   { path: 'RegisterTeacher', element: <RegisterTeacher /> },
                   { path: 'TeacherManagement', element: <TeacherManagementPanel/> },
-                  { path: 'DropOut', element: <SoftDeletedStudents/> },
+               
                   { path: 'Restored', element: <RestoredStudentsPage/> },
                   { path: 'DiscountManagement', element: <DiscountLimitManager/> },
                   { path: 'ProfitManager', element: <ProfitLogManager/> },
@@ -279,6 +279,7 @@ export const router = createBrowserRouter([
                 children: [
                  
                   { path: 'regstd', element: <StudentForm /> },
+                     { path: 'DropOut', element: <SoftDeletedStudents/> },
                   { path: 'UnpaidFamily', element: <UnpaidFamilyReport/> },
                   { path: 'UnpaidFamilySummary', element: <UnpaidFamilySummary/> },
                   { path: 'free', element: <FreeStudentManager/> },

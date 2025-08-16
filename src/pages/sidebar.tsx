@@ -123,6 +123,8 @@ const SidebarLayout = () => {
 
             ? [
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
+                  
+                      { title: "Dropout Students", icon: <AiOutlineUser />, path: "/dashboard/DropOut" },
                    { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
                 { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
                  { title: "Check Transfer", icon: <AiOutlineSetting />, path: "/dashboard/CheckTransfer" },
@@ -141,8 +143,7 @@ const SidebarLayout = () => {
 
                 ...(isAdmin
                   ? [
-                   
-                      { title: "Dropout Students", icon: <AiOutlineUser />, path: "/dashboard/DropOut" },
+                 
                       { title: "Restored Students", icon: <AiOutlineUser />, path: "/dashboard/Restored" },
                       { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
                     ]
