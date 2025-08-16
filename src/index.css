@@ -97,7 +97,29 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* ✅ Global fix: make all inputs & textareas readable */
+  input, textarea, select, [contenteditable="true"] {
+    @apply text-foreground caret-foreground placeholder-muted-foreground bg-background;
+  }
+
+  /* iOS Safari & Chrome search quirks */
+  input[type="search"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* If using MUI anywhere */
+  .MuiInputBase-input {
+    color: var(--foreground);
+    caret-color: var(--foreground);
+  }
+  .MuiInputBase-input::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
 }
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -106,17 +128,17 @@
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
 @media print {
   .print-only {
     display: block !important;
   }
-
   .no-print {
     display: none !important;
   }
 }
 
-/* Make autofilled text visible on iOS/Safari/Chrome */
+/* ✅ Make autofilled text visible on iOS/Safari/Chrome */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
