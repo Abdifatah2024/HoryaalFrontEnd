@@ -115,3 +115,19 @@
     display: none !important;
   }
 }
+
+/* Make autofilled text visible on iOS/Safari/Chrome */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111 !important; /* light */
+  transition: background-color 9999s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #f3f4f6 !important; /* gray-100 */
+  }
+}
