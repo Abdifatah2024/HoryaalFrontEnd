@@ -151,7 +151,7 @@ const EmployeeForm = () => {
           <Input name="dateOfHire" type="date" label="Date of Hire" value={formData.dateOfHire} onChange={handleChange} icon={<FiCalendar />} />
           <Input name="education" label="Education" value={formData.education} onChange={handleChange} icon={<FiBook />} />
           <Input name="bankAccount" label="Bank Account" value={formData.bankAccount} onChange={handleChange} icon={<FiCreditCard />} />
-          <Input name="salary" type="number" label="Salary" value={formData.salary} onChange={handleChange} error={errors.salary} icon={<FiDollarSign />} min="0" step="100" />
+          <Input name="salary" type="number" label="Salary" value={formData.salary} onChange={handleChange} error={errors.salary} icon={<FiDollarSign />} min="0" step="1" />
 
           <div className="md:col-span-2 mt-4 space-y-3">
             <button
