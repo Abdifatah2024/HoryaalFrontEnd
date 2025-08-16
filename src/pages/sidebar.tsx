@@ -123,6 +123,7 @@ const SidebarLayout = () => {
 
             ? [
                 { title: "Student List", icon: <AiOutlineUser />, path: "/dashboard/ListStd" },
+                   { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
                 { title: "Get One Student", icon: <AiOutlineSearch />, path: "/dashboard/GetOneStudent" },
                  { title: "Check Transfer", icon: <AiOutlineSetting />, path: "/dashboard/CheckTransfer" },
                              ]                     
@@ -140,7 +141,7 @@ const SidebarLayout = () => {
 
                 ...(isAdmin
                   ? [
-                      { title: "Update Class", icon: <AiOutlineUser />, path: "/dashboard/UpdateClass" },
+                   
                       { title: "Dropout Students", icon: <AiOutlineUser />, path: "/dashboard/DropOut" },
                       { title: "Restored Students", icon: <AiOutlineUser />, path: "/dashboard/Restored" },
                       { title: "Delete Student", icon: <AiOutlineDelete />, path: "/dashboard/DeleteStd" },
@@ -233,20 +234,7 @@ const SidebarLayout = () => {
 }
 
 
-    // if (isAdmin || isAcademy|| isUser) {
-    //   items.push({
-    //     title: "Employee",
-    //     icon: <AiOutlineTeam className="text-lg" />,
-    //     subItems: [
-    //       { title: "Create Employee", icon: <AiOutlineTeam />, path: "/dashboard/CreateEmployee" },
-    //       { title: "Register Teacher", icon: <AiOutlineTeam />, path: "/dashboard/RegisterTeacher" },
-    //       { title: "Attendence", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAttendance" },
-    //       { title: "Attendence Report By Month", icon: <AiOutlineTeam />, path: "/dashboard/EmployeAttReport" },
-    //       { title: "Employee List", icon: <AiOutlineTeam />, path: "/dashboard/AllEmployeesList" },
-    //       { title: "Teacher Exam Management", icon: <AiOutlineTeam />, path: "/dashboard/TeacherManagement" },
-    //     ],
-    //   });
-    // }
+
 if (isAdmin || isAcademy || isUser) {
   const employeeSubItems = [
     { title: "Attendence", icon: <AiOutlineTeam />, path: "/dashboard/EmployeeAttendance" },

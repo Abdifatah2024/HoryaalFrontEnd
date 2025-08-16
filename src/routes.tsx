@@ -179,7 +179,7 @@ export const router = createBrowserRouter([
                   { path: 'user/list', element: <UsersList /> },
                   { path: 'DeleteStd', element: <DeleteStudent /> },
                   { path: 'CeateClass', element: <CreateClassForm /> },
-                  { path: 'UpdateClass', element: <UpdateClassForm /> },
+              
                 
                   { path: 'CustomReports', element: <UserSearch /> },
                   { path: 'CreateEmployee', element: <EmployeeForm /> },
@@ -205,6 +205,7 @@ export const router = createBrowserRouter([
   children: [
      { path: 'Announcements', element: <ManageAnnouncements/> },
      { path: 'Newstudent', element: <NewStudentList/> },
+         { path: 'UpdateClass', element: <UpdateClassForm /> },
      
       { path: 'AllEmployeesList', element: <AllEmployeesList /> },
      { path: 'AnnouncementsList', element: <AdminAnnouncements/> },
