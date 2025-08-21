@@ -164,7 +164,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER, Role.ACADEMY]} />,
+        element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.Teacher, Role.USER, Role.ACADEMY, Role.ATTENDANCE]} />,
         children: [
           {
             path: 'dashboard',
@@ -225,17 +225,14 @@ export const router = createBrowserRouter([
                   { path: 'UploadStudents', element: <UploadStudents /> },
                   { path: 'RegisterMulti', element: <RegisterMultipleStudents /> },
                   { path: 'GetOneStudent', element: <StudentDetail /> },
-                  { path: 'AttendceListPerClass', element: <StudentAbsentRecorder /> },
-                  { path: 'Attedence', element: <Attendance /> },
-                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+
                   { path: 'Decipline', element: <DisciplinePage /> },
                   { path: 'GetOneStudentDecipline', element: <StudentDisciplinePage /> },
-                  { path: 'MarkAtetendenceClass', element: <StudentClassListStd2 /> },
-                    { path: 'AbsentReport', element: <AttendanceReport /> },
-                      { path: 'MonthAttendceReport', element: <ClassAbsentDashboard /> },
-                       { path: 'ClassAttendenceReport', element: <ClassMonthlyAttendanceSummary/> },
+                 
+                    
+             
                   { path: 'UpdateExam', element: <UpdateStudentScores /> },
-                   { path: 'GetTobAbsent', element: <AbsenceList /> },
+               
                     { path: 'StudentWithSameBus', element: <SameBusStudents/> },
                         { path: 'StudentBusses', element: <StudentBusList/> },
                           { path: 'BusIncomeSummary', element: <BusFeeSummaryPage/> },
@@ -246,6 +243,7 @@ export const router = createBrowserRouter([
     // ⬇️ Add shared routes here
   ],
 },
+
 {
   element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.ACADEMY]} />,
   children: [
@@ -274,6 +272,22 @@ export const router = createBrowserRouter([
                  
                 ],
               },
+              {
+  element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER, Role.ACADEMY, Role.ATTENDANCE]} />,
+  children: [
+      { path: 'MarkAtetendenceClass', element: <StudentClassListStd2 /> },
+                        { path: 'AttendceListPerClass', element: <StudentAbsentRecorder /> },
+                  { path: 'Attedence', element: <Attendance /> },
+                  { path: 'GetTobAbsent', element: <AbsenceList /> },
+                      { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
+                      { path: 'AbsentReport', element: <AttendanceReport /> },
+                               { path: 'MonthAttendceReport', element: <ClassAbsentDashboard /> },
+                       { path: 'ClassAttendenceReport', element: <ClassMonthlyAttendanceSummary/> },
+                           { path: 'GetTobAbsent', element: <AbsenceList /> },
+
+  ],
+},
+
               {
                 element: <ProtectedRoute allowedRoles={[Role.ADMIN, Role.USER]} />,
                 children: [
@@ -342,13 +356,12 @@ export const router = createBrowserRouter([
                   { path: 'Final Student', element: <YearlyProgressReport/> },
                   { path: 'GetReportMidterm', element: <ExamMidtermReport /> },
                
-                
-                 
+                           
                   { path: 'ClassListStd', element: <ClassList /> },
                   { path: 'ClassReports', element: <ClassLists /> },
                 
                 
-                  { path: 'TodayAbsent', element: <AbsentStudentsByDate/> },
+              
                      { path: 'Rules', element: <PdfDocumentsList/> },
                      
                  

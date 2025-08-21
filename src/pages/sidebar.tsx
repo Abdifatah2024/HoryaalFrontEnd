@@ -57,6 +57,8 @@ const SidebarLayout = () => {
   const isTeacher = roleEnumValue === Role.Teacher;
   const isUser = roleEnumValue === Role.USER;
   const isAcademy = roleEnumValue === Role.ACADEMY;
+  const isAttendance = roleEnumValue === Role.ATTENDANCE
+  
 
 
   useEffect(() => {
@@ -289,7 +291,7 @@ if (isAdmin || isAcademy || isUser) {
       });
     }
 
-    if (isAdmin || isUser||isAcademy) {
+    if (isAdmin || isUser||isAcademy||isAttendance) {
       items.push({
         title: "Attendance",
         icon: <AiOutlineCalendar className="text-lg" />,

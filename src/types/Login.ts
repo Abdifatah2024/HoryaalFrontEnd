@@ -24,6 +24,8 @@ export enum Role {
   Teacher = "Teacher",
   PARENT = "PARENT",
   ACADEMY = "ACADEMY",
+  ATTENDANCE= "ATTENDANCE"
+
 }
 
 export interface Advance {

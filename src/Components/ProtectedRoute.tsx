@@ -6,9 +6,7 @@ import type { RootState } from "../Redux/store";
 import { logout } from "../Redux/Auth/LoginSlice";
 import type { Role } from "../types/Login";
 
-// export interface ProtectedRouteProps {
-//   allowedRoles: ("ADMIN" | "USER" | "Teacher" | "PARENT")[];
-// }
+
 export interface ProtectedRouteProps {
   allowedRoles: Role[]; // ✅ now accepts "ACADEMY" and any future roles
 }
@@ -43,7 +41,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) 
 
 const isRole = (value: unknown): value is Role =>
   typeof value === "string" &&
-  ["ADMIN", "TEACHER", "PARENT", "STUDENT", "USER", "ACADEMY"].includes(value);
+  ["ADMIN", "TEACHER", "PARENT", "STUDENT", "USER", "ACADEMY", "ATTENDANCE"].includes(value);
 
 
 const userRole = decoded.role;
