@@ -427,7 +427,11 @@ const StudentClassListStd2: React.FC = () => {
     const className = classes.find((c) => c.id === selectedClassId)?.name || "";
     const headers = [
       "NO", "ID-NO", "Student’s Full Name",
-      ...Array(25).fill("").map((_, i) => `Day${i + 1}`)
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We",
+      "Sa", "Su", "Mo", "Tu", "We"
     ];
 
     const body = students.map((student, index) => [
