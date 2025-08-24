@@ -245,7 +245,9 @@ const ALL = "ALL";
 
 const StudentBalanceList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { students, loading, error } = useAppSelector((state) => state.studentBalance);
+  const { students, loading, error } = useAppSelector(
+    (state) => state.studentBalance
+  );
   const printRef = useRef<HTMLDivElement>(null);
 
   const [selectedClass, setSelectedClass] = useState<string>(ALL);
@@ -254,7 +256,7 @@ const StudentBalanceList: React.FC = () => {
     dispatch(fetchStudentsWithBalancesAndMonths());
   }, [dispatch]);
 
-  // 🔹 Build class options purely from UI data (no backend calls)
+  // 🔹 Build class options purely from UI data
   const classOptions = useMemo(() => {
     const set = new Set<string>();
     students.forEach((s) => {
@@ -269,7 +271,8 @@ const StudentBalanceList: React.FC = () => {
     return students.filter((s) => s.className === selectedClass);
   }, [students, selectedClass]);
 
-  const titleSuffix = selectedClass === ALL ? " (All Classes)" : ` (${selectedClass})`;
+  const titleSuffix =
+    selectedClass === ALL ? " (All Classes)" : ` (${selectedClass})`;
 
   const handleExportExcel = () => {
     const rows = filteredStudents.map((student) => ({
@@ -290,7 +293,10 @@ const StudentBalanceList: React.FC = () => {
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Unpaid Students");
-    const filename = selectedClass === ALL ? "UnpaidStudents_All.xlsx" : `UnpaidStudents_${selectedClass}.xlsx`;
+    const filename =
+      selectedClass === ALL
+        ? "UnpaidStudents_All.xlsx"
+        : `UnpaidStudents_${selectedClass}.xlsx`;
     XLSX.writeFile(workbook, filename);
   };
 
@@ -300,12 +306,19 @@ const StudentBalanceList: React.FC = () => {
     // Title
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text(`Unpaid Students Balance Report${titleSuffix}`, 105, 16, { align: "center" });
+    doc.text(
+      `Unpaid Students Balance Report${titleSuffix}`,
+      105,
+      16,
+      { align: "center" }
+    );
 
     // Meta
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 22, { align: "center" });
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 22, {
+      align: "center",
+    });
 
     // Table
     const tableData = filteredStudents.map((student, index) => [
@@ -326,7 +339,9 @@ const StudentBalanceList: React.FC = () => {
 
     autoTable(doc, {
       startY: 28,
-      head: [["#", "Full Name", "Class", "Balance", "Carry Forward", "Unpaid Months"]],
+      head: [
+        ["#", "Full Name", "Class", "Balance", "Carry Forward", "Unpaid Months"],
+      ],
       body: tableData,
       styles: {
         halign: "center",
@@ -354,13 +369,20 @@ const StudentBalanceList: React.FC = () => {
         5: { cellWidth: 65 },
       },
       didDrawPage: () => {
-        const str = `Page ${doc.internal.getNumberOfPages()}`;
+        // ✅ Correct: public API
+        const pageCount = doc.getNumberOfPages();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
         doc.setFontSize(9);
-        doc.text(str, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 8);
+        doc.text(`Page ${pageCount}`, pageWidth - 20, pageHeight - 8);
       },
     });
 
-    const filename = selectedClass === ALL ? "UnpaidStudents_All.pdf" : `UnpaidStudents_${selectedClass}.pdf`;
+    const filename =
+      selectedClass === ALL
+        ? "UnpaidStudents_All.pdf"
+        : `UnpaidStudents_${selectedClass}.pdf`;
     doc.save(filename);
   };
 
