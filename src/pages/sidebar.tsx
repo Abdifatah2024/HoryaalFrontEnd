@@ -162,6 +162,7 @@ const SidebarLayout = () => {
         icon: <AiOutlineTeam className="text-lg" />,
         subItems: [
               { title: "Family Payment", icon: <AiOutlineTeam />, path: "/dashboard/FamilyPaypayment" },
+              { title: "Check Sender Number", icon: <AiOutlineTeam />, path: "/dashboard/SearchPaymentHistory" },
     { title: "Paid and Histiry", icon: <AiOutlineTeam />, path: "/dashboard/PaidFee" },
     { title: "Unpaid-family-summary", icon: <AiOutlineTeam />, path: "/dashboard/UnpaidFamilySummary" },
     { title: "Unpaid Family Report", icon: <AiOutlineTeam />, path: "/dashboard/UnpaidFamily" },

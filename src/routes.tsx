@@ -138,6 +138,7 @@ import FreeStudentManager from './pages/FreeStudentManager';
 import UnpaidFamilyReport from './pages/Payment/UnpaidFamilyReport';
 import NewStudentList from './pages/Payment/NewStudentList';
 import UnpaidFamilySummary from './pages/Payment/BalanceFamilySummary';
+import NumberHistory from './Redux/Payment/NumberHistory';
 
 export const router = createBrowserRouter([
   {
@@ -293,6 +294,7 @@ export const router = createBrowserRouter([
                 children: [
                  
                   { path: 'regstd', element: <StudentForm /> },
+                  { path: 'SearchPaymentHistory', element: <NumberHistory /> },
                      { path: 'DropOut', element: <SoftDeletedStudents/> },
                   { path: 'UnpaidFamily', element: <UnpaidFamilyReport/> },
                   { path: 'UnpaidFamilySummary', element: <UnpaidFamilySummary/> },
