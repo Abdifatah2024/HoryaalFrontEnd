@@ -5,7 +5,7 @@ import { BASE_API_URL, DEFAULT_ERROR_MESSAGE } from "../../Constant";
 
 /* --------------------------- Types & Interfaces --------------------------- */
 
-export type PayMethod = "ZAAD" | "E-DAHAB";
+export type PayMethod = "ZAAD" | "E-dahab";
 
 export interface NumberHistoryFilters {
   number: string;
@@ -98,7 +98,7 @@ export const fetchNumberHistory = createAsyncThunk<
         methods:
           Array.isArray(filters.methods) && filters.methods.length > 0
             ? filters.methods
-            : ["ZAAD", "E-DAHAB"],
+            : ["ZAAD", "E-dahab"],
       };
 
       if (filters.dateStart && filters.dateEnd) {

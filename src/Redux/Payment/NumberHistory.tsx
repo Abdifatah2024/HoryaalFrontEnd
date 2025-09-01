@@ -28,7 +28,7 @@ const NumberHistory: React.FC = () => {
 
   // ---- Form state ----
   const [number, setNumber] = useState<string>("");
-  const [methods, setMethods] = useState<PayMethod[]>(["ZAAD", "E-DAHAB"]);
+  const [methods, setMethods] = useState<PayMethod[]>(["ZAAD", "E-dahab"]);
   const [filterMode, setFilterMode] = useState<FilterMode>("MONTH_YEAR");
   const [month, setMonth] = useState<number | "">("");
   const [year, setYear] = useState<number | "">("");
@@ -87,7 +87,7 @@ const NumberHistory: React.FC = () => {
   const onClear = useCallback(() => {
     dispatch(clearNumberHistory());
     setNumber("");
-    setMethods(["ZAAD", "E-DAHAB"]);
+    setMethods(["ZAAD", "E-dahab"]);
     setFilterMode("MONTH_YEAR");
     setMonth("");
     setYear("");
@@ -298,8 +298,8 @@ const NumberHistory: React.FC = () => {
               <label className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={methods.includes("E-DAHAB")}
-                  onChange={() => toggleMethod("E-DAHAB")}
+                  checked={methods.includes("E-dahab")}
+                  onChange={() => toggleMethod("E-dahab")}
                 />
                 <span>E-DAHAB</span>
               </label>
