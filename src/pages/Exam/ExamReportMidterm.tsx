@@ -1,23 +1,15 @@
-import React, {  useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store";
 import { fetchMidtermReport } from "../../Redux/Exam/ExamMidtermReportSlice";
+import { fetchAllClasses } from "../../Redux/Auth/studentSlice"; // ✅ fetch classes from backend
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { FiPrinter, FiDownload} from "react-icons/fi";
+import { FiPrinter, FiDownload } from "react-icons/fi";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import { useReactToPrint, UseReactToPrintOptions } from 'react-to-print';
+import { useReactToPrint, UseReactToPrintOptions } from "react-to-print";
 
 // Constants
-const CLASS_LIST = [
-  { id: 1, name: "1A" }, { id: 2, name: "1B" }, { id: 3, name: "1C" },
-  { id: 4, name: "1D" }, { id: 5, name: "1E" }, { id: 6, name: "1G" },
-  { id: 7, name: "2A" }, { id: 8, name: "2B" }, { id: 9, name: "2C" },
-  { id: 10, name: "2D" }, { id: 11, name: "2E" }, { id: 12, name: "2F" },
-  { id: 13, name: "3A" }, { id: 14, name: "3B" }, { id: 15, name: "3C" },
-  { id: 16, name: "3D" }, { id: 17, name: "3E" }, { id: 18, name: "4A" },
-  { id: 19, name: "4B" }, { id: 20, name: "4C" }, { id: 21, name: "4D" },
-];
 const ACADEMIC_YEAR = "2024 - 2025";
 const MAX_MARKS = 500;
 const PASSING_MARKS = 250;
@@ -29,13 +21,21 @@ interface SortConfig {
 
 const ExamMidtermReport: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { report, loading, error } = useSelector((state: RootState) => state.midtermReport);
+  const { report, loading, error } = useSelector(
+    (state: RootState) => state.midtermReport
+  );
+  const { classes = [] } = useSelector((state: RootState) => state.classList); // ✅ classList slice
   const [classId, setClassId] = useState<number | "">("");
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const reportRef = useRef<HTMLDivElement>(null);
 
-  const selectedClass = CLASS_LIST.find((c) => c.id === Number(classId));
+  // ✅ Fetch classes on mount
+  useEffect(() => {
+    dispatch(fetchAllClasses());
+  }, [dispatch]);
+
+  const selectedClass = classes.find((c) => c.id === Number(classId));
   const className = selectedClass?.name || "N/A";
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -89,19 +89,19 @@ const ExamMidtermReport: React.FC = () => {
   };
 
   const getSortIcon = (key: string) => {
-    if (!sortConfig || sortConfig.key !== key) return <FaSort className="ml-1 opacity-40" />;
-    return sortConfig.direction === "ascending" ? <FaSortUp className="ml-1" /> : <FaSortDown className="ml-1" />;
+    if (!sortConfig || sortConfig.key !== key)
+      return <FaSort className="ml-1 opacity-40" />;
+    return sortConfig.direction === "ascending" ? (
+      <FaSortUp className="ml-1" />
+    ) : (
+      <FaSortDown className="ml-1" />
+    );
   };
 
-  // const handlePrint = useReactToPrint({
-  //   content: () => reportRef.current,
-  //   documentTitle: `Midterm Report - ${className}`,
-  // });
-  
-const handlePrint = useReactToPrint({
-  content: () => reportRef.current,
-  documentTitle: `Midterm Report - ${className}`,
-} as unknown as UseReactToPrintOptions);
+  const handlePrint = useReactToPrint({
+    content: () => reportRef.current,
+    documentTitle: `Midterm Report - ${className}`,
+  } as unknown as UseReactToPrintOptions);
 
   const exportToPDF = () => {
     if (!report.length) return;
@@ -119,23 +119,14 @@ const handlePrint = useReactToPrint({
     doc.text(`Total Students: ${report.length}`, 15, 37);
     doc.text(`Passed: ${passed} | Failed: ${failed}`, 15, 44);
 
-    // const headers = [
-    //   "Student Name",
-    //   ...report[0]?.subjects.map((s) => s.subject),
-    //   "Total",
-    //   "Percentage",
-    //   "Rank",
-    //   "Status",
-    // ];
     const headers = [
-  "Student Name",
-  ...(report[0]?.subjects?.map((s) => s.subject) || []),
-  "Total",
-  "Percentage",
-  "Rank",
-  "Status",
-];
-
+      "Student Name",
+      ...(report[0]?.subjects?.map((s) => s.subject) || []),
+      "Total",
+      "Percentage",
+      "Rank",
+      "Status",
+    ];
 
     const data = report.map((student) => [
       student.fullName,
@@ -161,8 +152,11 @@ const handlePrint = useReactToPrint({
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Midterm Examination Results</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        Midterm Examination Results
+      </h1>
 
+      {/* ✅ Use dynamic classes */}
       <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
         <select
           value={classId}
@@ -170,11 +164,16 @@ const handlePrint = useReactToPrint({
           className="border rounded px-3 py-1"
         >
           <option value="">Select Class</option>
-          {CLASS_LIST.map((cls) => (
-            <option key={cls.id} value={cls.id}>{cls.name}</option>
+          {classes.map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.name}
+            </option>
           ))}
         </select>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-1 rounded"
+        >
           {loading ? "Loading..." : "Get Results"}
         </button>
       </form>
@@ -188,10 +187,16 @@ const handlePrint = useReactToPrint({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button onClick={handlePrint} className="bg-gray-700 text-white px-3 py-1 rounded flex items-center gap-1">
+          <button
+            onClick={handlePrint}
+            className="bg-gray-700 text-white px-3 py-1 rounded flex items-center gap-1"
+          >
             <FiPrinter /> Print
           </button>
-          <button onClick={exportToPDF} className="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1">
+          <button
+            onClick={exportToPDF}
+            className="bg-red-600 text-white px-3 py-1 rounded flex items-center gap-1"
+          >
             <FiDownload /> PDF
           </button>
         </div>
@@ -208,7 +213,9 @@ const handlePrint = useReactToPrint({
                   className="text-left px-2 py-2 cursor-pointer"
                   onClick={() => requestSort("fullName")}
                 >
-                  <div className="flex items-center">Student Name {getSortIcon("fullName")}</div>
+                  <div className="flex items-center">
+                    Student Name {getSortIcon("fullName")}
+                  </div>
                 </th>
                 {report[0].subjects.map((s) => (
                   <th key={s.subject} className="text-center px-2 py-2">
@@ -219,14 +226,18 @@ const handlePrint = useReactToPrint({
                   className="text-center px-2 py-2 cursor-pointer"
                   onClick={() => requestSort("totalMarks")}
                 >
-                  <div className="flex items-center justify-center">Total {getSortIcon("totalMarks")}</div>
+                  <div className="flex items-center justify-center">
+                    Total {getSortIcon("totalMarks")}
+                  </div>
                 </th>
                 <th className="text-center px-2 py-2">%</th>
                 <th
                   className="text-center px-2 py-2 cursor-pointer"
                   onClick={() => requestSort("rank")}
                 >
-                  <div className="flex items-center justify-center">Rank {getSortIcon("rank")}</div>
+                  <div className="flex items-center justify-center">
+                    Rank {getSortIcon("rank")}
+                  </div>
                 </th>
                 <th className="text-center px-2 py-2">Status</th>
               </tr>
@@ -236,16 +247,26 @@ const handlePrint = useReactToPrint({
                 <tr key={student.studentId} className="border-t">
                   <td className="px-2 py-1">{student.fullName}</td>
                   {student.subjects.map((s) => (
-                    <td key={s.subject} className="text-center px-2 py-1">{s.marks}</td>
+                    <td key={s.subject} className="text-center px-2 py-1">
+                      {s.marks}
+                    </td>
                   ))}
-                  <td className="text-center px-2 py-1 font-bold">{student.totalMarks}</td>
-                  <td className="text-center px-2 py-1">{calculatePercentage(student.totalMarks)}%</td>
+                  <td className="text-center px-2 py-1 font-bold">
+                    {student.totalMarks}
+                  </td>
+                  <td className="text-center px-2 py-1">
+                    {calculatePercentage(student.totalMarks)}%
+                  </td>
                   <td className="text-center px-2 py-1">{student.rank}</td>
                   <td className="text-center px-2 py-1">
                     {student.totalMarks >= PASSING_MARKS ? (
-                      <span className="text-green-600 font-medium">Passed</span>
+                      <span className="text-green-600 font-medium">
+                        Passed
+                      </span>
                     ) : (
-                      <span className="text-red-600 font-medium">Failed</span>
+                      <span className="text-red-600 font-medium">
+                        Failed
+                      </span>
                     )}
                   </td>
                 </tr>
